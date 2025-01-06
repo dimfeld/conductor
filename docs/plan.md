@@ -4,7 +4,7 @@ Below is a structured plan broken into epics and small, actionable stories. Each
 
 ---
 
-### [ ] Epic 0: App Shell
+### [x] Epic 0: App Shell
 
 **Summary**: Establish a consistent structure for the app, including sidebar navigation
 
@@ -12,13 +12,8 @@ Below is a structured plan broken into epics and small, actionable stories. Each
        **Description**: Create a consistent structure for the app, including sidebar navigation.
       **Test Focus**: Check that the app is structured and responsive.
 
-- [ ] **Story 0.2: Sidebar Navigation**  
-       **Description**: Implement sidebar navigation for easy navigation between features.
-      **Test Focus**: Check that the sidebar navigation is functional and visually appealing.
-
-- [ ] **Story 0.3: Responsive Design**  
-       **Description**: Ensure that the app is responsive to different screen sizes.
-      **Test Focus**: Check that the app is responsive to different screen sizes.
+- [ ] **Story 0.2: Reference a project repository**  
+       **Description**: Ability for the application to reference a project repository for the AI Coding Agent to track tasks, commits, and logs.
 
 ---
 
@@ -26,9 +21,9 @@ Below is a structured plan broken into epics and small, actionable stories. Each
 
 **Summary**: Provide functionality to manage a TODO list of epics and stories in a markdown file, and allow different methods of choosing tasks.
 
-- [ ] **Story 1.1: Add Task Markdown File**  
-       **Description**: Create a repository markdown file where epics and stories are listed.  
-       **Test Focus**: Verify file creation and correct loading of initial tasks.
+- [x] **Story 1.1: Add Task Markdown File**  
+       **Description**: Reference a repository, with a markdown file at `docs/plan.md` where epics and stories are listed.  
+       **Test Focus**: Verify correct loading of initial tasks.
 
 - [ ] **Story 1.2: Parse Tasks from Markdown**  
        **Description**: Implement logic to read and parse tasks from the markdown file.  

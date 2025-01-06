@@ -9,25 +9,26 @@
 
 ## Architecture and Modularity
 
-5. Ensure **all code is modular**, reusable, and adheres to SOLID principles.
-6. Use **dependency injection** for better code organization, scalability, and testability.
-7. Follow **SvelteKit module structure** to organize related functionality logically.
-8. Use **Drizzle** for defining entities and managing database operations.
+5. All web code should use web best practices, such as <a> tags for navigation and <form> tags for form handling.
+6. Ensure **all code is modular**, reusable, and adheres to SOLID principles.
+7. Use **dependency injection** for better code organization, scalability, and testability.
+8. Follow **SvelteKit best practices** to organize related functionality logically.
+9. Use **Drizzle** for defining entities and managing database operations.
 
 ## Error Handling and Security
 
-9. Implement **error handling** to account for edge cases and unexpected inputs.
-10. Validate form uploads using **sveltekit-superforms** and **zod** to prevent malicious uploads.
+10. Implement **error handling** to account for edge cases and unexpected inputs.
+11. Validate form uploads using **sveltekit-superforms** and **zod** to prevent malicious uploads.
 
 ## Documentation and Testing
 
-11. Write tests using the `vitest` library.
-12. Write **automated tests** for Svelte components with **Svelte Testing Library**.
-13. Mock real services in tests to ensure independence and faster execution.
-14. Enable **parallel test execution** for backend and frontend tests to reduce runtime.
+12. Write tests using the `vitest` library.
+13. Write **automated tests** for Svelte components with **Svelte Testing Library**.
+14. Mock real services in tests to ensure independence and faster execution.
+15. Enable **parallel test execution** for backend and frontend tests to reduce runtime.
 
 ## Best Practices
 
-15. Maintain a clear separation of concerns in modules and codebase.
-16. Avoid hardcoding configurations; use environment variables for flexibility.
-17. Always consider scalability and future maintainability when designing components or architecture.
+16. Maintain a clear separation of concerns in modules and codebase.
+17. Avoid hardcoding configurations; use environment variables for flexibility.
+18. Always consider scalability and future maintainability when designing components or architecture.
