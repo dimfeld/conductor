@@ -12,28 +12,28 @@ Below is a structured plan broken into epics and small, actionable stories. Each
        **Description**: Create a consistent structure for the app, including sidebar navigation.
       **Test Focus**: Check that the app is structured and responsive.
 
-- [ ] **Story 0.2: Reference a project repository**  
-       **Description**: Ability for the application to reference a project repository for the AI Coding Agent to track tasks, commits, and logs.
-
 ---
 
 ## [ ] Epic 1: Task Management
 
 **Summary**: Provide functionality to manage a TODO list of epics and stories in a markdown file, and allow different methods of choosing tasks.
 
-- [x] **Story 1.1: Add Task Markdown File**  
+- [ ] **Story 1.1: Reference a project repository**  
+       **Description**: Ability for the application to reference a project repository for the AI Coding Agent to track tasks, commits, and logs.
+
+- [x] **Story 1.2: Add Task Markdown File**  
        **Description**: Reference a repository, with a markdown file at `docs/plan.md` where epics and stories are listed.  
        **Test Focus**: Verify correct loading of initial tasks.
 
-- [ ] **Story 1.2: Parse Tasks from Markdown**  
+- [ ] **Story 1.3: Parse Tasks from Markdown**  
        **Description**: Implement logic to read and parse tasks from the markdown file.  
        **Test Focus**: Check correct parsing of task titles and statuses through unit tests.
 
-- [ ] **Story 1.3: Implement Task Selection Methods**  
+- [ ] **Story 1.4: Implement Task Selection Methods**  
        **Description**: Support user-requested tasks, user-typed tasks, and automatic selection of the next task.  
        **Test Focus**: Confirm correct selection flow in different scenarios using mock user inputs.
 
-- [ ] **Story 1.4: Connect with Aider for Coding Tasks**  
+- [ ] **Story 1.5: Connect with Aider for Coding Tasks**  
        **Description**: Integrate the system to invoke `aider` for performing coding tasks automatically.  
        **Test Focus**: Mock `aider` calls and validate the request flow within the system.
 

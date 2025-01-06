@@ -27,7 +27,6 @@ export default defineConfig({
   // @ts-expect-error Type difference until vite 6 officially supported
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}'],
-    environment: 'jsdom',
     setupFiles: ['./vitest-setup.js']
   }
 });

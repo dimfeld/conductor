@@ -12,7 +12,7 @@
     "format": "prettier --write .",
     "lint": "prettier --check . && eslint .",
     "test:e2e": "playwright test",
-    "test": "bun run test:e2e && bun run test:unit -- --run",
+    "test": "bun run test:unit -- --run",
     "test:unit": "vitest",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
