@@ -4,6 +4,24 @@ Below is a structured plan broken into epics and small, actionable stories. Each
 
 ---
 
+### [ ] Epic 0: App Shell
+
+**Summary**: Establish a consistent structure for the app, including sidebar navigation
+
+- [ ] **Story 0.1: App Shell Setup**  
+    **Description**: Create a consistent structure for the app, including sidebar navigation.
+    **Test Focus**: Check that the app is structured and responsive.
+
+- [ ] **Story 0.2: Sidebar Navigation**  
+    **Description**: Implement sidebar navigation for easy navigation between features.
+    **Test Focus**: Check that the sidebar navigation is functional and visually appealing.
+
+- [ ] **Story 0.3: Responsive Design**  
+    **Description**: Ensure that the app is responsive to different screen sizes.
+    **Test Focus**: Check that the app is responsive to different screen sizes.
+
+---
+
 ## [ ] Epic 1: Task Management
 
 **Summary**: Provide functionality to manage a TODO list of epics and stories in a markdown file, and allow different methods of choosing tasks.
@@ -82,8 +100,8 @@ Below is a structured plan broken into epics and small, actionable stories. Each
        **Description**: Configure the application to handle both Git and Jujutsu operations.  
        **Test Focus**: Mock Git/JJ commands and verify correct branching and commit flows.
 
-- [ ] **Story 4.2: Branch Creation per Instance**  
-       **Description**: Automatically create a new branch/workspace from a specified base for each agent instance.  
+- [ ] **Story 4.2: Worktree and Branch Creation per Instance**  
+       **Description**: Automatically create a new worktree/workspace and branch (for Git) from a specified base for each agent instance.  
        **Test Focus**: Validate branch name generation and successful checkout with mocked VCS tools.
 
 - [ ] **Story 4.3: Commit Tracking**  
@@ -118,7 +136,26 @@ Below is a structured plan broken into epics and small, actionable stories. Each
 
 ---
 
-## [ ] Epic 6: User Management
+
+## [ ] Epic 6: Discord Bot
+
+**Summary**: Integrate the AI Coding Agent with a Discord bot for enhanced functionality.
+
+- [ ] **Story 6.1: Discord Bot Setup**  
+       **Description**: Configure a Discord bot to integrate with the AI Coding Agent.  
+       **Test Focus**: Mock Discord bot interactions and validate correct behavior.
+
+- [ ] **Story 6.2: Discord Bot Commands**  
+       **Description**: Add commands to the Discord bot to control the AI Coding Agent.  
+       **Test Focus**: Mock Discord bot commands and validate correct behavior.
+
+- [ ] **Story 6.3: Thread per Instance**
+       **Description**: Ensure each instance of the AI Coding Agent has its own Discord thread.  
+       **Test Focus**: Mock Discord bot interactions and validate correct behavior.
+
+---
+
+## [ ] Epic 7: User Management
 
 **Summary**: Though multi-user features are low priority, keep the design flexible for potential upgrades.
 

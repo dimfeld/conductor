@@ -1,10 +1,27 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
+import type { PluginOption } from 'vite';
+import { gitRef } from './gitRef.js';
 import { sveltekit } from '@sveltejs/kit/vite';
+import { initTracing } from './src/lib/server/tracing/node.js';
+
+process.env.PUBLIC_GIT_REF = gitRef;
+
+// Handle websocket upgrades in dev server
+const tracing: PluginOption = {
+  name: 'websockets',
+  configureServer(server) {
+    // Do this before anything else loads so that autoinstrumentation can kick in.
+    initTracing('seneschal', { TRACK_SPANS: 'true', NODE_ENV: 'development' });
+  },
+  configurePreviewServer(server) {
+    initTracing('seneschal', { TRACK_SPANS: 'true', NODE_ENV: 'development' });
+  }
+};
 
 export default defineConfig({
-  plugins: [sveltekit()],
-
-  test: {
-    include: ['src/**/*.{test,spec}.{js,ts}']
+  plugins: [sveltekit(), tracing],
+  clearScreen: false,
+  build: {
+    sourcemap: true
   }
 });
