@@ -8,17 +8,17 @@ Below is a structured plan broken into epics and small, actionable stories. Each
 
 **Summary**: Establish a consistent structure for the app, including sidebar navigation
 
-- [ ] **Story 0.1: App Shell Setup**  
-    **Description**: Create a consistent structure for the app, including sidebar navigation.
-    **Test Focus**: Check that the app is structured and responsive.
+- [x] **Story 0.1: App Shell Setup**  
+       **Description**: Create a consistent structure for the app, including sidebar navigation.
+      **Test Focus**: Check that the app is structured and responsive.
 
 - [ ] **Story 0.2: Sidebar Navigation**  
-    **Description**: Implement sidebar navigation for easy navigation between features.
-    **Test Focus**: Check that the sidebar navigation is functional and visually appealing.
+       **Description**: Implement sidebar navigation for easy navigation between features.
+      **Test Focus**: Check that the sidebar navigation is functional and visually appealing.
 
 - [ ] **Story 0.3: Responsive Design**  
-    **Description**: Ensure that the app is responsive to different screen sizes.
-    **Test Focus**: Check that the app is responsive to different screen sizes.
+       **Description**: Ensure that the app is responsive to different screen sizes.
+      **Test Focus**: Check that the app is responsive to different screen sizes.
 
 ---
 
@@ -65,7 +65,7 @@ Below is a structured plan broken into epics and small, actionable stories. Each
        **Test Focus**: Validate correct linking and updating of references with minimal user input.
 
 - [ ] **Story 2.5: Dockerized Development Environment**  
-       **Description**: Provide a Docker configuration for a local SvelteKit + Bun development environment to facilitate code generation.  
+       **Description**: Provide a Docker configuration for a local SvelteKit + Node development environment to facilitate code generation.  
        **Test Focus**: Verify container builds and runs SvelteKit successfully, ensuring no environment conflicts.
 
 ---
@@ -136,7 +136,6 @@ Below is a structured plan broken into epics and small, actionable stories. Each
 
 ---
 
-
 ## [ ] Epic 6: Discord Bot
 
 **Summary**: Integrate the AI Coding Agent with a Discord bot for enhanced functionality.
@@ -150,7 +149,7 @@ Below is a structured plan broken into epics and small, actionable stories. Each
        **Test Focus**: Mock Discord bot commands and validate correct behavior.
 
 - [ ] **Story 6.3: Thread per Instance**
-       **Description**: Ensure each instance of the AI Coding Agent has its own Discord thread.  
+      **Description**: Ensure each instance of the AI Coding Agent has its own Discord thread.  
        **Test Focus**: Mock Discord bot interactions and validate correct behavior.
 
 ---
@@ -171,7 +170,7 @@ Below is a structured plan broken into epics and small, actionable stories. Each
 
 ### Notes on Testing & Guidelines
 
-- Every story will have its own unit tests using the `bun:test` framework with Svelte Testing Library where applicable.
+- Every story will have its own unit tests using the `vitest` framework with Svelte Testing Library where applicable.
 - Code must follow TypeScript best practices, with ESLint rules enforced.
 - Use descriptive variable/function names and JSDoc comments in each module.
 - Implement error handling and form validation with sveltekit-superforms and zod.

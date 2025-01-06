@@ -21,7 +21,7 @@
 
 ## Documentation and Testing
 
-11. Write tests using the `bun:test` library.
+11. Write tests using the `vitest` library.
 12. Write **automated tests** for Svelte components with **Svelte Testing Library**.
 13. Mock real services in tests to ensure independence and faster execution.
 14. Enable **parallel test execution** for backend and frontend tests to reduce runtime.
