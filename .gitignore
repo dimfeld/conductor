@@ -1,6 +1,8 @@
 test-results
 node_modules
 
+docs/svelte-llm.txt
+
 # Output
 .output
 .vercel
