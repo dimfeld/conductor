@@ -1,24 +1,8 @@
 import { describe, it, expect, afterEach, beforeEach, vi, beforeAll } from 'vitest';
 import { AiderProcess } from './index.js';
-import { tmpdir } from 'os';
-import { join } from 'path';
-import { mkdtempSync, writeFileSync } from 'fs';
 
 describe('AiderProcess', () => {
   let aider: AiderProcess;
-  let tempDir: string;
-
-  beforeAll(() => {
-    // Create a temporary directory for each test
-    tempDir = mkdtempSync(join(tmpdir(), 'aider-test-'));
-    writeFileSync(
-      tempDir + '/aider.yaml',
-      `
-chat-mode: architect
-map-refresh: manual
-`
-    );
-  });
 
   afterEach(async () => {
     // Clean up the process after each test
@@ -30,7 +14,7 @@ map-refresh: manual
   it('should start and handle /help command', async () => {
     aider = new AiderProcess({
       cwd: process.cwd(),
-      args: ['--architect', '--config', tempDir + '/aider.yaml']
+      args: ['--architect', '--map-refresh', 'manual']
     });
 
     // Get the output stream to verify we're getting output
@@ -45,6 +29,8 @@ map-refresh: manual
     expect(initialPrompt).toContain('>');
 
     aider.takeBuffer();
+
+    expect(aider.buffer).toBe('');
 
     // Send the /help command
     await aider.send('/help');

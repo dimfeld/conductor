@@ -24,7 +24,7 @@ function isPrompt(text: string): boolean {
 
 export class AiderProcess {
   private process: ChildProcess;
-  private buffer = '';
+  private _buffer = '';
   private promptResolve: ((value: string) => void) | null = null;
 
   constructor(options: AiderOptions) {
@@ -39,12 +39,12 @@ export class AiderProcess {
 
     this.process.stdout?.on('data', (data: Buffer) => {
       const text = data.toString();
-      this.buffer += text;
+      this._buffer += text;
 
       // When we see a prompt, resolve the promise if one is waiting
-      if (isPrompt(this.buffer)) {
-        const prompt = this.buffer;
-        this.buffer = '';
+      if (isPrompt(this._buffer)) {
+        const prompt = this._buffer;
+        this._buffer = '';
         this.promptResolve?.(prompt);
         this.promptResolve = null;
       }
@@ -55,10 +55,14 @@ export class AiderProcess {
     });
   }
 
+  get buffer() {
+    return this._buffer;
+  }
+
   /** Take the current buffer and clear it */
   takeBuffer(): string {
-    const buffer = this.buffer;
-    this.buffer = '';
+    const buffer = this._buffer;
+    this._buffer = '';
     return buffer;
   }
 
@@ -80,9 +84,9 @@ export class AiderProcess {
    */
   async waitForPrompt(): Promise<string> {
     // If we already have a complete prompt in the buffer, return it immediately
-    if (isPrompt(this.buffer)) {
-      const prompt = this.buffer;
-      this.buffer = '';
+    if (isPrompt(this._buffer)) {
+      const prompt = this._buffer;
+      this._buffer = '';
       return prompt;
     }
 
