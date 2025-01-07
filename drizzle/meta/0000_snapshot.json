@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "49e6249f-0a48-4d83-9437-451c1000c74b",
+  "id": "997eeb26-df24-412c-be78-f1c1aaef1554",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "agent_instances": {
@@ -61,6 +61,162 @@
           "tableTo": "projects",
           "columnsFrom": [
             "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "agent_task_progress": {
+      "name": "agent_task_progress",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "agent_task_id": {
+          "name": "agent_task_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "agent_task_step_id": {
+          "name": "agent_task_step_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "logs": {
+          "name": "logs",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "model": {
+          "name": "model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "operation": {
+          "name": "operation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "agent_task_progress_agent_task_id_agent_tasks_id_fk": {
+          "name": "agent_task_progress_agent_task_id_agent_tasks_id_fk",
+          "tableFrom": "agent_task_progress",
+          "tableTo": "agent_tasks",
+          "columnsFrom": [
+            "agent_task_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "agent_task_progress_agent_task_step_id_agent_task_steps_id_fk": {
+          "name": "agent_task_progress_agent_task_step_id_agent_task_steps_id_fk",
+          "tableFrom": "agent_task_progress",
+          "tableTo": "agent_task_steps",
+          "columnsFrom": [
+            "agent_task_step_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "agent_task_steps": {
+      "name": "agent_task_steps",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "agent_task_id": {
+          "name": "agent_task_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(unixepoch())"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "agent_task_steps_agent_task_id_agent_tasks_id_fk": {
+          "name": "agent_task_steps_agent_task_id_agent_tasks_id_fk",
+          "tableFrom": "agent_task_steps",
+          "tableTo": "agent_tasks",
+          "columnsFrom": [
+            "agent_task_id"
           ],
           "columnsTo": [
             "id"
@@ -159,144 +315,6 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "project_frameworks": {
-      "name": "project_frameworks",
-      "columns": {
-        "project_id": {
-          "name": "project_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "framework": {
-          "name": "framework",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "project_frameworks_project_id_projects_id_fk": {
-          "name": "project_frameworks_project_id_projects_id_fk",
-          "tableFrom": "project_frameworks",
-          "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "project_frameworks_project_id_framework_pk": {
-          "columns": [
-            "project_id",
-            "framework"
-          ],
-          "name": "project_frameworks_project_id_framework_pk"
-        }
-      },
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "project_states": {
-      "name": "project_states",
-      "columns": {
-        "project_id": {
-          "name": "project_id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "status": {
-          "name": "status",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "last_accessed": {
-          "name": "last_accessed",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(strftime('%s', 'now'))"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "project_states_project_id_projects_id_fk": {
-          "name": "project_states_project_id_projects_id_fk",
-          "tableFrom": "project_states",
-          "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
-    },
-    "project_technologies": {
-      "name": "project_technologies",
-      "columns": {
-        "project_id": {
-          "name": "project_id",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "technology": {
-          "name": "technology",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "project_technologies_project_id_projects_id_fk": {
-          "name": "project_technologies_project_id_projects_id_fk",
-          "tableFrom": "project_technologies",
-          "tableTo": "projects",
-          "columnsFrom": [
-            "project_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "project_technologies_project_id_technology_pk": {
-          "columns": [
-            "project_id",
-            "technology"
-          ],
-          "name": "project_technologies_project_id_technology_pk"
-        }
-      },
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
