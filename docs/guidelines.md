@@ -14,21 +14,22 @@
 7. Ensure **all code is modular**, reusable, and adheres to SOLID principles.
 8. Follow **SvelteKit best practices** to organize related functionality logically.
 9. Use **Drizzle** for defining entities and managing database operations. After making changes to the database, run `bun run db:migrate` to generate migrations.
+10. The database should only be used for storing logs of agent runs, and minimal administrative data related to the project. Everything else should be stored in the filesystem within the project folder, in formats easily parsed by LLMs such as YAML.
 
 ## Error Handling and Security
 
-10. Implement **error handling** to account for edge cases and unexpected inputs.
-11. Validate form uploads using **sveltekit-superforms** and **zod** to prevent malicious uploads.
+11. Implement **error handling** to account for edge cases and unexpected inputs.
+12. Validate form uploads using **sveltekit-superforms** and **zod** to prevent malicious uploads.
 
 ## Documentation and Testing
 
-12. Write tests using the `vitest` library.
-13. Write **automated tests** for Svelte components with **Svelte Testing Library**.
-14. Mock real services in tests to ensure independence and faster execution.
-15. Enable **parallel test execution** for backend and frontend tests to reduce runtime.
+13. Write tests using the `vitest` library.
+14. Write **automated tests** for Svelte components with **Svelte Testing Library**.
+15. Mock real services in tests to ensure independence and faster execution.
+16. Enable **parallel test execution** for backend and frontend tests to reduce runtime.
 
 ## Best Practices
 
-16. Maintain a clear separation of concerns in modules and codebase.
-17. Avoid hardcoding configurations; use environment variables for flexibility.
-18. Always consider scalability and future maintainability when designing components or architecture.
+17. Maintain a clear separation of concerns in modules and codebase.
+18. Avoid hardcoding configurations; use environment variables for flexibility.
+19. Always consider scalability and future maintainability when designing components or architecture.

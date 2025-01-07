@@ -1,5 +1,5 @@
 - Description: Set up basic project structure with langgraph and necessary dependencies
 - Testing: Verify project builds and dependencies are correctly configured
 - Subtasks:
-  - [ ] Configure langgraph for state machine
+  - [ ] Configure langgraph for state machine in src/lib/agent/index.ts
   - [ ] Set up AI SDK integration

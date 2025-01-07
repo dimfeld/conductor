@@ -11,10 +11,6 @@ export const projects = sqliteTable(
   (table) => [uniqueIndex('project_path_idx').on(table.path)]
 );
 
-export const projectRelations = relations(projects, ({ many }) => ({
-  technologies: many(projectTechnologies)
-}));
-
 type AgentStatus = 'IDLE' | 'PLANNING' | 'EXECUTING' | 'TESTING';
 
 export const agentInstances = sqliteTable('agent_instances', {
@@ -78,26 +74,7 @@ export const agentTaskProgress = sqliteTable('agent_task_progress', {
     .$onUpdate(() => sql`unixepoch()`)
 });
 
-export const projectTechnologies = sqliteTable(
-  'project_technologies',
-  {
-    projectId: integer('project_id')
-      .notNull()
-      .references(() => projects.id),
-    technology: text('technology').notNull()
-  },
-  (table) => [primaryKey({ columns: [table.projectId, table.technology] })]
-);
-
-export const projectTechnologiesRelations = relations(projectTechnologies, ({ one }) => ({
-  project: one(projects, {
-    fields: [projectTechnologies.projectId],
-    references: [projects.id]
-  })
-}));
-
 export type Project = typeof projects.$inferSelect;
 export type AgentInstance = typeof agentInstances.$inferSelect;
 export type AgentTask = typeof agentTasks.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
-export type NewProjectTechnology = typeof projectTechnologies.$inferInsert;

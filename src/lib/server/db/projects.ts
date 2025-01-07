@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { db } from './index.js';
-import { projects, projectTechnologies, type NewProject } from './schema';
+import { projects, type NewProject } from './schema';
 
 export async function createProject(project: NewProject) {
   return db.transaction(async (tx) => {
@@ -12,10 +12,7 @@ export async function createProject(project: NewProject) {
 
 export async function getProjectById(id: number) {
   return db.query.projects.findFirst({
-    where: (projects, { eq }) => eq(projects.id, id),
-    with: {
-      technologies: true
-    }
+    where: (projects, { eq }) => eq(projects.id, id)
   });
 }
 
@@ -30,8 +27,5 @@ export async function updateProject(id: number, project: Partial<NewProject>) {
 }
 
 export async function deleteProject(id: number) {
-  return db.transaction(async (tx) => {
-    await tx.delete(projectTechnologies).where(eq(projectTechnologies.projectId, id));
-    return tx.delete(projects).where(eq(projects.id, id)).returning();
-  });
+  return db.delete(projects).where(eq(projects.id, id)).returning();
 }

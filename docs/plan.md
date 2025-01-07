@@ -9,11 +9,17 @@ _Focus: Implement basic agent functionality with console interface and state man
 - Description: Set up basic project structure with langgraph and necessary dependencies
 - Testing: Verify project builds and dependencies are correctly configured
 - Subtasks:
-  - Initialize TypeScript project with Bun
   - Configure langgraph for state machine
   - Set up AI SDK integration
   - Add inquirer/prompts dependency
-  - Create initial database schema
+
+### - [ ] Project Configuration File
+
+- Description: Create a project configuration file format
+- Testing: Verify project configuration file is correctly parsed
+- Subtasks:
+  - Create project configuration file format in `docs/project.yml`
+  - Configuration file includes a list of technologies used
 
 ### - [ ] Task Input System
 
@@ -34,7 +40,7 @@ _Focus: Implement basic agent functionality with console interface and state man
   - Implement plan generation logic
   - Create plan storage in markdown
   - Add commit step for plan creation
-  - Store planning step in database
+  - Store record of planning step in database
 
 ### - [ ] Interface Definition Step
 
@@ -45,7 +51,7 @@ _Focus: Implement basic agent functionality with console interface and state man
   - Implement type definition storage
   - Add validation for generated types
   - Create commit step for interface definitions
-  - Store interface step in database
+  - Store record of interface step in database
 
 ### - [ ] Code Generation - Frontend
 
@@ -56,7 +62,7 @@ _Focus: Implement basic agent functionality with console interface and state man
   - Implement template system
   - Add type validation
   - Create commit step for frontend code
-  - Store frontend generation step in database
+  - Store record of frontend generation step in database
 
 ### - [ ] Code Generation - Backend
 
@@ -67,7 +73,7 @@ _Focus: Implement basic agent functionality with console interface and state man
   - Implement API endpoint generation
   - Add type validation
   - Create commit step for backend code
-  - Store backend generation step in database
+  - Store record of backend generation step in database
 
 ### - [ ] Type Checking System
 
@@ -78,7 +84,7 @@ _Focus: Implement basic agent functionality with console interface and state man
   - Implement error detection
   - Add automatic fix generation
   - Create commit step for type fixes
-  - Store type checking step in database
+  - Store record of type checking step in database
 
 ### - [ ] Test Generation System
 
@@ -134,6 +140,16 @@ _Focus: Implement basic agent functionality with console interface and state man
   - Add error handling
   - Create progress tracking
   - Store state machine logs in database
+
+### - [ ] File Map System
+
+- Description: The file map lists information about every source file in the project.
+- Testing: Verify file map is generated correctly
+- Subtasks:
+  - Create file map generation logic
+  - Use an LLM to get a one-line description of each file
+  - Store the file map in a YAML file in docs/file_map.yml
+  - Add file map validation
 
 ## Dependencies and Flow
 
