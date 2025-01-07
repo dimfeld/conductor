@@ -1,7 +1,8 @@
 import { describe, it, expect, afterEach, beforeEach, vi, beforeAll } from 'vitest';
 import { AiderProcess } from './index.js';
 
-describe('AiderProcess', () => {
+// This is slightly slow so we skip it if not explicitly requested
+describe.skipIf(!process.env.TEST_AIDER_INTERFACE && !process.env.CI)('AiderProcess', () => {
   let aider: AiderProcess;
 
   afterEach(async () => {
@@ -11,35 +12,26 @@ describe('AiderProcess', () => {
     }
   });
 
-  it('should start and handle /help command', async () => {
-    aider = new AiderProcess({
+  it('basic communication', async () => {
+    aider = await AiderProcess.start({
       cwd: process.cwd(),
       args: ['--architect', '--map-refresh', 'manual']
     });
 
-    // Get the output stream to verify we're getting output
-    const output = aider.getOutputStream();
-    const chunks: string[] = [];
-    output.on('data', (chunk: Buffer) => {
-      chunks.push(chunk.toString());
-    });
+    expect(aider.readFiles).toEqual(
+      new Set(['.cursorrules', 'docs/guidelines.md', 'docs/overview.md', 'docs/svelte-llm.txt'])
+    );
 
-    // Wait for the initial prompt
-    const initialPrompt = await aider.waitForPrompt();
-    expect(initialPrompt).toContain('>');
-
-    aider.takeBuffer();
-
-    expect(aider.buffer).toBe('');
+    expect(aider.editFiles).toEqual(new Set(['docs/lessons.md', 'docs/plan.md']));
 
     // Send the /help command
-    await aider.send('/help');
+    aider.send('/help');
 
     // Wait for the next prompt after help output
     const helpPrompt = await aider.waitForPrompt();
 
     // The help command should have generated some output
-    expect(chunks.join('')).toContain(
+    expect(aider.buffer).toContain(
       'Use `/help <question>` to ask questions about how to use aider.'
     );
     expect(helpPrompt).toContain('\narchitect>');

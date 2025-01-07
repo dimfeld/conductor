@@ -27,7 +27,10 @@ export class AiderProcess {
   private _buffer = '';
   private promptResolve: ((value: string) => void) | null = null;
 
-  constructor(options: AiderOptions) {
+  readFiles: Set<string> = new Set();
+  editFiles: Set<string> = new Set();
+
+  protected constructor(options: AiderOptions) {
     debug('Starting aider in %s', options.cwd);
 
     const args = [...(options.args ?? []), '--no-pretty', '--no-fancy-input'];
@@ -43,8 +46,7 @@ export class AiderProcess {
 
       // When we see a prompt, resolve the promise if one is waiting
       if (isPrompt(this._buffer)) {
-        const prompt = this._buffer;
-        this._buffer = '';
+        const prompt = this._buffer.slice();
         this.promptResolve?.(prompt);
         this.promptResolve = null;
       }
@@ -53,6 +55,44 @@ export class AiderProcess {
     this.process.stderr?.on('data', (data: Buffer) => {
       debug('stderr: %s', data.toString());
     });
+  }
+
+  static async start(options: AiderOptions) {
+    const aider = new AiderProcess(options);
+    await aider.init();
+    return aider;
+  }
+
+  private async init() {
+    await this.waitForPrompt();
+
+    let lines = this.takeBuffer().split('\n');
+
+    // See which files are loaded at first, if any
+    if (lines[0].trim() === '') {
+      lines.shift();
+    }
+
+    let emptyLineIndex = lines.findIndex((line) => line === '');
+    if (emptyLineIndex === -1) {
+      emptyLineIndex = lines.length;
+    }
+
+    let files = lines.slice(emptyLineIndex + 1);
+
+    for (let line of files) {
+      if (isPrompt(line)) {
+        break;
+      }
+
+      line = line.trim();
+
+      if (line.endsWith(' (read only)')) {
+        this.readFiles.add(line.slice(0, -' (read only)'.length).trim());
+      } else {
+        this.editFiles.add(line);
+      }
+    }
   }
 
   get buffer() {
