@@ -67,13 +67,24 @@ export class AiderProcess {
   }
 
   /** Send a message to Aider's stdin */
-  async send(message: string) {
+  send(message: string | string[]) {
     if (!this.process.stdin?.writable) {
       throw new Error('Aider process stdin is not writable');
     }
 
     debug('Sending message: %s', message);
-    this.process.stdin.write(message + '\n');
+    if (Array.isArray(message)) {
+      const stdin = this.process.stdin;
+      message.forEach((msg) => stdin.write(msg + '\n'));
+    } else {
+      this.process.stdin.write(message + '\n');
+    }
+  }
+
+  /** Send a message to Aider's stdin and wait for the next prompt */
+  async sendSync(message: string | string[]) {
+    this.send(message);
+    return this.waitForPrompt();
   }
 
   /** Wait for the next prompt from Aider. This will be either:
