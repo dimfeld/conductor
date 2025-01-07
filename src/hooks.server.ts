@@ -5,6 +5,7 @@ import type { Span } from '@opentelemetry/api';
 import { formatSpanTrace, hasSpanInfo } from '$lib/server/tracing/spans.js';
 import { runInSpan } from '$lib/server/tracing/index.js';
 import { error, type Handle, type HandleServerError, type RequestEvent } from '@sveltejs/kit';
+import { initDb } from '$lib/server/db';
 
 const handleInternal = async (span: Span, { event, resolve }: Parameters<Handle>[0]) => {
   event.locals.traceId = span.spanContext().traceId;
@@ -12,6 +13,10 @@ const handleInternal = async (span: Span, { event, resolve }: Parameters<Handle>
   const response = await resolve(event);
   return response;
 };
+
+export function init() {
+  initDb();
+}
 
 export const handle: Handle = async ({ event, resolve }) => {
   return runInSpan(

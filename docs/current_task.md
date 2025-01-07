@@ -1,0 +1,5 @@
+- Description: Set up basic project structure with langgraph and necessary dependencies
+- Testing: Verify project builds and dependencies are correctly configured
+- Subtasks:
+  - [ ] Configure langgraph for state machine
+  - [ ] Set up AI SDK integration

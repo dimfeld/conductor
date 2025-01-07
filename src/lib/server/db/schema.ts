@@ -1,11 +1,19 @@
-import { sql } from 'drizzle-orm';
-import { sqliteTable, text, integer, int } from 'drizzle-orm/sqlite-core';
+import { relations, sql } from 'drizzle-orm';
+import { sqliteTable, text, integer, int, primaryKey, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
-export const projects = sqliteTable('projects', {
-  id: int('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
-  repoPath: text('repo_path').notNull()
-});
+export const projects = sqliteTable(
+  'projects',
+  {
+    id: int('id').primaryKey({ autoIncrement: true }),
+    name: text('name').notNull(),
+    path: text('path').notNull()
+  },
+  (table) => [uniqueIndex('project_path_idx').on(table.path)]
+);
+
+export const projectRelations = relations(projects, ({ many }) => ({
+  technologies: many(projectTechnologies)
+}));
 
 type AgentStatus = 'IDLE' | 'PLANNING' | 'EXECUTING' | 'TESTING';
 
@@ -14,10 +22,12 @@ export const agentInstances = sqliteTable('agent_instances', {
   active: int('active', { mode: 'boolean' }).notNull().default(true),
   projectId: text('project_id').references(() => projects.id),
   lastCommit: text('last_commit'),
-  createdAt: integer('created_at').notNull(),
+  createdAt: integer('created_at')
+    .notNull()
+    .default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
     .notNull()
-    .default(sql`unixepoch()`)
+    .default(sql`(unixepoch())`)
     .$onUpdate(() => sql`unixepoch()`)
 });
 
@@ -32,9 +42,62 @@ export const agentTasks = sqliteTable('agent_tasks', {
   status: text('status').$type<AgentStatus>().notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
-    .default(sql`unixepoch()`),
+    .default(sql`(unixepoch())`),
   updatedAt: integer('updated_at', { mode: 'timestamp' })
     .notNull()
-    .default(sql`unixepoch()`)
+    .default(sql`(unixepoch())`)
     .$onUpdate(() => sql`unixepoch()`)
 });
+
+export const agentTaskSteps = sqliteTable('agent_task_steps', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  agentTaskId: int('agent_task_id').references(() => agentTasks.id),
+  title: text('title').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`)
+    .$onUpdate(() => sql`unixepoch()`)
+});
+
+export const agentTaskProgress = sqliteTable('agent_task_progress', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  agentTaskId: int('agent_task_id').references(() => agentTasks.id),
+  agentTaskStepId: int('agent_task_step_id').references(() => agentTaskSteps.id),
+  logs: text('logs').notNull(),
+  model: text('model').notNull(),
+  operation: text('operation').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer('updated_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(unixepoch())`)
+    .$onUpdate(() => sql`unixepoch()`)
+});
+
+export const projectTechnologies = sqliteTable(
+  'project_technologies',
+  {
+    projectId: integer('project_id')
+      .notNull()
+      .references(() => projects.id),
+    technology: text('technology').notNull()
+  },
+  (table) => [primaryKey({ columns: [table.projectId, table.technology] })]
+);
+
+export const projectTechnologiesRelations = relations(projectTechnologies, ({ one }) => ({
+  project: one(projects, {
+    fields: [projectTechnologies.projectId],
+    references: [projects.id]
+  })
+}));
+
+export type Project = typeof projects.$inferSelect;
+export type AgentInstance = typeof agentInstances.$inferSelect;
+export type AgentTask = typeof agentTasks.$inferSelect;
+export type NewProject = typeof projects.$inferInsert;
+export type NewProjectTechnology = typeof projectTechnologies.$inferInsert;
