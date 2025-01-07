@@ -1,4 +1,4 @@
-# AI Coder Guidelines
+# Coder Guidelines
 
 ## Code Quality
 
@@ -10,11 +10,10 @@
 ## Architecture and Modularity
 
 5. All web code should use web best practices, such as <a> tags for navigation and <form> tags for form handling.
-6. Make sure to maintain proper separation between backend and frontend code. Frontend code can not call any functions that require Node and this must go through SvelteKit load functions or form actions.
+6. Make sure to maintain proper separation between backend and frontend code. Frontend code can not call any functions that require Node and this must go through calls to the backend. In general, prefer using SvelteKit's load function and form actions instead of dedicated API routes, except for the SSE streaming endpoint.
 7. Ensure **all code is modular**, reusable, and adheres to SOLID principles.
-8. Use **dependency injection** for better code organization, scalability, and testability.
-9. Follow **SvelteKit best practices** to organize related functionality logically.
-10. Use **Drizzle** for defining entities and managing database operations.
+8. Follow **SvelteKit best practices** to organize related functionality logically.
+9. Use **Drizzle** for defining entities and managing database operations. After making changes to the database, run `bun run db:migrate` to generate migrations.
 
 ## Error Handling and Security
 

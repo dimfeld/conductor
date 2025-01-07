@@ -2,16 +2,15 @@
 
 This is the abridged developer documentation for Svelte 5 and SvelteKit, covering only differences from Svelte 4.
 
-
-# .svelte.js and .svelte.ts files
+## .svelte.js and .svelte.ts files
 
 Besides `.svelte` files, Svelte also operates on `.svelte.js` and `.svelte.ts` files. These behave like any other `.js` or `.ts` module, except that you can use runes. This is useful for creating reusable reactive logic, or sharing reactive state across your app. > This is a concept that didn't exist prior to Svelte 5
 
-# What are runes?
+## What are runes?
 
 Runes are symbols that you use in `.svelte` and `.svelte.js`/`.svelte.ts` files to control the Svelte compiler. If you think of Svelte as a language, runes are part of the syntax — they are _keywords_. Runes have a `$` prefix and look like functions: ```js let message = $state('hello'); ``` They differ from normal JavaScript functions in important ways, however: - You don't need to import them — they are part of the language - They're not values — you can't assign them to a variable or pass them as arguments to a function - Just like JavaScript keywords, they are only valid in certain positions (the compiler will help you if you put them in the wrong place)
 
-# $state
+## $state
 
 The `$state` rune allows you to create _reactive state_, which means that your UI _reacts_ when it changes. ```svelte <script> let count = $state(0); </script> <button onclick={() => count++}> clicks: {count} </button> ``` Unlike other frameworks you may have encountered, there is no API for interacting with state — `count` is just a number, rather than an object or a function, and you can update it like you would update any other variable.
 
@@ -21,7 +20,7 @@ The `$state` rune allows you to create _reactive state_, which means that your U
 
 You can also use `$state` in class fields (whether public or private): ```js // @errors: 7006 2554 class Todo { done = $state(false); text = $state(); constructor(text) { this.text = text; } reset() { this.text = ''; this.done = false; } } ```  
 
-## `$state.raw`
+### `$state.raw`
 
 In cases where you don't want objects and arrays to be deeply reactive you can use `$state.raw`. State declared with `$state.raw` cannot be mutated; it can only be _reassigned_. In other words, rather than assigning to a property of an object, or using an array method like `push`, replace the object or array altogether if you'd like to update it.
 
@@ -103,11 +102,31 @@ The `$inspect` rune is roughly equivalent to `console.log`, with the exception t
 
 ## $inspect.trace(...)
 
-This rune, added in 5.14, causes the surrounding function to be _traced_ in development. Any time the function re-runs as part of an [effect]($effect) or a [derived]($derived), information will be printed to the console about which pieces of reactive state caused the effect to fire.
+This rune causes the surrounding function to be _traced_ in development. Any time the function re-runs as part of an [effect]($effect) or a [derived]($derived), information will be printed to the console about which pieces of reactive state caused the effect to fire.
+
+# Event Handlers
+
+When using event handlers, do not use the `on:event` syntax. Instead, use the `onevent` attribute: ```svelte <button onclick={onclick}> ... </button> ```. Similarly, components with events should just take callbacks as props, no more `createEventDispatcher` and `dispatch`.
 
 # Basic markup 
 
 Most of the markup from Svelte 4 still applies, but these are new:
+
+# <svelte:boundary>
+
+```svelte <svelte:boundary onerror={handler}>...</svelte:boundary> ``` 
+
+Boundaries allow you to guard against errors in part of your app from breaking the app as a whole, and to recover from those errors. If an error occurs while rendering or updating the children of a `<svelte:boundary>`, or running any [`$effect`]($effect) functions contained therein, the contents will be removed. Errors occurring outside the rendering process (for example, in event handlers) are _not_ caught by error boundaries.
+
+## Properties 
+
+For the boundary to do anything, one or both of `failed` and `onerror` must be provided. 
+
+### `failed`
+
+If a `failed` snippet is provided, it will be rendered with the error that was thrown, and a `reset` function that recreates the contents: ```svelte <svelte:boundary> <FlakyComponent /> {#snippet failed(error, reset)} <button onclick={reset}>oops! try again</button> {/snippet} </svelte:boundary> ``` 
+
+> As with [snippets passed to components](snippet#Passing-snippets-to-components), the `failed` snippet can be passed explicitly as a property... > > ```svelte > <svelte:boundary {failed}>...</svelte:boundary> > ``` > > ...or implicitly by declaring it directly inside the boundary, as in the example above. ### `onerror` If an `onerror` function is provided, it will be called with the same two `error` and `reset` arguments. This is useful for tracking the error with an error reporting service... ```svelte <svelte:boundary onerror={(e) => report(e)}> ... </svelte:boundary> ``` ...or using `error` and `reset` outside the boundary itself: ```svelte <script> let error = $state(null); let reset = $state(() => {}); function onerror(e, r) { error = e; reset = r; } </script> <svelte:boundary {onerror}> <FlakyComponent /> </svelte:boundary> {#if error} <button onclick={() => { error = null; reset(); }}> oops! try again </button> {/if} ``` If an error occurs inside the `onerror` function (or if you rethrow the error), it will be handled by a parent boundary if such exists.
 
 # {#snippet ...}
 
@@ -153,4 +172,9 @@ To render a [snippet](snippet), use a `{@render ...}` tag. ```svelte {#snippet s
 If the snippet is potentially undefined — for example, because it's an incoming prop — then you can use optional chaining to only render it when it _is_ defined: ```svelte {@render children?.()} ``` Alternatively, use an [`{#if ...}`](if) block with an `:else` clause to render fallback content: ```svelte {#if children} {@render children()} {:else} <p>fallback content</p> {/if} ```
 
 
+## SvelteKit
 
+This covers changes for Svelte 5 and SvelteKit 2.
+
+- When using `error` or `redirect` in server-side code, there is no need to `throw` them.
+- Instead of `$app/stores`, use `$app/state` which has the same exported names, but as state runes instead of stores, so they can be used without the `$` prefix.

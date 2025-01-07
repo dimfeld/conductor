@@ -5,7 +5,7 @@
 ## 2. Detailed Implementation Plan
 
 - Find the next incomplete story from plan.md in docs folder.
-- Develop a comprehensive plan for the chosen story from plan.md in docs folder.
+- Develop a comprehensive plan for the chosen story from plan.md in docs folder. Make sure to account for both frontend and backend development.
 
 ## 3. Implementation of the Next Story
 
