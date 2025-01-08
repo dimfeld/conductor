@@ -4,14 +4,12 @@ _Focus: Implement basic agent functionality with console interface and state man
 
 ## Stories
 
-### - [ ] Core Infrastructure Setup
+### - [X] Core Infrastructure Setup
 
-- Description: Set up basic project structure with langgraph and necessary dependencies
+- Description: Set up basic project structure with necessary dependencies
 - Testing: Verify project builds and dependencies are correctly configured
 - Subtasks:
-  - [ ] Set up AI SDK integration
-  - [ ] Configure langgraph for state machine
-  - [ ] Add inquirer/prompts dependency
+  - [x] Set up AI SDK integration
 
 ### - [ ] Project Configuration File
 
