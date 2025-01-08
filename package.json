@@ -21,7 +21,6 @@
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.4",
-    "@happy-dom/global-registrator": "^16.3.0",
     "@playwright/test": "^1.49.1",
     "@sveltejs/adapter-node": "^5.2.11",
     "@sveltejs/kit": "^2.15.1",
@@ -65,6 +64,8 @@
     "zod": "^3.24.1"
   },
   "dependencies": {
+    "@ai-sdk/deepseek": "^0.0.2",
+    "@ai-sdk/openai-compatible": "^0.0.14",
     "@inquirer/prompts": "^7.2.1",
     "@langchain/langgraph": "^0.2.39",
     "@opentelemetry/api": "^1.9.0",
