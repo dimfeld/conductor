@@ -15,14 +15,13 @@ vi.mock('js-yaml');
 describe('project-config', () => {
   const mockConfig: ProjectConfig = {
     paths: {
-      root: './',
-      src: 'src',
       docs: 'docs',
       guidelines: 'guidelines.md',
       lessons: 'lessons.md',
       overview: 'overview.md',
       plan: 'plan.yml'
     },
+    include: ['src/**/*.ts'],
     technologies: [
       {
         name: 'typescript',

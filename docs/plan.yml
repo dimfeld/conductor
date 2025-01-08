@@ -11,16 +11,16 @@ plan:
             completed: true
 
       - title: 'Project Configuration File'
-        completed: false
+        completed: true
         description: 'Create a project configuration file format'
         testing: 'Verify project configuration file is correctly parsed'
         subtasks:
           - title: 'Create project plan YAML file format'
             completed: true
           - title: 'Create project configuration file format in `docs/project.yml`'
-            completed: false
+            completed: true
           - title: 'Configuration file includes a list of technologies used'
-            completed: false
+            completed: true
 
       - title: 'Task Input System'
         completed: false

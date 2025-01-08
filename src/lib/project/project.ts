@@ -30,17 +30,20 @@ export const vcsConfigSchema = z.object({
 
 export const projectConfigSchema = z.object({
   // Core paths
-  paths: z.object({
-    root: z.string().optional().default('./'),
-    src: z.string().optional().default('src'),
-    docs: z.string().optional().default('docs'),
+  paths: z
+    .object({
+      docs: z.string().optional(),
 
-    // Optional custom paths for standard docs
-    guidelines: z.string().optional().default('guidelines.md'),
-    lessons: z.string().optional().default('lessons.md'),
-    overview: z.string().optional().default('overview.md'),
-    plan: z.string().optional().default('plan.yml')
-  }),
+      // Optional custom paths for standard docs
+      guidelines: z.string().optional(),
+      lessons: z.string().optional(),
+      overview: z.string().optional(),
+      plan: z.string().optional()
+    })
+    .optional(),
+
+  include: z.array(z.string()).describe('Glob for files to include in project'),
+  exclude: z.array(z.string()).optional().describe('Glob for files to exclude from project'),
 
   // Project requirements and tooling
   technologies: z.array(technologySchema),
