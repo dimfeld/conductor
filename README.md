@@ -1,4 +1,4 @@
-# Seneschal
+# Conductor
 
 An Aider-based coding agent swarm
 

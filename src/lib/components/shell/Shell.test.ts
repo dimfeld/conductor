@@ -15,7 +15,7 @@ describe('Shell', () => {
       }
     });
 
-    expect(screen.getByText('Seneschal')).toBeDefined();
+    expect(screen.getByText('Conductor')).toBeDefined();
   });
 
   it('renders the sidebar on desktop', () => {
