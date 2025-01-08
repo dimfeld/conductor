@@ -74,6 +74,7 @@
     "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
     "@opentelemetry/sdk-node": "^0.57.0",
     "@opentelemetry/sdk-trace-base": "^1.30.0",
+    "@repo/rust_helper": "file:./rust_helper",
     "ai": "^4.0.27",
     "better-sqlite3": "^11.7.2",
     "debug": "^4.4.0",
