@@ -93,8 +93,9 @@ export const scannedFiles = sqliteTable('scanned_files', {
   long_description: text('long_description'),
 
   file_timestamp: integer('file_timestamp', { mode: 'timestamp' }).notNull(),
-  last_minhash: blob('last_minhash'),
-  current_minhash: blob('current_minhash'),
+  last_minhash: blob('last_minhash', { mode: 'buffer' }),
+  current_minhash: blob('current_minhash', { mode: 'buffer' }),
+  needsAnalysis: int('needs_analysis', { mode: 'boolean' }).notNull().default(true),
 });
 
 export type Project = typeof projects.$inferSelect;
