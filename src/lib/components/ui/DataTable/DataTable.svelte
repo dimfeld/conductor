@@ -9,7 +9,7 @@
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    getSortedRowModel
+    getSortedRowModel,
   } from '@tanstack/table-core';
   import { queryParameters, ssp } from 'sveltekit-search-params';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -52,7 +52,7 @@
     globalFilterPlaceholder = 'Filter',
     pageSize = 50,
     pageSizeOptions = [10, 25, 50, 100],
-    queryStringKey
+    queryStringKey,
   }: DataTableProps<TData, TValue> = $props();
 
   let minPageSize = $derived(pageSizeOptions?.length ? Math.min(...pageSizeOptions) : 0);
@@ -67,12 +67,12 @@
           [pageKey]: {
             encode: (value: number) => (value + 1).toString(),
             decode: (value: string | null) => (value ? parseInt(value, 10) - 1 : 0),
-            defaultValue: '1'
+            defaultValue: '1',
           },
           [globalFilterKey]: ssp.string(''),
           [filtersKey]: {
             encode: (value: ColumnFiltersState) => (value?.length ? JSON.stringify(value) : ''),
-            decode: (value) => (value ? JSON.parse(value) : [])
+            decode: (value) => (value ? JSON.parse(value) : []),
           },
           [sortKey]: {
             encode: (value: SortingState) => {
@@ -96,21 +96,21 @@
                 if (item[0] === '-') {
                   return {
                     id: item.slice(1),
-                    desc: true
+                    desc: true,
                   };
                 } else {
                   return {
                     id: item,
-                    desc: false
+                    desc: false,
                   };
                 }
               });
-            }
-          }
+            },
+          },
         },
         {
           pushHistory: false,
-          showDefaults: false
+          showDefaults: false,
         }
       )
     : undefined;
@@ -165,7 +165,7 @@
       },
       get sorting() {
         return sorting;
-      }
+      },
     },
     onSortingChange: (updater) => {
       if (typeof updater === 'function') {
@@ -202,7 +202,7 @@
       if (params) {
         params[filtersKey] = columnFilters;
       }
-    }
+    },
   });
 </script>
 

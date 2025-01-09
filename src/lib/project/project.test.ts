@@ -3,7 +3,7 @@ import {
   loadProjectConfig,
   safeLoadProjectConfig,
   validateProjectConfig,
-  type ProjectConfig
+  type ProjectConfig,
 } from './project.js';
 import { readFile } from 'node:fs/promises';
 import { load } from 'js-yaml';
@@ -19,20 +19,20 @@ describe('project-config', () => {
       guidelines: 'guidelines.md',
       lessons: 'lessons.md',
       overview: 'overview.md',
-      plan: 'plan.yml'
+      plan: 'plan.yml',
     },
     include: ['src/**/*.ts'],
     technologies: [
       {
         name: 'typescript',
         version: '5.0.0',
-        documentation: 'https://www.typescriptlang.org/docs/'
-      }
+        documentation: 'https://www.typescriptlang.org/docs/',
+      },
     ],
     commands: {
       typecheck: 'tsc --noEmit',
-      test: 'vitest'
-    }
+      test: 'vitest',
+    },
   };
 
   beforeEach(() => {
@@ -63,9 +63,9 @@ describe('project-config', () => {
       commands: {
         test: {
           // @ts-expect-error testing invalid command
-          invalid: true
-        }
-      }
+          invalid: true,
+        },
+      },
     };
 
     expect(() => validateProjectConfig(configWithInvalidCommand)).toThrow();
@@ -77,9 +77,9 @@ describe('project-config', () => {
       technologies: [
         {
           // @ts-expect-error testing invalid technology
-          invalid: true
-        }
-      ]
+          invalid: true,
+        },
+      ],
     };
 
     expect(() => validateProjectConfig(configWithInvalidTech)).toThrow();

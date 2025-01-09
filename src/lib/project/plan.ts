@@ -8,7 +8,7 @@ import { z } from 'zod';
 
 export const subtaskSchema = z.object({
   title: z.string(),
-  completed: z.boolean()
+  completed: z.boolean(),
 });
 
 export const storySchema = z.object({
@@ -17,20 +17,20 @@ export const storySchema = z.object({
   description: z.string().optional(),
   plan_file: z.string().optional().describe('Location of the plan file for this story'),
   testing: z.string().optional(),
-  subtasks: z.array(subtaskSchema).optional()
+  subtasks: z.array(subtaskSchema).optional(),
 });
 
 export const epicSchema = z.object({
   title: z.string(),
   focus: z.string(),
   plan_file: z.string().optional().describe('Location of the plan file for this epic'),
-  stories: z.array(storySchema)
+  stories: z.array(storySchema),
 });
 
 export const projectPlanSchema = z.object({
   plan: z.array(epicSchema),
   dependencies: z.array(z.string()).optional(),
-  notes: z.array(z.string()).optional()
+  notes: z.array(z.string()).optional(),
 });
 
 // Infer TypeScript types from the Zod schemas

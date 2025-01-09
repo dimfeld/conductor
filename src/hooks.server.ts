@@ -28,9 +28,9 @@ export const handle: Handle = async ({ event, resolve }) => {
           method: event.request.method,
           url: event.url.href,
           isDataRequest: event.isDataRequest,
-          isSubRequest: event.isSubRequest
-        }
-      }
+          isSubRequest: event.isSubRequest,
+        },
+      },
     },
     async (span) => handleInternal(span, { event, resolve })
   );
@@ -59,14 +59,14 @@ export const handleError: HandleServerError = async ({ error, event, message, st
         'user-agent': event.request.headers.get('user-agent'),
         'x-forwarded-for': event.request.headers.get('x-forwarded-for'),
         'x-forwarded-proto': event.request.headers.get('x-forwarded-proto'),
-        'x-forwarded-port': event.request.headers.get('x-forwarded-port')
-      }
+        'x-forwarded-port': event.request.headers.get('x-forwarded-port'),
+      },
     },
     {
       traceId: event.locals.traceId,
       route: event.route.id,
       isDataRequest: event.isDataRequest,
-      isSubRequest: event.isSubRequest
+      isSubRequest: event.isSubRequest,
     }
   );
 
@@ -75,12 +75,12 @@ export const handleError: HandleServerError = async ({ error, event, message, st
     return {
       message: (error as Error).message || message,
       stack: (error as Error).stack,
-      status
+      status,
     };
   }
 
   return {
     message: 'An unexpected error occurred.',
-    status
+    status,
   };
 };

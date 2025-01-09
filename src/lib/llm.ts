@@ -5,11 +5,11 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 const cerebras = createOpenAICompatible({
   name: 'cerebras',
   apiKey: env.CEREBRAS_API_KEY,
-  baseURL: 'https://api.cerebras.ai/v1'
+  baseURL: 'https://api.cerebras.ai/v1',
 });
 
 const deepseek = createDeepSeek({
-  apiKey: env.DEEPSEEK_API_KEY
+  apiKey: env.DEEPSEEK_API_KEY,
 })('deepseek-chat');
 
 const llama8b = cerebras('llama-3.1-8b');

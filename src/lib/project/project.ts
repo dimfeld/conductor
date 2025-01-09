@@ -9,7 +9,7 @@ export const technologySchema = z.object({
   version: z.string().optional(),
   documentation: z
     .union([z.string().url(), z.string().startsWith('./'), z.string().startsWith('../')])
-    .optional()
+    .optional(),
 });
 
 export const commandsConfigSchema = z.object({
@@ -20,12 +20,12 @@ export const commandsConfigSchema = z.object({
   test: z.string().optional(),
   'test:unit': z.string().optional(),
   'test:e2e': z.string().optional(),
-  'test:integration': z.string().optional()
+  'test:integration': z.string().optional(),
 });
 
 export const vcsConfigSchema = z.object({
   commitMessageTemplate: z.string().optional(),
-  prTemplate: z.string().optional()
+  prTemplate: z.string().optional(),
 });
 
 export const projectConfigSchema = z.object({
@@ -38,7 +38,7 @@ export const projectConfigSchema = z.object({
       guidelines: z.string().optional(),
       lessons: z.string().optional(),
       overview: z.string().optional(),
-      plan: z.string().optional()
+      plan: z.string().optional(),
     })
     .optional(),
 
@@ -58,9 +58,9 @@ export const projectConfigSchema = z.object({
       // API documentation location
       apiDocs: z.string().optional(),
       // Additional documentation URLs
-      externalDocs: z.array(z.string().url()).optional()
+      externalDocs: z.array(z.string().url()).optional(),
     })
-    .optional()
+    .optional(),
 });
 
 // Infer TypeScript types from the Zod schemas

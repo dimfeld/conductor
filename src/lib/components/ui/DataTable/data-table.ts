@@ -13,7 +13,7 @@ export function sortableHeader(opts: ComponentProps<typeof SortableHeader>) {
   return ({ column }: { column: Column<any> }) =>
     renderComponent(SortableHeader, {
       ...opts,
-      onclick: () => column.toggleSorting(column.getIsSorted() === 'asc')
+      onclick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
     });
 }
 
@@ -38,7 +38,7 @@ export function linkCell<TData extends RowData>(opts: LinkCellOpts<TData>) {
         typeof opts.href === 'function'
           ? opts.href(row.original)
           : (row.original as any)[opts.href],
-      label
+      label,
     });
   };
 }

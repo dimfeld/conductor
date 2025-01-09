@@ -15,18 +15,18 @@ const tracing: PluginOption = {
   },
   configurePreviewServer(server) {
     initTracing('seneschal', { TRACK_SPANS: 'true', NODE_ENV: 'development' });
-  }
+  },
 };
 
 export default defineConfig({
   plugins: [sveltekit(), svelteTesting(), tracing],
   clearScreen: false,
   build: {
-    sourcemap: true
+    sourcemap: true,
   },
   // @ts-expect-error Type difference until vite 6 officially supported
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}'],
-    setupFiles: ['./vitest-setup.js']
-  }
+    setupFiles: ['./vitest-setup.js'],
+  },
 });

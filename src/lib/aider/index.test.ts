@@ -15,7 +15,7 @@ describe.skipIf(!process.env.TEST_AIDER_INTERFACE && !process.env.CI)('AiderProc
   it('basic communication', async () => {
     aider = await AiderProcess.start({
       cwd: process.cwd(),
-      args: ['--architect', '--map-refresh', 'manual']
+      args: ['--architect', '--map-refresh', 'manual'],
     });
 
     expect(aider.readFiles).toEqual(

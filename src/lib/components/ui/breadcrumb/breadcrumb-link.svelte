@@ -18,7 +18,7 @@
   const attrs = $derived({
     class: cn('hover:text-foreground transition-colors', className),
     href,
-    ...restProps
+    ...restProps,
   });
 </script>
 

@@ -15,8 +15,8 @@ export const rollbar = new Rollbar({
       javascript: {
         source_map_enabled: true,
         code_version: PUBLIC_GIT_REF,
-        guess_uncaught_frames: true
-      }
-    }
-  }
+        guess_uncaught_frames: true,
+      },
+    },
+  },
 });

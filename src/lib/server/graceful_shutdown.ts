@@ -14,7 +14,7 @@ export async function shutdownWithTimeout(service: ShutdownService) {
         );
         // Don't wait for this timer to quit
         timer.unref();
-      })
+      }),
     ]);
 
     debug('Shutdown %s done', service.name);
@@ -47,7 +47,7 @@ export function wrapShutdownCallback(): {
       } else {
         resolve();
       }
-    }
+    },
   };
 }
 

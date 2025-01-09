@@ -21,7 +21,7 @@
       className
     ),
     'data-sidebar': 'group-label',
-    ...restProps
+    ...restProps,
   });
 </script>
 

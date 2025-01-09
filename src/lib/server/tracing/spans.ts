@@ -3,7 +3,7 @@ import {
   type Span,
   type SpanOptions,
   SpanStatusCode,
-  type Tracer
+  type Tracer,
 } from '@opentelemetry/api';
 import { W3CTraceContextPropagator } from '@opentelemetry/core';
 import * as opentelemetry from '@opentelemetry/api';
@@ -109,7 +109,7 @@ export function runInSpan<T>(
   if (options.info) {
     spanOptions.attributes = {
       ...spanOptions.attributes,
-      ...objectToSpanAttributeValues(options.info)
+      ...objectToSpanAttributeValues(options.info),
     };
   }
 
@@ -154,7 +154,7 @@ export function propagateSpanToRequest(req: Request) {
   const setter = {
     set: (req: Request, headerName: string, headerValue: string) => {
       req.headers.set(headerName, headerValue);
-    }
+    },
   };
 
   propagator.inject(opentelemetry.context.active(), req, setter);
@@ -171,7 +171,7 @@ export function getPropagatedSpanFromRequest(
     },
     get: (headers: ReadonlyMap<string, string>, headerName: string) => {
       return headers.get(headerName) ?? undefined;
-    }
+    },
   };
 
   return propagator.extract(opentelemetry.context.active(), headers, getter);

@@ -23,7 +23,7 @@
       className
     ),
     'data-sidebar': 'group-action',
-    ...restProps
+    ...restProps,
   });
 </script>
 

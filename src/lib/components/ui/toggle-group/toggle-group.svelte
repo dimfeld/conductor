@@ -25,7 +25,7 @@
 
   setToggleGroupCtx({
     variant,
-    size
+    size,
   });
 </script>
 

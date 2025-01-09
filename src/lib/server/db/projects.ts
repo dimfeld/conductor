@@ -12,7 +12,7 @@ export async function createProject(project: NewProject) {
 
 export async function getProjectById(id: number) {
   return db.query.projects.findFirst({
-    where: (projects, { eq }) => eq(projects.id, id)
+    where: (projects, { eq }) => eq(projects.id, id),
   });
 }
 
@@ -20,7 +20,7 @@ export async function updateProject(id: number, project: Partial<NewProject>) {
   return db
     .update(projects)
     .set({
-      ...project
+      ...project,
     })
     .where(eq(projects.id, id))
     .returning();

@@ -15,7 +15,7 @@ const PROMPT_PATTERNS = [
   /\(Y\)es\/\(N\)o\/\(A\)ll\/\(S\)kip all\/\(D\)on't ask again \[.*\]:$/,
   /\(Y\)es\/\(N\)o\/\(D\)on't ask again \[.*\]:$/,
   /\(y\/n\): $/,
-  /> $/
+  /> $/,
 ];
 
 function isPrompt(text: string): boolean {
@@ -37,7 +37,7 @@ export class AiderProcess {
 
     this.process = spawn('aider', args, {
       cwd: options.cwd,
-      stdio: ['pipe', 'pipe', 'pipe']
+      stdio: ['pipe', 'pipe', 'pipe'],
     });
 
     this.process.stdout?.on('data', (data: Buffer) => {

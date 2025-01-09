@@ -16,7 +16,7 @@ export function createTracingConfig(env: Record<string, string | undefined>) {
   return {
     target: (env.TRACING_TARGET || 'jaeger') as TracingTarget,
     jaegerHost: env.JAEGER_URL || 'http://localhost:4318',
-    honeycombApiKey: env.HONEYCOMB_API_KEY
+    honeycombApiKey: env.HONEYCOMB_API_KEY,
   };
 }
 
@@ -29,12 +29,12 @@ export function createTracingExporter(tracingConfig: ReturnType<typeof createTra
     return new OTLPTraceExporter({
       url: 'https://api.honeycomb.io/v1/traces',
       headers: {
-        'x-honeycomb-team': tracingConfig.honeycombApiKey
-      }
+        'x-honeycomb-team': tracingConfig.honeycombApiKey,
+      },
     });
   } else if (tracingConfig.target === 'jaeger') {
     return new OTLPTraceExporter({
-      url: `${tracingConfig.jaegerHost}/v1/traces`
+      url: `${tracingConfig.jaegerHost}/v1/traces`,
     });
   } else {
     // The type is `never` but the whole point of this error is that type safety failed, so don't let lint complain.
@@ -51,7 +51,7 @@ export function initTracing(
   if (process.env.CI) {
     return {
       start: () => {},
-      shutdown: () => Promise.resolve()
+      shutdown: () => Promise.resolve(),
     };
   }
 
@@ -67,27 +67,27 @@ export function initTracing(
 
   const spanProcessors = [
     new BatchSpanProcessor(exporter),
-    trackSpans ? initAncestorSpanProcessor() : undefined
+    trackSpans ? initAncestorSpanProcessor() : undefined,
   ].filter((e) => e != null);
 
   sdk = new NodeSDK({
     traceExporter: exporter,
     spanProcessors,
     resource: new Resource({
-      [ATTR_SERVICE_NAME]: serviceName
+      [ATTR_SERVICE_NAME]: serviceName,
     }),
     instrumentations: [
       getNodeAutoInstrumentations({
         // we recommend disabling fs autoinstrumentation since it can be noisy
         // and expensive during startup
         '@opentelemetry/instrumentation-fs': {
-          enabled: false
+          enabled: false,
         },
         '@opentelemetry/instrumentation-pg': {
-          enhancedDatabaseReporting: true
-        }
-      })
-    ]
+          enhancedDatabaseReporting: true,
+        },
+      }),
+    ],
   });
 
   return sdk;

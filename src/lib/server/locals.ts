@@ -13,7 +13,7 @@ export function createLocalsServices(event: RequestEvent) {
         type,
         message,
         toast: true,
-        options
+        options,
       },
       event
     );
@@ -23,7 +23,7 @@ export function createLocalsServices(event: RequestEvent) {
     setFlash(
       {
         type,
-        message
+        message,
       },
       event
     );

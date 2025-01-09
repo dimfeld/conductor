@@ -4,7 +4,7 @@ import {
   safeLoadProjectPlan,
   getNextIncompleteStory,
   getNextIncompleteSubtask,
-  type ProjectPlan
+  type ProjectPlan,
 } from './plan.js';
 import { readFile } from 'node:fs/promises';
 import { load } from 'js-yaml';
@@ -25,7 +25,7 @@ describe('plan-loader', () => {
             completed: true,
             description: 'Test Description',
             testing: 'Test Testing',
-            subtasks: [{ title: 'Subtask 1', completed: true }]
+            subtasks: [{ title: 'Subtask 1', completed: true }],
           },
           {
             title: 'Incomplete Story',
@@ -34,14 +34,14 @@ describe('plan-loader', () => {
             testing: 'Test Testing',
             subtasks: [
               { title: 'Subtask 1', completed: true },
-              { title: 'Subtask 2', completed: false }
-            ]
-          }
-        ]
-      }
+              { title: 'Subtask 2', completed: false },
+            ],
+          },
+        ],
+      },
     ],
     dependencies: ['Test Dependency'],
-    notes: ['Test Note']
+    notes: ['Test Note'],
   };
 
   beforeEach(() => {

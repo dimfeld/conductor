@@ -10,9 +10,9 @@ describe('Shell', () => {
     render(Shell, {
       props: {
         children: createRawSnippet(() => ({
-          render: () => '<div>Test Content</div>'
-        }))
-      }
+          render: () => '<div>Test Content</div>',
+        })),
+      },
     });
 
     expect(screen.getByText('Conductor')).toBeDefined();
@@ -22,9 +22,9 @@ describe('Shell', () => {
     render(Shell, {
       props: {
         children: createRawSnippet(() => ({
-          render: () => '<div>Test Content</div>'
-        }))
-      }
+          render: () => '<div>Test Content</div>',
+        })),
+      },
     });
 
     expect(screen.getByText('Navigation')).toBeDefined();
@@ -34,9 +34,9 @@ describe('Shell', () => {
     render(Shell, {
       props: {
         children: createRawSnippet(() => ({
-          render: () => '<div>Test Content</div>'
-        }))
-      }
+          render: () => '<div>Test Content</div>',
+        })),
+      },
     });
 
     expect(screen.getByText('Test Content')).toBeDefined();

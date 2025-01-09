@@ -30,7 +30,7 @@
       className
     ),
     'data-sidebar': 'menu-action',
-    ...restProps
+    ...restProps,
   });
 </script>
 

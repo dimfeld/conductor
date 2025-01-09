@@ -3,7 +3,7 @@ import {
   type TableOptions,
   type TableOptionsResolved,
   type TableState,
-  createTable
+  createTable,
 } from '@tanstack/table-core';
 
 /**
@@ -43,7 +43,7 @@ export function createSvelteTable<TData extends RowData>(options: TableOptions<T
         options: Partial<TableOptions<TData>>
       ) => {
         return mergeObjects(defaultOptions, options);
-      }
+      },
     },
     options
   );
@@ -62,7 +62,7 @@ export function createSvelteTable<TData extends RowData>(options: TableOptions<T
           else state = mergeObjects(state, updater);
 
           options.onStateChange?.(updater);
-        }
+        },
       });
     });
   }
@@ -103,7 +103,7 @@ function mergeObjects(...sources: any): any {
               const v = (s || {})[key];
               if (v !== undefined) return v;
             }
-          }
+          },
         });
       }
     }

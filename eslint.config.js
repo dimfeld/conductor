@@ -26,8 +26,8 @@ export function createConfig(withSvelte = false) {
         'playwright.config.ts',
         '**/svelte.config.js',
         'tailwind.config.ts',
-        'vite.config.ts.*'
-      ]
+        'vite.config.ts.*',
+      ],
     },
     js.configs.recommended,
     {
@@ -35,9 +35,9 @@ export function createConfig(withSvelte = false) {
         parser: ts.parser,
         parserOptions: {
           projectService: true,
-          extraFileExtensions
-        }
-      }
+          extraFileExtensions,
+        },
+      },
     },
     ...ts.configs.recommendedTypeChecked,
     ...(withSvelte ? svelte.configs['flat/recommended'] : []),
@@ -45,8 +45,8 @@ export function createConfig(withSvelte = false) {
       languageOptions: {
         globals: {
           ...globals.browser,
-          ...globals.node
-        }
+          ...globals.node,
+        },
       },
       rules: {
         'no-unexpected-multiline': 'off',
@@ -68,10 +68,10 @@ export function createConfig(withSvelte = false) {
         '@typescript-eslint/no-floating-promises': [
           'error',
           {
-            allowForKnownSafeCalls: ['goto', 'invalidate', 'invalidateAll']
-          }
-        ]
-      }
+            allowForKnownSafeCalls: ['goto', 'invalidate', 'invalidateAll'],
+          },
+        ],
+      },
     },
 
     withSvelte
@@ -83,16 +83,16 @@ export function createConfig(withSvelte = false) {
               projectService: true,
               extraFileExtensions,
               svelteFeatures: {
-                experimentalGenerics: true
-              }
-            }
+                experimentalGenerics: true,
+              },
+            },
           },
           rules: {
             // This ends up duplicating the svelte warnings in the editor
-            'svelte/valid-compile': 'off'
-          }
+            'svelte/valid-compile': 'off',
+          },
         }
-      : null
+      : null,
   ].filter((x) => x != null);
 }
 

@@ -6,7 +6,7 @@ vi.mock('node:fs/promises', async (importOriginal) => ({
   ...(await importOriginal()),
   access: vi.fn(),
   readFile: vi.fn(),
-  writeFile: vi.fn()
+  writeFile: vi.fn(),
 }));
 
 describe('MarkdownService', () => {
