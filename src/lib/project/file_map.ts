@@ -1,7 +1,7 @@
 import { globby } from 'globby';
 import { join } from 'path';
 import { db } from '$lib/server/db';
-import { scannedFiles } from '$lib/server/db/schema';
+import { scannedFiles, type ScannedFile } from '$lib/server/db/schema';
 import { minhashPath } from '@repo/rust_helper';
 import { eq, and } from 'drizzle-orm';
 import { stat } from 'fs/promises';
@@ -14,22 +14,20 @@ interface ScanOptions {
   exclude: string[];
 }
 
-function jaccardSimilarity(hash1: Buffer | null, hash2: Buffer): number {
+function jaccardSimilarity(hash1: Uint32Array | null, hash2: Uint32Array): number {
   if (!hash1 || !hash2) return 0;
   if (hash1.length !== hash2.length) {
     throw new Error('Minhash signatures must have the same length');
   }
 
   let matches = 0;
-  for (let i = 0; i < hash1.length; i += 4) {
-    const value1 = hash1.readUint32LE(i);
-    const value2 = hash2.readUint32LE(i);
-    if (value1 === value2) {
+  for (let i = 0; i < hash1.length; i++) {
+    if (hash1[i] === hash2[i]) {
       matches++;
     }
   }
 
-  return matches / (hash1.length / 4);
+  return matches / hash1.length;
 }
 
 export async function scanProjectFiles({ projectId, projectRoot, include, exclude }: ScanOptions) {
@@ -37,6 +35,7 @@ export async function scanProjectFiles({ projectId, projectRoot, include, exclud
   const files = await globby(include, {
     cwd: projectRoot,
     ignore: exclude,
+    gitignore: true,
     dot: true,
     absolute: false, // Keep paths relative to projectRoot
   });
@@ -60,41 +59,52 @@ export async function scanProjectFiles({ projectId, projectRoot, include, exclud
     // Check if file is new or modified
     if (!existing || existing.file_timestamp.getTime() !== fileTimestamp.getTime()) {
       // Generate new minhash
-      const hashArray = minhashPath(fullPath);
-      const currentMinhash = new Uint32Array(hashArray).buffer;
+      const newMinHash = minhashPath(fullPath);
 
       if (!existing) {
         // Insert new file
+        let hashArg = Buffer.from(newMinHash.buffer);
         await db.insert(scannedFiles).values({
           projectId,
           path: relativePath,
           file_timestamp: fileTimestamp,
-          current_minhash: currentMinhash,
-          last_minhash: currentMinhash,
+          current_minhash: hashArg,
+          analyzed_minhash: hashArg,
+          needsAnalysis: true,
         });
       } else {
         let needsAnalysis = existing.needsAnalysis;
         if (!needsAnalysis) {
           // Perform jaccard similarity on last_minhash and current_minhash
-          const similarity = jaccardSimilarity(existing.last_minhash, currentMinhash);
+          let analyzedHashArray = existing.analyzed_minhash
+            ? new Uint32Array(
+                existing.analyzed_minhash.buffer,
+                existing.analyzed_minhash.byteOffset,
+                existing.analyzed_minhash.length / Uint32Array.BYTES_PER_ELEMENT
+              )
+            : null;
+          const similarity = jaccardSimilarity(analyzedHashArray, newMinHash);
           if (similarity < 0.6) {
             needsAnalysis = true;
           }
         }
 
         // Update existing file
+        let newMinHashArg = Buffer.from(newMinHash.buffer);
+        let updates: Partial<ScannedFile> = {
+          file_timestamp: fileTimestamp,
+          current_minhash: newMinHashArg,
+          needsAnalysis,
+        };
+
+        if (needsAnalysis) {
+          updates.analyzed_minhash = newMinHashArg;
+        }
+
         await db
           .update(scannedFiles)
-          .set({
-            file_timestamp: fileTimestamp,
-            current_minhash: currentMinhash,
-            needsAnalysis: true,
-          })
+          .set(updates)
           .where(and(eq(scannedFiles.projectId, projectId), eq(scannedFiles.path, relativePath)));
-
-        // TODO: Compare minhash similarity between last_minhash and current_minhash
-        // to detect significant changes. This could be used to trigger
-        // re-analysis of file contents or alert about major changes.
       }
     }
   }

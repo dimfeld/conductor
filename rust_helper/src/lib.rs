@@ -6,13 +6,13 @@ use gaoya::{
     minhash::{MinHasher, MinHasher32},
     text::whitespace_split,
 };
-use napi::{Error, Result};
+use napi::{bindgen_prelude::Uint32Array, Error, Result};
 
 #[macro_use]
 extern crate napi_derive;
 
 #[napi]
-pub fn minhash_path(path: String) -> Result<Vec<u32>> {
+pub fn minhash_path(path: String) -> Result<Uint32Array> {
     let file =
         std::fs::read_to_string(Path::new(&path)).map_err(|e| Error::from_reason(e.to_string()))?;
 
@@ -20,7 +20,11 @@ pub fn minhash_path(path: String) -> Result<Vec<u32>> {
 }
 
 #[napi]
-pub fn minhash_text(text: String) -> Vec<u32> {
+pub fn minhash_text(text: String) -> Uint32Array {
+    minhash_text_internal(text).into()
+}
+
+fn minhash_text_internal(text: String) -> Vec<u32> {
     let num_bands = 42;
     let band_width = 3;
     let hasher = MinHasher32::new(num_bands * band_width);
@@ -40,7 +44,7 @@ mod tests {
         // Same text should produce same hash
         let text1 = "hello world".to_string();
         let text2 = "hello world".to_string();
-        assert_eq!(minhash_text(text1), minhash_text(text2));
+        assert_eq!(minhash_text_internal(text1), minhash_text_internal(text2));
     }
 
     #[test]
@@ -49,8 +53,8 @@ mod tests {
         let text1 = "hello world".to_string();
         let text2 = "hello there".to_string();
 
-        let value1 = minhash_text(text1);
-        let value2 = minhash_text(text2);
+        let value1 = minhash_text_internal(text1);
+        let value2 = minhash_text_internal(text2);
 
         assert_ne!(value1, value2);
 
@@ -67,7 +71,7 @@ mod tests {
         // Case insensitive comparison
         let text1 = "hello world".to_string();
         let text2 = "HELLO WORLD".to_string();
-        assert_eq!(minhash_text(text1), minhash_text(text2));
+        assert_eq!(minhash_text_internal(text1), minhash_text_internal(text2));
     }
 
     #[test]
@@ -75,14 +79,14 @@ mod tests {
         // Extra whitespace should not affect the hash
         let text1 = "hello    world".to_string();
         let text2 = "hello world".to_string();
-        assert_eq!(minhash_text(text1), minhash_text(text2));
+        assert_eq!(minhash_text_internal(text1), minhash_text_internal(text2));
     }
 
     #[test]
     fn test_minhash_empty_string() {
         // Empty string should produce expected output
         let empty = String::new();
-        let result = minhash_text(empty);
+        let result = minhash_text_internal(empty);
         assert_eq!(result.len(), 126); // 42 bands * 3 width = 126
         assert!(result.iter().all(|&x| x == 0)); // Empty string should produce all zeros
     }
