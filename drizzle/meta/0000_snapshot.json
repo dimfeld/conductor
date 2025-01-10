@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "997eeb26-df24-412c-be78-f1c1aaef1554",
+  "id": "0f043e00-d7f1-447a-85b4-4d0123e6a6be",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "agent_instances": {
@@ -12,7 +12,7 @@
           "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": true
+          "autoincrement": false
         },
         "active": {
           "name": "active",
@@ -81,7 +81,7 @@
           "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": true
+          "autoincrement": false
         },
         "agent_task_id": {
           "name": "agent_task_id",
@@ -176,7 +176,7 @@
           "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": true
+          "autoincrement": false
         },
         "agent_task_id": {
           "name": "agent_task_id",
@@ -237,7 +237,7 @@
           "type": "integer",
           "primaryKey": true,
           "notNull": true,
-          "autoincrement": true
+          "autoincrement": false
         },
         "agent_instance_id": {
           "name": "agent_instance_id",
@@ -318,6 +318,160 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "document_parents": {
+      "name": "document_parents",
+      "columns": {
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "child_document_id": {
+          "name": "child_document_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "parent_document_id": {
+          "name": "parent_document_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "document_parents_child_document_id_documents_id_fk": {
+          "name": "document_parents_child_document_id_documents_id_fk",
+          "tableFrom": "document_parents",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "child_document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "document_parents_parent_document_id_documents_id_fk": {
+          "name": "document_parents_parent_document_id_documents_id_fk",
+          "tableFrom": "document_parents",
+          "tableTo": "documents",
+          "columnsFrom": [
+            "parent_document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "document_parents_project_id_child_document_id_parent_document_id_pk": {
+          "columns": [
+            "project_id",
+            "child_document_id",
+            "parent_document_id"
+          ],
+          "name": "document_parents_project_id_child_document_id_parent_document_id_pk"
+        }
+      },
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "documents": {
+      "name": "documents",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "canvas_location_x": {
+          "name": "canvas_location_x",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "canvas_location_y": {
+          "name": "canvas_location_y",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "canvas_location_width": {
+          "name": "canvas_location_width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "canvas_location_height": {
+          "name": "canvas_location_height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "documents_project_id_projects_id_fk": {
+          "name": "documents_project_id_projects_id_fk",
+          "tableFrom": "documents",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "projects": {
       "name": "projects",
       "columns": {
@@ -353,6 +507,101 @@
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "scanned_files": {
+      "name": "scanned_files",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "project_id": {
+          "name": "project_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "area": {
+          "name": "area",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "short_description": {
+          "name": "short_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "long_description": {
+          "name": "long_description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "file_timestamp": {
+          "name": "file_timestamp",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "analyzed_minhash": {
+          "name": "analyzed_minhash",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "current_minhash": {
+          "name": "current_minhash",
+          "type": "blob",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "needs_analysis": {
+          "name": "needs_analysis",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "scanned_files_project_id_projects_id_fk": {
+          "name": "scanned_files_project_id_projects_id_fk",
+          "tableFrom": "scanned_files",
+          "tableTo": "projects",
+          "columnsFrom": [
+            "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

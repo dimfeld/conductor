@@ -19,6 +19,47 @@ export const projects = sqliteTable(
   (table) => [uniqueIndex('project_path_idx').on(table.path)]
 );
 
+export const projectRelations = relations(projects, ({ many }) => ({
+  documents: many(documents),
+}));
+
+export const documents = sqliteTable('documents', {
+  id: int('id').primaryKey(),
+  projectId: int('project_id')
+    .notNull()
+    .references(() => projects.id),
+  path: text('path').notNull(),
+  type: text('type').notNull(),
+  description: text('description'),
+  canvas_location_x: int('canvas_location_x'),
+  canvas_location_y: int('canvas_location_y'),
+  canvas_location_width: int('canvas_location_width'),
+  canvas_location_height: int('canvas_location_height'),
+});
+
+export const documentRelations = relations(documents, ({ one }) => ({
+  project: one(projects, {
+    fields: [documents.projectId],
+    references: [projects.id],
+  }),
+}));
+
+export const documentParents = sqliteTable(
+  'document_parents',
+  {
+    projectId: int('project_id'),
+    childDocumentId: int('child_document_id')
+      .notNull()
+      .references(() => documents.id, { onDelete: 'cascade' }),
+    parentDocumentId: int('parent_document_id')
+      .notNull()
+      .references(() => documents.id, { onDelete: 'cascade' }),
+  },
+  (table) => [
+    primaryKey({ columns: [table.projectId, table.childDocumentId, table.parentDocumentId] }),
+  ]
+);
+
 type AgentStatus = 'IDLE' | 'PLANNING' | 'EXECUTING' | 'TESTING';
 
 export const agentInstances = sqliteTable('agent_instances', {
@@ -105,3 +146,5 @@ export type AgentInstance = typeof agentInstances.$inferSelect;
 export type AgentTask = typeof agentTasks.$inferSelect;
 export type NewProject = typeof projects.$inferInsert;
 export type ScannedFile = typeof scannedFiles.$inferSelect;
+export type Document = typeof documents.$inferSelect;
+export type DocumentParent = typeof documentParents.$inferSelect;

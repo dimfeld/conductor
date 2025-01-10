@@ -27,7 +27,6 @@
 
 5. **Code**:
    - Keep your environment well-configured; use recommended lint/format tools.
-   - Respect remote latency issues. If a tool check fails, wait 1 second and check if you edits completed after your first check. Only output the user about the retry if it still fails.
    - Frequent commits and tests with minimal steps in between.
 
 ---
@@ -38,7 +37,7 @@
 2. **Data & Backend**: Drizzle with SQlite
 3. **Testing**: Playwright (E2E), Vitest (unit)
 
-### Usage Notes
+## Usage Notes
 
 - **Svelte**: Use $state runes
 - **SvelteKit**: When calling `error` or `redirect`, there is no need to `throw` them. Just call normally.
@@ -48,20 +47,14 @@
 - **Drizzle**: SQL ORM.
 - **ESLint/Prettier**: Code consistency.
 - **Playwright & Vitest**: Thorough testing.
-- **c8**: Coverage reports for tests.
-- **Auth.js**: Authentication library for flexible user management.
 
-### Project Notes
+## Project Notes
 
-- Keep `techStack.md` updated with chosen DB approach.
-- Use small iterative commits; ensure tests pass in GitHub Actions.
-- Document major structural or design shifts in `codebaseSummary.md`.
-- Maintain coverage above desired thresholds.
-- Document new services or frameworks in `techStack.md`.
-- Respect remote latency checks between edits.
-- Maintain modular code.
-- Update `techStack.md` if new libraries are added.
-- Keep coverage to an acceptable threshold (e.g. 80%+).
-- Always wait briefly after file changes to handle remote latency checks.
-- Always maintain package.json and make sure to differentiate between normal usage and developer usage.
-- \*_always use pnpm_
+- Use bun for package management.
+
+### Svelte
+
+- Use `$props` instead of `export let` in Svelte components.
+- In a +page.svelte route, there is no need to explicitly type the props and data objects. Let the automatic type inference handle it.
+- Make sure to separate backend and frontend concerns, using SvelteKit load functions and form actions to send data between the two.
+- Place `// @vitest-environment jsdom` at the top of each test file that tests Svelte components.
