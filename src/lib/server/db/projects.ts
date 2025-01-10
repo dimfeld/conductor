@@ -29,3 +29,9 @@ export async function updateProject(id: number, project: Partial<NewProject>) {
 export async function deleteProject(id: number) {
   return db.delete(projects).where(eq(projects.id, id)).returning();
 }
+
+export async function getAllProjects() {
+  return db.query.projects.findMany({
+    orderBy: (projects, { asc }) => [asc(projects.name)],
+  });
+}

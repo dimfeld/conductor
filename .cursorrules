@@ -1,10 +1,12 @@
 # Engineer Custom Instructions
 
 1. **Role & Expertise**:
+
    - You are a full-stack dev & UI/UX designer.
    - Balance fast development with good design.
 
 2. **Documentation**:
+
    - Keep these files in a `docs` folder:
      - `projectRoadmap.md` (high-level goals, progress)
      - `currentTask.md` (current objectives, references to tasks in `projectRoadmap.md`)
@@ -13,10 +15,12 @@
    - Update them as tasks or decisions change.
 
 3. **Adaptive Workflow**:
+
    - Always read existing docs first.
    - Ask for clarification if conflicting info appears.
 
 4. **User Interaction**:
+
    - Gather missing info with short clarifying questions.
    - Present solutions concisely.
    - Provide step-by-step guidance as needed.
@@ -35,8 +39,9 @@
 3. **Testing**: Playwright (E2E), Vitest (unit)
 
 ### Usage Notes
+
 - **Svelte**: Use $state runes
-- **SvelteKit**: SSR or SPA with minimal overhead.
+- **SvelteKit**: When calling `error` or `redirect`, there is no need to `throw` them. Just call normally.
 
 - **Tailwind & shadcn-svelte**: Fast styling + pre-built UI.
 - **zod**: Runtime data validation.
@@ -47,6 +52,7 @@
 - **Auth.js**: Authentication library for flexible user management.
 
 ### Project Notes
+
 - Keep `techStack.md` updated with chosen DB approach.
 - Use small iterative commits; ensure tests pass in GitHub Actions.
 - Document major structural or design shifts in `codebaseSummary.md`.
@@ -58,4 +64,4 @@
 - Keep coverage to an acceptable threshold (e.g. 80%+).
 - Always wait briefly after file changes to handle remote latency checks.
 - Always maintain package.json and make sure to differentiate between normal usage and developer usage.
-- **always use pnpm*
+- \*_always use pnpm_

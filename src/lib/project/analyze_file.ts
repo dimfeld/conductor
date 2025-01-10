@@ -63,6 +63,7 @@ export async function analyzeScannedFile(path: string, projectPath: string) {
 
   const toolCall = response.toolCalls[0];
 
+  console.log('Analyzed file:', filePath, toolCall.args);
   return {
     area: toolCall.args.best_matching_area,
     shortDescription: toolCall.args.short_description,
