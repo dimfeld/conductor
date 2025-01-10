@@ -69,6 +69,7 @@
     "@ai-sdk/openai-compatible": "^0.0.14",
     "@inquirer/prompts": "^7.2.1",
     "@langchain/langgraph": "^0.2.39",
+    "@openrouter/ai-sdk-provider": "^0.0.6",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/auto-instrumentations-node": "^0.55.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
