@@ -84,7 +84,9 @@ export const agentTaskProgress = sqliteTable('agent_task_progress', {
 
 export const scannedFiles = sqliteTable('scanned_files', {
   id: int('id').primaryKey(),
-  projectId: int('project_id').references(() => projects.id),
+  projectId: int('project_id')
+    .notNull()
+    .references(() => projects.id),
   /** Path relative to the project root */
   path: text('path').notNull(),
 

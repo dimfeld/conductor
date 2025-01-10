@@ -1,9 +1,8 @@
-import { llama8b } from '$lib/llm';
 import { generateText, tool } from 'ai';
-import type { ScannedFile } from '$lib/server/db/schema';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { z } from 'zod';
+import { openrouterLlama318b } from '../llm';
 
 function prompt(source: string) {
   return `You are an expert code analyst. Your task is to analyze a source code file and provide insights about its functionality and purpose. Here's the source code file you need to analyze:
@@ -29,12 +28,14 @@ Ensure that your analysis is accurate, concise, and provides valuable insights i
 `;
 }
 
-export async function analyzeScannedFile(file: ScannedFile, projectPath: string) {
-  const filePath = join(projectPath, file.path);
+export const analyzeModel = openrouterLlama318b;
+
+export async function analyzeScannedFile(path: string, projectPath: string) {
+  const filePath = join(projectPath, path);
   const source = await readFile(filePath, 'utf-8');
 
   const response = await generateText({
-    model: llama8b,
+    model: analyzeModel,
     prompt: prompt(source),
     temperature: 0.1,
     toolChoice: 'required',

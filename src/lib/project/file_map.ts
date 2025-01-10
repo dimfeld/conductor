@@ -6,6 +6,9 @@ import { minhashPath } from '@repo/rust_helper';
 import { eq, and } from 'drizzle-orm';
 import { stat } from 'fs/promises';
 import { Buffer } from 'buffer';
+import { getRateLimit } from '$lib/llm';
+import { batchRequests } from '$lib/llm_batch';
+import { analyzeModel, analyzeScannedFile } from './analyze_file';
 
 interface ScanOptions {
   projectId: number;
@@ -28,6 +31,33 @@ function jaccardSimilarity(hash1: Uint32Array | null, hash2: Uint32Array): numbe
   }
 
   return matches / hash1.length;
+}
+
+async function analyzeFiles(
+  files: { path: string; current_minhash: Buffer | null }[],
+  projectId: number,
+  projectRoot: string
+) {
+  const rateLimit = await getRateLimit(analyzeModel);
+  if (!rateLimit) {
+    throw new Error('Could not get rate limit for LLM');
+  }
+
+  await batchRequests(files.length, rateLimit, async (i: number) => {
+    const file = files[i];
+    const value = await analyzeScannedFile(file.path, projectRoot);
+
+    await db
+      .update(scannedFiles)
+      .set({
+        area: value.area,
+        short_description: value.shortDescription,
+        long_description: value.longDescription,
+        analyzed_minhash: file.current_minhash,
+        needsAnalysis: false,
+      })
+      .where(and(eq(scannedFiles.path, files[i].path), eq(scannedFiles.projectId, projectId)));
+  });
 }
 
 export async function scanProjectFiles({ projectId, projectRoot, include, exclude }: ScanOptions) {
@@ -97,10 +127,6 @@ export async function scanProjectFiles({ projectId, projectRoot, include, exclud
           needsAnalysis,
         };
 
-        if (needsAnalysis) {
-          updates.analyzed_minhash = newMinHashArg;
-        }
-
         await db
           .update(scannedFiles)
           .set(updates)
@@ -119,5 +145,18 @@ export async function scanProjectFiles({ projectId, projectRoot, include, exclud
       .where(
         and(eq(scannedFiles.projectId, projectId), eq(scannedFiles.path, removedFiles[0].path))
       );
+  }
+
+  // After all the scanning is done, analyze files that need it
+  const filesToAnalyze = await db
+    .select({
+      path: scannedFiles.path,
+      current_minhash: scannedFiles.current_minhash,
+    })
+    .from(scannedFiles)
+    .where(and(eq(scannedFiles.projectId, projectId), eq(scannedFiles.needsAnalysis, true)));
+
+  if (filesToAnalyze.length > 0) {
+    await analyzeFiles(filesToAnalyze, projectId, projectRoot);
   }
 }
