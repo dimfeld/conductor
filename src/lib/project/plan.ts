@@ -82,14 +82,20 @@ export function safeValidateProjectPlan(plan: unknown): ProjectPlan | null {
  * @throws {ZodError} if plan validation fails
  */
 export async function loadProjectPlan(path: string): Promise<ProjectPlan> {
+  let yamlContent: string;
   try {
-    // Read the YAML file
-    const yamlContent = await readFile(path, 'utf8');
+    yamlContent = await readFile(path, 'utf8');
+  } catch (e) {
+    const emptyPlan: ProjectPlan = {
+      plan: [],
+      dependencies: [],
+      notes: [],
+    };
+    return emptyPlan;
+  }
 
-    // Parse YAML to JavaScript object
+  try {
     const parsedYaml = load(yamlContent);
-
-    // Validate and return the plan
     return projectPlanSchema.parse(parsedYaml);
   } catch (error) {
     if (error instanceof Error) {

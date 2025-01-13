@@ -1,0 +1,10 @@
+paths:
+  docs: docs
+  guidelines: guidelines.md
+  lessons: lessons.md
+  overview: overview.md
+  plan: plan.yml
+include: []
+exclude: []
+technologies: []
+commands: {}

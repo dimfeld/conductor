@@ -23,19 +23,23 @@ export const projectRelations = relations(projects, ({ many }) => ({
   documents: many(documents),
 }));
 
-export const documents = sqliteTable('documents', {
-  id: int('id').primaryKey(),
-  projectId: int('project_id')
-    .notNull()
-    .references(() => projects.id),
-  path: text('path').notNull(),
-  type: text('type').notNull(),
-  description: text('description'),
-  canvas_location_x: int('canvas_location_x'),
-  canvas_location_y: int('canvas_location_y'),
-  canvas_location_width: int('canvas_location_width'),
-  canvas_location_height: int('canvas_location_height'),
-});
+export const documents = sqliteTable(
+  'documents',
+  {
+    id: int('id').primaryKey(),
+    projectId: int('project_id')
+      .notNull()
+      .references(() => projects.id),
+    path: text('path').notNull(),
+    type: text('type').notNull(),
+    description: text('description'),
+    canvas_location_x: int('canvas_location_x'),
+    canvas_location_y: int('canvas_location_y'),
+    canvas_location_width: int('canvas_location_width'),
+    canvas_location_height: int('canvas_location_height'),
+  },
+  (table) => [uniqueIndex('document_path_idx').on(table.projectId, table.path)]
+);
 
 export const documentRelations = relations(documents, ({ one }) => ({
   project: one(projects, {

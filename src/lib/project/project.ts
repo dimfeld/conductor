@@ -1,12 +1,16 @@
 import { z } from 'zod';
-import { join } from 'path';
+import { join, relative } from 'path';
 import { EventEmitter } from 'node:events';
-import { watch, type FileChangeInfo } from 'node:fs/promises';
-import { scanProjectFiles } from './file_map';
+import { access, readFile, watch, writeFile } from 'node:fs/promises';
 import { projects, type Document } from '$lib/server/db/schema';
 import { loadProjectPlan, ManagedProjectPlan } from './plan';
+import { dump, load } from 'js-yaml';
 import { db } from '../server/db';
 import { eq } from 'drizzle-orm';
+import { globby } from 'globby';
+import type { Cookies, RequestEvent } from '@sveltejs/kit';
+import { setFlash } from 'sveltekit-flash-message/server';
+import { inferProjectLanguages, jsPackageManager } from './infer_project_settings.js';
 
 /**
  * Zod schemas for project configuration structure
@@ -21,6 +25,7 @@ export const technologySchema = z.object({
 });
 
 export const commandsConfigSchema = z.object({
+  generate_types: z.string().optional(),
   typecheck: z.string().optional(),
   lint: z.string().optional(),
   format: z.string().optional(),
@@ -98,14 +103,53 @@ export function safeValidateProjectConfig(config: unknown): ProjectConfig | null
  * @throws {Error} if file cannot be read or parsed
  * @throws {ZodError} if config validation fails
  */
-export async function loadProjectConfig(path: string): Promise<ProjectConfig> {
+export async function loadProjectConfig(
+  event: RequestEvent | Cookies,
+  path: string
+): Promise<ProjectConfig> {
+  let parsedYaml: any;
   try {
-    const { readFile } = await import('node:fs/promises');
-    const { load } = await import('js-yaml');
-
     const yamlContent = await readFile(path, 'utf8');
-    const parsedYaml = load(yamlContent);
+    parsedYaml = load(yamlContent);
+  } catch (e) {
+    const tech = await inferProjectLanguages(path);
+    const packageManager =
+      tech.includes('javascript') || tech.includes('typescript')
+        ? await jsPackageManager(path)
+        : undefined;
 
+    if (packageManager) {
+      tech.push(packageManager);
+    }
+
+    const defaultProjectConfig: ProjectConfig = {
+      paths: {
+        docs: 'docs',
+        guidelines: 'guidelines.md',
+        lessons: 'lessons.md',
+        overview: 'overview.md',
+        plan: 'plan.yml',
+      },
+      include: [],
+      exclude: [],
+      technologies: tech.map((language) => ({ name: language })),
+      commands: {},
+    };
+
+    await writeFile(path, dump(defaultProjectConfig));
+
+    setFlash(
+      {
+        type: 'info',
+        message: `Created project config file ${path}`,
+      },
+      event
+    );
+
+    parsedYaml = defaultProjectConfig;
+  }
+
+  try {
     return projectConfigSchema.parse(parsedYaml);
   } catch (error) {
     if (error instanceof Error) {
@@ -115,25 +159,15 @@ export async function loadProjectConfig(path: string): Promise<ProjectConfig> {
   }
 }
 
-/**
- * Safe version of loadProjectConfig that returns null instead of throwing
- */
-export async function safeLoadProjectConfig(path: string): Promise<ProjectConfig | null> {
-  try {
-    return await loadProjectConfig(path);
-  } catch (error) {
-    return null;
-  }
-}
-
 export interface ProjectEvents {
-  'docs:update': [string];
+  'docs:added': [string];
+  'docs:removed': [string];
   error: [Error];
 }
 
 export class Project {
-  docs: Map<string, Document> = new Map();
-  knownDocs: Set<string> = new Set();
+  /** All the documents, including untracked ones */
+  allDocs: Set<string> = new Set();
   events = new EventEmitter<ProjectEvents>();
   private watcherAbort: AbortController | null = null;
 
@@ -145,6 +179,7 @@ export class Project {
 
   async init() {
     void this.startWatching();
+    await this.scanDocsPath();
   }
 
   async destroy() {
@@ -155,6 +190,14 @@ export class Project {
   getDocsPath() {
     const docsPath = this.configFile.paths?.docs ?? 'docs';
     return join(this.projectInfo.path, docsPath);
+  }
+
+  async scanDocsPath() {
+    const docsPath = this.getDocsPath();
+    const docs = await globby('**/*.md', { cwd: docsPath });
+    for (const doc of docs) {
+      this.allDocs.add(doc);
+    }
   }
 
   /** Start watching the docs directory for changes */
@@ -174,9 +217,20 @@ export class Project {
     try {
       for await (const event of watcher) {
         // Rescan files and emit update event
-        if (event.filename) {
-          this.knownDocs.add(event.filename);
-          this.events.emit('docs:update', event.filename);
+        if (event.eventType === 'rename' && event.filename) {
+          try {
+            await access(event.filename);
+            if (!this.allDocs.has(event.filename)) {
+              this.allDocs.add(event.filename);
+              this.events.emit('docs:added', relative(docsPath, event.filename));
+            }
+          } catch (e) {
+            // File was deleted
+            if (this.allDocs.has(event.filename)) {
+              this.allDocs.delete(event.filename);
+              this.events.emit('docs:removed', relative(docsPath, event.filename));
+            }
+          }
         }
       }
     } catch (e) {
@@ -192,7 +246,7 @@ export class Project {
   }
 }
 
-export async function loadProject(id: number) {
+export async function loadProject(event: RequestEvent | Cookies, id: number) {
   if (loadedProjects.has(id)) {
     return loadedProjects.get(id);
   }
@@ -204,7 +258,7 @@ export async function loadProject(id: number) {
     throw new Error(`Project ${id} not found`);
   }
 
-  const projectConfig = await loadProjectConfig(join(projectInfo.path, 'project.yml'));
+  const projectConfig = await loadProjectConfig(event, join(projectInfo.path, 'project.yml'));
   if (!projectConfig) {
     throw new Error(`Project ${id} config not found`);
   }
