@@ -1,5 +1,5 @@
-import { load } from 'js-yaml';
-import { readFile } from 'node:fs/promises';
+import { dump, load } from 'js-yaml';
+import { readFile, writeFile } from 'node:fs/promises';
 import { z } from 'zod';
 
 /**
@@ -8,6 +8,7 @@ import { z } from 'zod';
 
 export const subtaskSchema = z.object({
   title: z.string(),
+  plan_file: z.string().optional().describe('Location of the plan file for this subtask'),
   completed: z.boolean(),
 });
 
@@ -32,6 +33,26 @@ export const projectPlanSchema = z.object({
   dependencies: z.array(z.string()).optional(),
   notes: z.array(z.string()).optional(),
 });
+
+export class ManagedProjectPlan {
+  constructor(
+    public data: ProjectPlan,
+    public path: string
+  ) {}
+
+  async update(updater: (data: ProjectPlan) => ProjectPlan) {
+    this.data = updater(this.data);
+    await this.save();
+  }
+
+  async refresh() {
+    this.data = await loadProjectPlan(this.path);
+  }
+
+  async save() {
+    await writeFile(this.path, dump(this.data));
+  }
+}
 
 // Infer TypeScript types from the Zod schemas
 export type Epic = z.infer<typeof epicSchema>;

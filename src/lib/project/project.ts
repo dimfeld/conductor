@@ -1,4 +1,12 @@
 import { z } from 'zod';
+import { join } from 'path';
+import { EventEmitter } from 'node:events';
+import { watch, type FileChangeInfo } from 'node:fs/promises';
+import { scanProjectFiles } from './file_map';
+import { projects, type Document } from '$lib/server/db/schema';
+import { loadProjectPlan, ManagedProjectPlan } from './plan';
+import { db } from '../server/db';
+import { eq } from 'drizzle-orm';
 
 /**
  * Zod schemas for project configuration structure
@@ -117,3 +125,100 @@ export async function safeLoadProjectConfig(path: string): Promise<ProjectConfig
     return null;
   }
 }
+
+export interface ProjectEvents {
+  'docs:update': [string];
+  error: [Error];
+}
+
+export class Project {
+  docs: Map<string, Document> = new Map();
+  knownDocs: Set<string> = new Set();
+  events = new EventEmitter<ProjectEvents>();
+  private watcherAbort: AbortController | null = null;
+
+  constructor(
+    public projectInfo: typeof projects.$inferSelect,
+    public configFile: ProjectConfig,
+    public plan: ManagedProjectPlan
+  ) {}
+
+  async init() {
+    void this.startWatching();
+  }
+
+  async destroy() {
+    this.stopWatching();
+  }
+
+  /** Get the absolute path to the docs directory */
+  getDocsPath() {
+    const docsPath = this.configFile.paths?.docs ?? 'docs';
+    return join(this.projectInfo.path, docsPath);
+  }
+
+  /** Start watching the docs directory for changes */
+  async startWatching() {
+    if (this.watcherAbort) {
+      return;
+    }
+
+    const docsPath = this.getDocsPath();
+    this.watcherAbort = new AbortController();
+    const watcher = watch(docsPath, {
+      recursive: true,
+      persistent: false,
+      signal: this.watcherAbort.signal,
+    });
+
+    try {
+      for await (const event of watcher) {
+        // Rescan files and emit update event
+        if (event.filename) {
+          this.knownDocs.add(event.filename);
+          this.events.emit('docs:update', event.filename);
+        }
+      }
+    } catch (e) {
+      // Watcher error
+      this.events.emit('error', e as Error);
+    }
+  }
+
+  /** Stop watching the docs directory */
+  stopWatching() {
+    this.watcherAbort?.abort();
+    this.watcherAbort = null;
+  }
+}
+
+export async function loadProject(id: number) {
+  if (loadedProjects.has(id)) {
+    return loadedProjects.get(id);
+  }
+
+  const projectInfo = await db.query.projects.findFirst({
+    where: eq(projects.id, id),
+  });
+  if (!projectInfo) {
+    throw new Error(`Project ${id} not found`);
+  }
+
+  const projectConfig = await loadProjectConfig(join(projectInfo.path, 'project.yml'));
+  if (!projectConfig) {
+    throw new Error(`Project ${id} config not found`);
+  }
+
+  const projectPlanPath = join(projectInfo.path, projectConfig.paths?.plan || 'docs/plan.yml');
+  const projectPlan = await loadProjectPlan(projectPlanPath);
+
+  const managedPlan = new ManagedProjectPlan(projectPlan, projectPlanPath);
+  const project = new Project(projectInfo, projectConfig, managedPlan);
+  await project.init();
+
+  loadedProjects.set(id, project);
+
+  return project;
+}
+
+export const loadedProjects: Map<number, Project> = new Map();

@@ -1,11 +1,19 @@
 <script lang="ts">
-  import { Background, Controls, SvelteFlow, type Node, type Edge } from '@xyflow/svelte';
+  import {
+    Background,
+    Controls,
+    SvelteFlow,
+    type Node,
+    type Edge,
+    type NodeTypes,
+  } from '@xyflow/svelte';
   import { writable } from 'svelte/store';
   import DocumentNode from './DocumentNode.svelte';
 
   const { data } = $props();
 
-  const nodeTypes = {
+  const nodeTypes: NodeTypes = {
+    // @ts-expect-error difference in Svelte 5 types
     document: DocumentNode,
   };
 

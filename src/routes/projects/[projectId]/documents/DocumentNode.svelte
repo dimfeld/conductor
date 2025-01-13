@@ -5,6 +5,7 @@
   import { Handle, Position } from '@xyflow/svelte';
 
   export interface Props {
+    type: string;
     data: DocumentWithContents;
   }
 
