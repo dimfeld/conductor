@@ -1,6 +1,6 @@
 import { loadProject } from '$lib/project/project.js';
 import { db } from '$lib/server/db';
-import { documents, projects } from '$lib/server/db/schema';
+import { documents, projects, scannedFiles } from '$lib/server/db/schema';
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 
@@ -22,5 +22,14 @@ export const load = async (event) => {
   const knownDocPaths = new Set(docs.map((doc) => doc.path));
   const untrackedDocs = Array.from(project.allDocs).filter((doc) => !knownDocPaths.has(doc));
 
-  return { project: project.projectInfo, documents: docs, plan, untrackedDocs };
+  const projectFiles = await db.query.scannedFiles.findMany({
+    columns: {
+      path: true,
+      short_description: true,
+      area: true,
+    },
+    where: eq(scannedFiles.projectId, Number(params.projectId)),
+  });
+
+  return { project: project.projectInfo, documents: docs, plan, untrackedDocs, projectFiles };
 };

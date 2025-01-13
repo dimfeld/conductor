@@ -3,7 +3,7 @@ import { join, relative } from 'path';
 import { EventEmitter } from 'node:events';
 import { access, readFile, watch, writeFile } from 'node:fs/promises';
 import { projects, type Document } from '$lib/server/db/schema';
-import { loadProjectPlan, ManagedProjectPlan } from './plan';
+import { loadProjectPlan, ManagedProjectPlan } from './server/plan';
 import { dump, load } from 'js-yaml';
 import { db } from '../server/db';
 import { eq } from 'drizzle-orm';
@@ -159,6 +159,14 @@ export async function loadProjectConfig(
   }
 }
 
+function docsPath(projectInfo: typeof projects.$inferSelect, projectConfig: ProjectConfig) {
+  return join(projectInfo.path, projectConfig.paths?.docs || 'docs');
+}
+
+function planPath(projectInfo: typeof projects.$inferSelect, projectConfig: ProjectConfig) {
+  return join(docsPath(projectInfo, projectConfig), projectConfig.paths?.plan || 'plan.yml');
+}
+
 export interface ProjectEvents {
   'docs:added': [string];
   'docs:removed': [string];
@@ -187,13 +195,16 @@ export class Project {
   }
 
   /** Get the absolute path to the docs directory */
-  getDocsPath() {
-    const docsPath = this.configFile.paths?.docs ?? 'docs';
-    return join(this.projectInfo.path, docsPath);
+  get docsPath() {
+    return docsPath(this.projectInfo, this.configFile);
+  }
+
+  get planPath() {
+    return planPath(this.projectInfo, this.configFile);
   }
 
   async scanDocsPath() {
-    const docsPath = this.getDocsPath();
+    const docsPath = this.docsPath;
     const docs = await globby('**/*.md', { cwd: docsPath });
     for (const doc of docs) {
       this.allDocs.add(doc);
@@ -206,7 +217,7 @@ export class Project {
       return;
     }
 
-    const docsPath = this.getDocsPath();
+    const docsPath = this.docsPath;
     this.watcherAbort = new AbortController();
     const watcher = watch(docsPath, {
       recursive: true,
@@ -263,7 +274,7 @@ export async function loadProject(event: RequestEvent | Cookies, id: number) {
     throw new Error(`Project ${id} config not found`);
   }
 
-  const projectPlanPath = join(projectInfo.path, projectConfig.paths?.plan || 'docs/plan.yml');
+  const projectPlanPath = planPath(projectInfo, projectConfig);
   const projectPlan = await loadProjectPlan(projectPlanPath);
 
   const managedPlan = new ManagedProjectPlan(projectPlan, projectPlanPath);

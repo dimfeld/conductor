@@ -37,6 +37,7 @@ export const documents = sqliteTable(
     canvas_location_y: int('canvas_location_y'),
     canvas_location_width: int('canvas_location_width'),
     canvas_location_height: int('canvas_location_height'),
+    tracked: int('tracked', { mode: 'boolean' }).notNull().default(true),
   },
   (table) => [uniqueIndex('document_path_idx').on(table.projectId, table.path)]
 );

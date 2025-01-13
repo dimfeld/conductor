@@ -6,7 +6,7 @@
 </script>
 
 <Sidebar.Provider>
-  <ProjectSidebar docs={data.documents} untrackedDocs={data.untrackedDocs} />
+  <ProjectSidebar {data} />
   <main>
     <Sidebar.Trigger />
     {@render children()}
