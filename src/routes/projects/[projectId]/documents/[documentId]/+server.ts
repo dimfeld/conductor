@@ -4,9 +4,9 @@ import { documents } from '$lib/server/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { projects } from '$lib/project/project';
+import { loadProject } from '$lib/project/project';
 
-export async function GET({ params }) {
+export async function GET({ params, cookies }) {
   const projectId = parseInt(params.projectId);
   const documentId = parseInt(params.documentId);
 
@@ -20,14 +20,14 @@ export async function GET({ params }) {
   }
 
   // Get the project to find the root path
-  const project = projects.get(projectId);
+  const project = await loadProject(cookies, projectId);
   if (!project) {
     error(404, 'Project not found');
   }
 
   // Read the file contents
   try {
-    const fullPath = join(project.rootPath, doc.path);
+    const fullPath = join(project.projectInfo.path, doc.path);
     const content = await readFile(fullPath, 'utf-8');
 
     return json({
@@ -40,7 +40,7 @@ export async function GET({ params }) {
   }
 }
 
-export async function PUT({ params, request }) {
+export async function PUT({ params, request, cookies }) {
   const projectId = parseInt(params.projectId);
   const documentId = parseInt(params.documentId);
 
@@ -54,7 +54,7 @@ export async function PUT({ params, request }) {
   }
 
   // Get the project to find the root path
-  const project = projects.get(projectId);
+  const project = await loadProject(cookies, projectId);
   if (!project) {
     error(404, 'Project not found');
   }
@@ -67,7 +67,7 @@ export async function PUT({ params, request }) {
     }
 
     // Write the file contents
-    const fullPath = join(project.rootPath, doc.path);
+    const fullPath = join(project.projectInfo.path, doc.path);
     await writeFile(fullPath, content, 'utf-8');
 
     // Update any metadata if provided
