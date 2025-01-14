@@ -15,6 +15,13 @@
       "when": 1736793509627,
       "tag": "0001_graceful_thunderbolt_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1736840364139,
+      "tag": "0002_parched_magdalene",
+      "breakpoints": true
     }
   ]
 }

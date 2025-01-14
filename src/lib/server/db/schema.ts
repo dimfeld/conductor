@@ -7,6 +7,7 @@ import {
   primaryKey,
   uniqueIndex,
   blob,
+  numeric,
 } from 'drizzle-orm/sqlite-core';
 
 export const projects = sqliteTable(
@@ -118,6 +119,9 @@ export const agentTaskProgress = sqliteTable('agent_task_progress', {
   agentTaskStepId: int('agent_task_step_id').references(() => agentTaskSteps.id),
   logs: text('logs').notNull(),
   model: text('model').notNull(),
+  inputTokens: int('input_tokens'),
+  outputTokens: int('output_tokens'),
+  costInMilliCents: int('cost_in_millicents'),
   operation: text('operation').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
