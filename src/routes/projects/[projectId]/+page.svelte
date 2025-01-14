@@ -132,7 +132,7 @@
   <main class="flex-1">
     {#if selectedFile}
       <div class="space-y-4 rounded-lg bg-white p-6 shadow-md">
-        <h1 class="text-2xl font-bold text-gray-900">{selectedFile.path.split('/').pop()}</h1>
+        <h1 class="text-2xl font-bold text-gray-900">{selectedFile.path}</h1>
         {#if selectedFile.area}
           <div class="border-l-4 border-blue-500 bg-blue-50 p-3">
             <h2 class="text-lg font-semibold text-blue-800">Area</h2>
