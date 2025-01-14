@@ -27,6 +27,8 @@ export class AiderProcess {
   private _buffer = '';
   private promptResolve: ((value: string) => void) | null = null;
 
+  private _sessionCost: number = 0;
+
   readFiles: Set<string> = new Set();
   editFiles: Set<string> = new Set();
 
@@ -46,8 +48,13 @@ export class AiderProcess {
 
       // When we see a prompt, resolve the promise if one is waiting
       if (isPrompt(this._buffer)) {
-        const prompt = this._buffer.slice();
-        this.promptResolve?.(prompt);
+        let tokenRegex = /^Tokens: \$(\d+\.\d+) session\.$/gm;
+        for (let match of this._buffer.matchAll(tokenRegex)) {
+          // We really just want the last match but this is easy and accomplishes the same thing.
+          this._sessionCost = parseFloat(match[1]);
+        }
+
+        this.promptResolve?.(this._buffer);
         this.promptResolve = null;
       }
     });
@@ -95,6 +102,10 @@ export class AiderProcess {
     }
   }
 
+  get sessionCost() {
+    return this._sessionCost;
+  }
+
   get buffer() {
     return this._buffer;
   }
@@ -136,9 +147,7 @@ export class AiderProcess {
   async waitForPrompt(): Promise<string> {
     // If we already have a complete prompt in the buffer, return it immediately
     if (isPrompt(this._buffer)) {
-      const prompt = this._buffer;
-      this._buffer = '';
-      return prompt;
+      return this._buffer;
     }
 
     // Otherwise wait for the next prompt
