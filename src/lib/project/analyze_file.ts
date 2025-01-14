@@ -4,10 +4,10 @@ import { join } from 'path';
 import { z } from 'zod';
 import { openrouterLlama318b } from '../llm';
 
-function prompt(source: string) {
+function prompt(path: string, source: string) {
   return `You are an expert code analyst. Your task is to analyze a source code file and provide insights about its functionality and purpose. Here's the source code file you need to analyze:
 
-<source_code>
+<source_code filename="${path}">
 ${source}
 </source_code>
 
@@ -24,6 +24,22 @@ Please follow these steps to analyze the code:
    - Key interfaces or methods provided by the code
    - Potential use cases or applications of this code
 
+After your analysis, provide your output in the following format:
+
+<analysis>
+<best_matching_area>
+[Insert the area that best matches the code's functionality]
+</best_matching_area>
+
+<short_description>
+[Insert a one-sentence description of what the code does]
+</short_description>
+
+<detailed_description>
+[Insert a more detailed description, up to one paragraph, including the points mentioned in step 6]
+</detailed_description>
+</analysis>
+
 Ensure that your analysis is accurate, concise, and provides valuable insights into the code's purpose and functionality.
 `;
 }
@@ -36,37 +52,21 @@ export async function analyzeScannedFile(path: string, projectPath: string) {
 
   const response = await generateText({
     model: analyzeModel,
-    prompt: prompt(source),
+    prompt: prompt(path, source),
     temperature: 0.1,
-    toolChoice: 'required',
-    tools: {
-      analyzeCode: tool({
-        description: 'Analyze the code and provide a detailed description of its functionality',
-        parameters: z.object({
-          best_matching_area: z
-            .string()
-            .describe(
-              "The area that best matches the code's functionality, such as database, auth, or file import"
-            ),
-          short_description: z
-            .string()
-            .describe('A one-sentence description of what the code does'),
-          detailed_description: z
-            .string()
-            .describe(
-              'A more detailed description, up to one paragraph, including the points mentioned in step 6'
-            ),
-        }),
-      }),
-    },
   });
 
-  const toolCall = response.toolCalls[0];
+  const analysis = response.text;
+  const bestMatchingArea = analysis.match(/<best_matching_area>(.*)<\/best_matching_area>/)?.[1];
+  const shortDescription = analysis.match(/<short_description>(.*)<\/short_description>/)?.[1];
+  const detailedDescription = analysis.match(
+    /<detailed_description>(.*)<\/detailed_description>/
+  )?.[1];
 
-  console.log('Analyzed file:', filePath, toolCall.args);
+  console.log(`Analyzed file: ${filePath}, area: ${bestMatchingArea}, short: ${shortDescription}`);
   return {
-    area: toolCall.args.best_matching_area,
-    shortDescription: toolCall.args.short_description,
-    longDescription: toolCall.args.detailed_description,
+    area: bestMatchingArea,
+    shortDescription,
+    longDescription: detailedDescription,
   };
 }
