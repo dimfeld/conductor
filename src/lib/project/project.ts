@@ -11,6 +11,7 @@ import { globby } from 'globby';
 import type { Cookies, RequestEvent } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { inferProjectLanguages, jsPackageManager } from './infer_project_settings.js';
+import { scanProjectFiles } from './file_map.js';
 
 /**
  * Zod schemas for project configuration structure
@@ -211,11 +212,22 @@ export class Project {
     }
   }
 
+  async scanProjectFiles() {
+    await scanProjectFiles({
+      projectId: this.projectInfo.id,
+      projectRoot: this.projectInfo.path,
+      include: this.configFile.include,
+      exclude: this.configFile.exclude ?? [],
+    });
+  }
+
   /** Start watching the docs directory for changes */
   async startWatching() {
     if (this.watcherAbort) {
       return;
     }
+
+    // TODO Also watch project and plan config files and reload them
 
     const docsPath = this.docsPath;
     this.watcherAbort = new AbortController();

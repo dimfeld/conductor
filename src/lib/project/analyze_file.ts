@@ -1,9 +1,9 @@
 import { generateText, tool } from 'ai';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
-import { z } from 'zod';
 import { openrouterLlama318b } from '../llm';
 
+// TODO Add extra context about the project based on the documentation.
 function prompt(path: string, source: string) {
   return `You are an expert code analyst. Your task is to analyze a source code file and provide insights about its functionality and purpose. Here's the source code file you need to analyze:
 
@@ -24,7 +24,7 @@ Please follow these steps to analyze the code:
    - Key interfaces or methods provided by the code
    - Potential use cases or applications of this code
 
-After your analysis, provide your output in the following format:
+After your analysis, provide your output in the following XML format:
 
 <analysis>
 <best_matching_area>
@@ -41,6 +41,7 @@ After your analysis, provide your output in the following format:
 </analysis>
 
 Ensure that your analysis is accurate, concise, and provides valuable insights into the code's purpose and functionality.
+Be sure to conform to the XML format exactly.
 `;
 }
 
@@ -50,6 +51,8 @@ export async function analyzeScannedFile(path: string, projectPath: string) {
   const filePath = join(projectPath, path);
   const source = await readFile(filePath, 'utf-8');
 
+  console.log('Analyzing file', path);
+
   const response = await generateText({
     model: analyzeModel,
     prompt: prompt(path, source),
@@ -57,16 +60,24 @@ export async function analyzeScannedFile(path: string, projectPath: string) {
   });
 
   const analysis = response.text;
-  const bestMatchingArea = analysis.match(/<best_matching_area>(.*)<\/best_matching_area>/)?.[1];
-  const shortDescription = analysis.match(/<short_description>(.*)<\/short_description>/)?.[1];
+  const bestMatchingArea = analysis.match(/<best_matching_area>(.*)<\/best_matching_area>/ms)?.[1];
+  const shortDescription = analysis.match(/<short_description>(.*)<\/short_description>/ms)?.[1];
   const detailedDescription = analysis.match(
-    /<detailed_description>(.*)<\/detailed_description>/
+    /<detailed_description>(.*)<\/detailed_description>/ms
   )?.[1];
 
   console.log(`Analyzed file: ${filePath}, area: ${bestMatchingArea}, short: ${shortDescription}`);
+
+  if (!bestMatchingArea || !shortDescription || !detailedDescription) {
+    console.error('No area or short description found for file', path);
+    console.error(response.text);
+    // TODO We should actually retry this or something
+    return;
+  }
+
   return {
-    area: bestMatchingArea,
-    shortDescription,
-    longDescription: detailedDescription,
+    area: bestMatchingArea.trim(),
+    shortDescription: shortDescription.trim(),
+    longDescription: detailedDescription.trim(),
   };
 }

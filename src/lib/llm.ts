@@ -32,9 +32,14 @@ export async function getOpenRouterRateLimit() {
     return openRouterRateLimit;
   }
 
-  const response = await fetch('https://openrouter.ai/api/v1/auth/key');
+  const response = await fetch('https://openrouter.ai/api/v1/auth/key', {
+    headers: {
+      Authorization: `Bearer ${env.OPENROUTER_API_KEY}`,
+    },
+  });
   const data = await response.json();
-  const rateLimit = data.rate_limit as { interval: string; requests: number };
+  console.log({ data });
+  const rateLimit = data.data.rate_limit as { interval: string; requests: number };
 
   if (rateLimit.interval.endsWith('s')) {
     const seconds = parseInt(rateLimit.interval.replace('s', ''));
@@ -57,11 +62,12 @@ export async function getOpenRouterRateLimit() {
 
 /** Return the rate limit for a given model, in requests per minute */
 export async function getRateLimit(model: LanguageModel) {
-  if (model.provider === 'openrouter') {
+  console.log('Getting rate limit for', model.provider);
+  if (model.provider.startsWith('openrouter.')) {
     return getOpenRouterRateLimit();
-  } else if (model.provider === 'cerebras') {
+  } else if (model.provider.startsWith('cerebras.')) {
     return { requests: 30, interval: 60 };
-  } else if (model.provider === 'deepseek') {
+  } else if (model.provider.startsWith('deepseek.')) {
     // DeepSeek has no published rate limit and it's said to be very high.
     return { requests: 500, interval: 1 };
   }

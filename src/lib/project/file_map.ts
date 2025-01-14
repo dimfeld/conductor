@@ -43,10 +43,18 @@ async function analyzeFiles(
     throw new Error('Could not get rate limit for LLM');
   }
 
+  let successful = 0;
+  let failed = 0;
   await batchRequests(files.length, rateLimit, async (i: number) => {
     const file = files[i];
     const value = await analyzeScannedFile(file.path, projectRoot);
 
+    if (!value) {
+      failed++;
+      return;
+    }
+
+    successful++;
     await db
       .update(scannedFiles)
       .set({
@@ -58,6 +66,8 @@ async function analyzeFiles(
       })
       .where(and(eq(scannedFiles.path, files[i].path), eq(scannedFiles.projectId, projectId)));
   });
+
+  console.log(`Analyzed ${successful} files, failed ${failed}`);
 }
 
 export async function scanProjectFiles({ projectId, projectRoot, include, exclude }: ScanOptions) {
@@ -83,6 +93,8 @@ export async function scanProjectFiles({ projectId, projectRoot, include, exclud
     const fullPath = join(projectRoot, relativePath);
     const stats = await stat(fullPath);
     const fileTimestamp = stats.mtime;
+
+    console.log('Found file', relativePath);
 
     const existing = existingFileMap.get(relativePath);
 

@@ -27,6 +27,7 @@ export const load = async (event) => {
       path: true,
       short_description: true,
       area: true,
+      needsAnalysis: true,
     },
     where: eq(scannedFiles.projectId, Number(params.projectId)),
   });

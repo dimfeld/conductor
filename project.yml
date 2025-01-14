@@ -4,7 +4,7 @@ paths:
   lessons: lessons.md
   overview: overview.md
   plan: plan.yml
-include: []
+include: ['src/**/*.ts', 'src/**/*.svelte', 'rust_helper/**/*.rs']
 exclude: []
 technologies: []
 commands: {}
