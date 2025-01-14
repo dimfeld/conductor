@@ -24,24 +24,5 @@ export const load = async ({ params }) => {
     where: eq(documentParents.projectId, Number(projectId)),
   });
 
-  const docContents = await Promise.all(
-    docs.map(async (doc) => {
-      // TODO read custom doc subdirectory name from project.yml
-      const docPath = path.join(project.path, 'docs', doc.path);
-      let contents: string;
-      try {
-        contents = await readFile(docPath, 'utf-8');
-      } catch (e) {
-        console.error(e);
-        contents = '';
-      }
-
-      return {
-        ...doc,
-        contents,
-      };
-    })
-  );
-
-  return { documents: docContents, edges: docParents };
+  return { edges: docParents };
 };

@@ -2,8 +2,29 @@ import { error, fail } from '@sveltejs/kit';
 import { db } from '$lib/server/db/index.js';
 import { documents, scannedFiles } from '$lib/server/db/schema.js';
 import { eq } from 'drizzle-orm';
-import { scanProjectFiles } from '$lib/project/file_map.js';
 import { loadProject } from '$lib/project/project.js';
+
+export const load = async ({ params, cookies }) => {
+  let project = await loadProject(cookies, Number(params.projectId));
+  if (!project) {
+    error(404, 'Project not found');
+  }
+
+  let fullFiles = await db
+    .select({
+      id: scannedFiles.id,
+      path: scannedFiles.path,
+      area: scannedFiles.area,
+      short_description: scannedFiles.short_description,
+      long_description: scannedFiles.long_description,
+      file_timestamp: scannedFiles.file_timestamp,
+      needsAnalysis: scannedFiles.needsAnalysis,
+    })
+    .from(scannedFiles)
+    .where(eq(scannedFiles.projectId, Number(params.projectId)));
+
+  return { fullFiles };
+};
 
 export const actions = {
   forceScan: async ({ request, params, cookies }) => {

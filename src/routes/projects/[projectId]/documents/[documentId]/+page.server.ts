@@ -11,16 +11,10 @@ export const load = async ({ params, fetch }) => {
   const form = await superValidate(zod(formSchema));
 
   const parentDocs = db.query.documentParents.findMany({
-    with: {
-      parentDocument: true,
-    },
     where: (documentParents, { eq }) => eq(documentParents.childDocumentId, +params.documentId),
   });
 
   const childDocs = db.query.documentParents.findMany({
-    with: {
-      childDocument: true,
-    },
     where: (documentParents, { eq }) => eq(documentParents.parentDocumentId, +params.documentId),
   });
 
