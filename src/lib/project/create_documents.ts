@@ -1,4 +1,4 @@
-import { extractTag } from '$lib/llm';
+import { anthropicClaude35Sonnet, extractTag } from '$lib/llm';
 import { db } from '$lib/server/db';
 import { scannedFiles } from '$lib/server/db/schema';
 import { generateText, type LanguageModel } from 'ai';
@@ -11,35 +11,200 @@ import type { ManagedProjectPlan } from './server/plan.js';
 
 interface CreateEpicPlanningInput {
   project: Project;
-  /** Name of the epic to create the planning document for */
-  epicName: string;
-  /** The LLM to use for generating the document */
-  llm: LanguageModel;
+  /** Index of the epic to create the planning document for */
+  epicIndex: number;
 }
 
-export async function createEpicPlanning({ project, epicName, llm }: CreateEpicPlanningInput) {
-  const epicTemplate = Handlebars.compile(
-    await readFile(join(import.meta.dir, 'prompts/create_epic_document.md.hbs'), 'utf-8')
+async function readPromptFile(name: string, params: Record<string, string>) {
+  const template = await readFile(
+    join(import.meta.dir, `prompts/planning/${name}.md.hbs`),
+    'utf-8'
   );
+  return Handlebars.compile(template)(params);
+}
 
+const planningModel = anthropicClaude35Sonnet;
+
+export async function createEpicPlanning({ project, epicIndex, llm }: CreateEpicPlanningInput) {
   const info = await gatherProjectContext(project);
-
-  const prompt = epicTemplate({
+  const overviewPrompt = await readPromptFile('prefix_main', {
     PROJECT_OVERVIEW: info.projectOverview,
     EXISTING_FILES: info.scannedFiles,
     EPICS_STORIES_TASKS: info.plan,
+  });
+
+  const epicName = project.plan.data.plan[epicIndex].title;
+  const epicPrompt = await readPromptFile('create_epic_document', {
     EPIC_NAME: epicName,
   });
 
   const response = await generateText({
-    model: llm,
-    prompt,
+    model: planningModel,
     temperature: 0.1,
+    messages: [
+      {
+        role: 'user',
+        content: overviewPrompt,
+        experimental_providerMetadata: {
+          anthropic: {
+            cacheControl: true,
+          },
+        },
+      },
+      {
+        role: 'user',
+        content: epicPrompt,
+      },
+    ],
   });
 
   const description = extractTag(response.text, 'epic_description');
   if (!description) {
     throw new Error('No epic description found in response');
+  }
+
+  return description;
+}
+
+export interface CreateStoryPlanningInput extends CreateEpicPlanningInput {
+  storyIndex: number;
+}
+
+export async function createStoryPlanning({
+  project,
+  epicIndex,
+  storyIndex,
+}: CreateStoryPlanningInput) {
+  const epic = project.plan.data.plan[epicIndex];
+
+  if (!epic.plan_file) {
+    throw new Error('Epic has no plan file');
+  }
+
+  const story = epic.stories[storyIndex];
+  const info = await gatherProjectContext(project);
+
+  const overviewPrompt = await readPromptFile('prefix_main', {
+    PROJECT_OVERVIEW: info.projectOverview,
+    EXISTING_FILES: info.scannedFiles,
+    EPICS_STORIES_TASKS: info.plan,
+  });
+  const epicDescription = await readPromptFile('prefix_epic_desc', {
+    EPIC_NAME: epic.title,
+    EPIC_PLANNING: await readFile(join(project.docsPath, epic.plan_file), 'utf-8'),
+  });
+  const storyPrompt = await readPromptFile('create_story_document', {
+    STORY_NAME: story.title,
+  });
+
+  const response = await generateText({
+    model: planningModel,
+    temperature: 0.1,
+    messages: [
+      {
+        role: 'user',
+        content: overviewPrompt,
+        experimental_providerMetadata: {
+          anthropic: {
+            cacheControl: true,
+          },
+        },
+      },
+      {
+        role: 'user',
+        content: epicDescription,
+        experimental_providerMetadata: {
+          anthropic: {
+            cacheControl: true,
+          },
+        },
+      },
+      { role: 'user', content: storyPrompt },
+    ],
+  });
+}
+
+export interface CreateTaskPlanningInput extends CreateStoryPlanningInput {
+  taskIndex: number;
+}
+
+export async function createTaskPlanning({
+  project,
+  epicIndex,
+  storyIndex,
+  taskIndex,
+}: CreateTaskPlanningInput) {
+  const epic = project.plan.data.plan[epicIndex];
+  const story = epic.stories[storyIndex];
+  const task = story.subtasks?.[taskIndex];
+  if (!task) {
+    throw new Error('Task not found');
+  }
+
+  if (!epic.plan_file) {
+    throw new Error('Epic has no plan file');
+  }
+
+  if (!story.plan_file) {
+    throw new Error('Story has no plan file');
+  }
+
+  const info = await gatherProjectContext(project);
+  const overviewPrompt = await readPromptFile('prefix_main', {
+    PROJECT_OVERVIEW: info.projectOverview,
+    EXISTING_FILES: info.scannedFiles,
+    EPICS_STORIES_TASKS: info.plan,
+  });
+  const epicDescription = await readPromptFile('prefix_epic_desc', {
+    EPIC_NAME: epic.title,
+    EPIC_PLANNING: await readFile(join(project.docsPath, epic.plan_file), 'utf-8'),
+  });
+  const storyPrompt = await readPromptFile('prefix_story_desc', {
+    STORY_NAME: story.title,
+    STORY_PLANNING: await readFile(join(project.docsPath, story.plan_file), 'utf-8'),
+  });
+  const taskPrompt = await readPromptFile('create_task_document', {
+    TASK_NAME: task.title,
+  });
+
+  const response = await generateText({
+    model: planningModel,
+    temperature: 0.1,
+    messages: [
+      {
+        role: 'user',
+        content: overviewPrompt,
+        experimental_providerMetadata: {
+          anthropic: {
+            cacheControl: true,
+          },
+        },
+      },
+      {
+        role: 'user',
+        content: epicDescription,
+        experimental_providerMetadata: {
+          anthropic: {
+            cacheControl: true,
+          },
+        },
+      },
+      {
+        role: 'user',
+        content: storyPrompt,
+        experimental_providerMetadata: {
+          anthropic: {
+            cacheControl: true,
+          },
+        },
+      },
+      { role: 'user', content: taskPrompt },
+    ],
+  });
+
+  const description = extractTag(response.text, 'task_description');
+  if (!description) {
+    throw new Error('No task description found in response');
   }
 
   return description;
