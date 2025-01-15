@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import { createDeepSeek } from '@ai-sdk/deepseek';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createAnthropic } from '@ai-sdk/anthropic';
 import type { LanguageModel } from 'ai';
 
 const openrouter = createOpenRouter({
@@ -14,6 +15,10 @@ const cerebras = createOpenAICompatible({
   baseURL: 'https://api.cerebras.ai/v1',
 });
 
+const anthropic = createAnthropic({
+  apiKey: env.ANTHROPIC_API_KEY,
+});
+
 const deepseek = createDeepSeek({
   apiKey: env.DEEPSEEK_API_KEY,
 })('deepseek-chat');
@@ -23,6 +28,7 @@ const cerebrasLlama3370b = cerebras('llama-3.3-70b');
 
 const openrouterLlama318b = openrouter('meta-llama/llama-3.1-8b-instruct');
 const openrouterLlama3370b = openrouter('meta-llama/llama-3.3-70b-instruct');
+const openrouterClaude35Sonnet = openrouter('anthropic/claude-3.5-sonnet');
 
 let openRouterRateLimit: { requests: number; interval: number } | null = null;
 
@@ -90,6 +96,7 @@ export {
   openrouter,
   cerebrasLlama318b,
   cerebrasLlama3370b,
+  openrouterClaude35Sonnet,
   openrouterLlama318b,
   openrouterLlama3370b,
 };
