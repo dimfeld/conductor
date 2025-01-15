@@ -1,41 +1,33 @@
+import { extractTag } from '$lib/llm';
+import { db } from '$lib/server/db';
+import { scannedFiles } from '$lib/server/db/schema';
+import { generateText, type LanguageModel } from 'ai';
+import { eq } from 'drizzle-orm';
 import { readFile } from 'fs/promises';
 import Handlebars from 'handlebars';
 import { join } from 'path';
-import { generateText, type LanguageModel } from 'ai';
-import { extractTag } from '$lib/llm';
 import type { Project } from './project.js';
 import type { ManagedProjectPlan } from './server/plan.js';
 
 interface CreateEpicPlanningInput {
   project: Project;
-  /** Overview of the project and its goals */
-  projectOverview: string;
-  /** Information about existing files in the project */
-  existingFiles: string;
-  /** Description of all epics, stories, and tasks */
-  epicsStoriesTasks: string;
   /** Name of the epic to create the planning document for */
   epicName: string;
   /** The LLM to use for generating the document */
   llm: LanguageModel;
 }
 
-export async function createEpicPlanning({
-  project,
-  projectOverview,
-  existingFiles,
-  epicsStoriesTasks,
-  epicName,
-  llm,
-}: CreateEpicPlanningInput) {
+export async function createEpicPlanning({ project, epicName, llm }: CreateEpicPlanningInput) {
   const epicTemplate = Handlebars.compile(
     await readFile(join(import.meta.dir, 'prompts/create_epic_document.md.hbs'), 'utf-8')
   );
 
+  const info = await gatherProjectContext(project);
+
   const prompt = epicTemplate({
-    PROJECT_OVERVIEW: projectOverview,
-    EXISTING_FILES: existingFiles,
-    EPICS_STORIES_TASKS: epicsStoriesTasks,
+    PROJECT_OVERVIEW: info.projectOverview,
+    EXISTING_FILES: info.scannedFiles,
+    EPICS_STORIES_TASKS: info.plan,
     EPIC_NAME: epicName,
   });
 
@@ -60,7 +52,14 @@ export async function gatherProjectContext(project: Project) {
   );
 
   const projectOverview = await readFile(projectOverviewPath, 'utf-8');
-  const planDoc = formatPlanForPrompt(project.plan);
+  const plan = formatPlanForPrompt(project.plan);
+  const scannedFiles = await formatScannedFiles(project.projectInfo.id);
+
+  return {
+    projectOverview,
+    plan,
+    scannedFiles,
+  };
 }
 
 function formatPlanForPrompt(plan: ManagedProjectPlan, fullDetails = false) {
@@ -124,6 +123,70 @@ function formatPlanForPrompt(plan: ManagedProjectPlan, fullDetails = false) {
       lines.push('');
     });
   });
+
+  return lines.join('\n');
+}
+
+const defaultOmitPrefixes = ['src/lib/components/ui'];
+
+/** Format scanned files into a brief markdown summary grouped by area */
+export async function formatScannedFiles(
+  projectId: number,
+  omitPrefixes: string[] = defaultOmitPrefixes
+) {
+  const files = await db
+    .select({
+      path: scannedFiles.path,
+      area: scannedFiles.area,
+      description: scannedFiles.short_description,
+    })
+    .from(scannedFiles)
+    .where(eq(scannedFiles.projectId, projectId));
+
+  if (!files.length) {
+    return '';
+  }
+
+  // Filter out files that match any of the prefixes
+  const filteredFiles = files.filter(
+    (file) => !omitPrefixes.some((prefix) => file.path.startsWith(prefix))
+  );
+
+  // Group files by area
+  const filesByArea = new Map<string, typeof files>();
+  for (const file of files) {
+    const area = file.area || 'Uncategorized';
+    const areaFiles = filesByArea.get(area) || [];
+    areaFiles.push(file);
+    filesByArea.set(area, areaFiles);
+  }
+
+  const lines: string[] = [];
+  lines.push('# Project Files\n');
+
+  // Sort areas alphabetically, but put Uncategorized at the end
+  const areas = [...filesByArea.keys()].sort((a, b) => {
+    if (a === 'Uncategorized') return 1;
+    if (b === 'Uncategorized') return -1;
+    return a.localeCompare(b);
+  });
+
+  for (const area of areas) {
+    lines.push(`## ${area}`);
+    const areaFiles = filesByArea.get(area)!;
+
+    // Sort files by path within each area
+    areaFiles.sort((a, b) => a.path.localeCompare(b.path));
+
+    for (const file of areaFiles) {
+      if (file.description) {
+        lines.push(`- \`${file.path}\` - ${file.description}`);
+      } else {
+        lines.push(`- \`${file.path}\``);
+      }
+    }
+    lines.push('');
+  }
 
   return lines.join('\n');
 }
