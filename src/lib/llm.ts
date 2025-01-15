@@ -75,6 +75,16 @@ export async function getRateLimit(model: LanguageModel) {
   return null;
 }
 
+export function extractTag(text: string, tag: string) {
+  const regex = new RegExp(`<${tag}>(.*)</${tag}>`, 'ms');
+  const match = text.match(regex);
+  return match ? match[1].trim() : null;
+}
+
+export function extractTags(text: string, tags: string[]) {
+  return Object.fromEntries(tags.map((tag) => [tag, extractTag(text, tag)]));
+}
+
 export {
   deepseek,
   openrouter,

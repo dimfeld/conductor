@@ -83,6 +83,7 @@
     "drizzle-orm": "^0.38.3",
     "execa": "^9.5.2",
     "globby": "^14.0.2",
+    "handlebars": "^4.7.8",
     "js-yaml": "^4.1.0",
     "rollbar": "^2.26.4"
   }
