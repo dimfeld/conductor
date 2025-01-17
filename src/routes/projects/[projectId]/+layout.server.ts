@@ -32,5 +32,12 @@ export const load = async (event) => {
     where: eq(scannedFiles.projectId, Number(params.projectId)),
   });
 
-  return { project: project.projectInfo, documents: docs, plan, untrackedDocs, projectFiles };
+  return {
+    heading: '',
+    project: project.projectInfo,
+    documents: docs,
+    plan,
+    untrackedDocs,
+    projectFiles,
+  };
 };

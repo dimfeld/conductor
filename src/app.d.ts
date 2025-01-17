@@ -12,6 +12,7 @@ declare global {
       flash: (type: 'success' | 'error' | 'info', message: string) => void;
     }
     interface PageData {
+      heading?: string;
       flash?: {
         type: 'success' | 'error' | 'info';
         message: string;
