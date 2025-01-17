@@ -2,7 +2,8 @@ import { generateText, tool } from 'ai';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import { extractTag, extractTags, openrouterLlama318b } from '../llm';
-import { compile } from 'handlebars';
+import Handlebars from 'handlebars';
+const { compile } = Handlebars;
 
 export const analyzeModel = openrouterLlama318b;
 
