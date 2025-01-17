@@ -7,8 +7,12 @@ import { db } from '$lib/server/db';
 
 export const load = async ({ params, fetch }) => {
   const response = await fetch(`/projects/${params.projectId}/documents/${params.documentId}`);
-  const doc = await response.json();
-  const form = await superValidate(zod(formSchema));
+  const doc: DocumentWithContents = await response.json();
+  console.log({ doc });
+  const form = await superValidate(
+    { description: doc.description ?? '', contents: doc.contents },
+    zod(formSchema)
+  );
 
   const parentDocs = db.query.documentParents.findMany({
     where: (documentParents, { eq }) => eq(documentParents.childDocumentId, +params.documentId),
@@ -18,11 +22,11 @@ export const load = async ({ params, fetch }) => {
     where: (documentParents, { eq }) => eq(documentParents.parentDocumentId, +params.documentId),
   });
 
-  return { doc: doc as DocumentWithContents, form, parentDocs, childDocs };
+  return { heading: doc.path, doc, form, parentDocs: await parentDocs, childDocs: await childDocs };
 };
 
 export const actions = {
-  update: async ({ request, params }) => {
+  update: async ({ request, params, fetch }) => {
     const form = await superValidate(request, zod(formSchema));
     if (!form.valid) {
       return fail(400, { form });

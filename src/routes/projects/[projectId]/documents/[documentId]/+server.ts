@@ -5,6 +5,7 @@ import { eq, and } from 'drizzle-orm';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { loadProject } from '$lib/project/project';
+import type { DocumentWithContents } from '../types.js';
 
 export async function GET({ params, cookies }) {
   const projectId = parseInt(params.projectId);
@@ -27,13 +28,13 @@ export async function GET({ params, cookies }) {
 
   // Read the file contents
   try {
-    const fullPath = join(project.projectInfo.path, doc.path);
-    const content = await readFile(fullPath, 'utf-8');
+    const fullPath = join(project.docsPath, doc.path);
+    const contents = await readFile(fullPath, 'utf-8');
 
     return json({
       ...doc,
-      content,
-    });
+      contents,
+    } satisfies DocumentWithContents);
   } catch (e) {
     console.error('Error reading document file:', e);
     error(500, 'Error reading document file');
@@ -61,14 +62,14 @@ export async function PUT({ params, request, cookies }) {
 
   try {
     const body = await request.json();
-    const content = body.content;
-    if (typeof content !== 'string') {
+    const contents = body.contents;
+    if (typeof contents !== 'string') {
       error(400, 'Content must be a string');
     }
 
     // Write the file contents
-    const fullPath = join(project.projectInfo.path, doc.path);
-    await writeFile(fullPath, content, 'utf-8');
+    const fullPath = join(project.docsPath, doc.path);
+    await writeFile(fullPath, contents, 'utf-8');
 
     // Update any metadata if provided
     const updateData: Partial<typeof doc> = {};
