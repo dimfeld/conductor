@@ -5,3 +5,5 @@ yarn.lock
 drizzle
 .aider*
 rust_helper
+*.hbs
+schema/*.json
