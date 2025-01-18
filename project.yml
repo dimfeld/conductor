@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=./schema/project-config-schema.json
 paths:
   docs: docs
   guidelines: guidelines.md
@@ -6,5 +7,14 @@ paths:
   plan: plan.yml
 include: ['src/**/*.ts', 'src/**/*.svelte', 'rust_helper/**/*.rs']
 exclude: []
-technologies: []
-commands: {}
+technologies:
+  - name: typescript
+  - name: svelte
+  - name: rust
+commands:
+  build: pnpm run build
+  test: pnpm run test
+  format: pnpm run format
+  lint: pnpm run lint
+  typecheck: pnpm run check
+  generate_types: pnpm exec svelte-kit sync

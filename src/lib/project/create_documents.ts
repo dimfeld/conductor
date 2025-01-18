@@ -336,6 +336,8 @@ export async function formatScannedFiles(
     return a.localeCompare(b);
   });
 
+  const stripPrefix = /^(this|the) code (defines|exports|is)/i;
+
   for (const area of areas) {
     lines.push(`## ${area}`);
     const areaFiles = filesByArea.get(area)!;
@@ -345,7 +347,8 @@ export async function formatScannedFiles(
 
     for (const file of areaFiles) {
       if (file.description) {
-        lines.push(`- \`${file.path}\` - ${file.description}`);
+        let description = file.description.replace(stripPrefix, '');
+        lines.push(`- \`${file.path}\` - ${description}`);
       } else {
         lines.push(`- \`${file.path}\``);
       }

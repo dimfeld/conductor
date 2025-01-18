@@ -1,0 +1,148 @@
+{
+  "type": "object",
+  "properties": {
+    "paths": {
+      "type": "object",
+      "properties": {
+        "docs": {
+          "type": "string"
+        },
+        "guidelines": {
+          "type": "string"
+        },
+        "lessons": {
+          "type": "string"
+        },
+        "overview": {
+          "type": "string"
+        },
+        "plan": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "include": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Glob for files to include in project"
+    },
+    "exclude": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Glob for files to exclude from project"
+    },
+    "technologies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "documentation": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uri"
+              },
+              {
+                "type": "string",
+                "pattern": "^\\.\\/"
+              },
+              {
+                "type": "string",
+                "pattern": "^\\.\\.\\/"
+              }
+            ]
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "commands": {
+      "type": "object",
+      "properties": {
+        "generate_types": {
+          "type": "string"
+        },
+        "typecheck": {
+          "type": "string"
+        },
+        "lint": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "build": {
+          "type": "string"
+        },
+        "test": {
+          "type": "string"
+        },
+        "test:unit": {
+          "type": "string"
+        },
+        "test:e2e": {
+          "type": "string"
+        },
+        "test:integration": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "vcs": {
+      "type": "object",
+      "properties": {
+        "commitMessageTemplate": {
+          "type": "string"
+        },
+        "prTemplate": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "documentation": {
+      "type": "object",
+      "properties": {
+        "contextFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "apiDocs": {
+          "type": "string"
+        },
+        "externalDocs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "include",
+    "technologies",
+    "commands"
+  ],
+  "additionalProperties": false,
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

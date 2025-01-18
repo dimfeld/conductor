@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schema/project-plan-schema.json
 plan:
   - title: 'Agent Core Loop MVP'
     focus: 'Implement basic agent functionality with console interface and state management'
@@ -224,4 +225,3 @@ notes:
   - 'Every step must include proper error handling and logging'
   - 'All commits should follow conventional commit format'
   - 'Progress tracking should be detailed enough for debugging'
-  - 'Each story should include CLI output formatting'

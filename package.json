@@ -87,6 +87,7 @@
     "globby": "^14.0.2",
     "handlebars": "^4.7.8",
     "js-yaml": "^4.1.0",
-    "rollbar": "^2.26.4"
+    "rollbar": "^2.26.4",
+    "zod-to-json-schema": "^3.24.1"
   }
 }

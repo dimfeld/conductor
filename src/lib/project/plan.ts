@@ -3,7 +3,6 @@ import { z } from 'zod';
 /**
  * Zod schemas for the project plan structure defined in docs/plan.yml
  */
-
 export const subtaskSchema = z.object({
   title: z.string(),
   plan_file: z.string().optional().describe('Location of the plan file for this subtask'),
