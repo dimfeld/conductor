@@ -18,5 +18,5 @@ export const load = async ({ params }) => {
     where: eq(documentParents.projectId, Number(projectId)),
   });
 
-  return { edges: docParents };
+  return { heading: 'Documents', edges: docParents };
 };

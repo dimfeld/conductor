@@ -110,7 +110,9 @@
     </Sidebar.Group>
 
     <Sidebar.Group>
-      <Sidebar.GroupLabel>Documents</Sidebar.GroupLabel>
+      <Sidebar.GroupLabel>
+        <a href="/projects/{page.params.projectId}/documents">Documents</a>
+      </Sidebar.GroupLabel>
       <Sidebar.GroupContent>
         <Sidebar.Menu>
           {#each documents as doc}
