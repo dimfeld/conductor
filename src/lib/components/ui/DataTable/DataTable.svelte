@@ -210,13 +210,15 @@
   <div class="rounded-md border">
     {#if globalFilterFn}
       <Input
-        bind:value={() => globalFilterValue,
-        (newValue) => {
-          globalFilterValue = newValue;
-          if (params) {
-            params[globalFilterKey] = newValue;
+        bind:value={
+          () => globalFilterValue,
+          (newValue) => {
+            globalFilterValue = newValue;
+            if (params) {
+              params[globalFilterKey] = newValue;
+            }
           }
-        }}
+        }
         placeholder={globalFilterPlaceholder}
         class="rounded-b-none"
       />
