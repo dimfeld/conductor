@@ -4,12 +4,14 @@ import { z } from 'zod';
  * Zod schemas for the project plan structure defined in docs/plan.yml
  */
 export const subtaskSchema = z.object({
+  id: z.number().optional(),
   title: z.string(),
   plan_file: z.string().optional().describe('Location of the plan file for this subtask'),
   completed: z.boolean(),
 });
 
 export const storySchema = z.object({
+  id: z.number().optional(),
   title: z.string(),
   completed: z.boolean().default(false),
   description: z.string().optional(),
@@ -19,6 +21,7 @@ export const storySchema = z.object({
 });
 
 export const epicSchema = z.object({
+  id: z.number().optional(),
   title: z.string(),
   focus: z.string(),
   plan_file: z.string().optional().describe('Location of the plan file for this epic'),

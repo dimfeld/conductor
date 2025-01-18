@@ -3,16 +3,18 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { projectPlanSchema } from '../plan.js';
 import type { ProjectPlan } from '../plan.js';
 
-export interface ProjectPlanWithSchema {
+export interface LoadedProjectPlan {
   plan: ProjectPlan;
   schemaComment?: string;
+  nextId: number;
 }
 
 export class ManagedProjectPlan {
   constructor(
     public data: ProjectPlan,
     public path: string,
-    public schemaComment?: string
+    public schemaComment?: string,
+    public nextId: number = 1
   ) {}
 
   async update(updater: (data: ProjectPlan) => ProjectPlan) {
@@ -24,6 +26,7 @@ export class ManagedProjectPlan {
     const result = await loadProjectPlan(this.path);
     this.data = result.plan;
     this.schemaComment = result.schemaComment;
+    this.nextId = result.nextId;
   }
 
   async save() {
@@ -41,17 +44,18 @@ export class ManagedProjectPlan {
  * @throws {Error} if file cannot be read or parsed
  * @throws {ZodError} if plan validation fails
  */
-export async function loadProjectPlan(path: string): Promise<ProjectPlanWithSchema> {
+export async function loadProjectPlan(path: string): Promise<LoadedProjectPlan> {
   let fileContent: string;
   try {
     fileContent = await readFile(path, 'utf8');
   } catch (e) {
-    const emptyPlan: ProjectPlanWithSchema = {
+    const emptyPlan: LoadedProjectPlan = {
       plan: {
         plan: [],
         dependencies: [],
         notes: [],
       },
+      nextId: 1,
     };
     return emptyPlan;
   }
@@ -74,9 +78,48 @@ export async function loadProjectPlan(path: string): Promise<ProjectPlanWithSche
     // Join the remaining lines to parse as YAML
     const yamlContent = fileLines.slice(yamlStart).join('\n');
     const parsedYaml = load(yamlContent);
+
+    let plan = projectPlanSchema.parse(parsedYaml);
+
+    const maxId = plan.plan.reduce((max, epic) => {
+      const epicMax = epic.id ?? 0;
+      const storiesMax = epic.stories.reduce((storyMax, story) => {
+        const subtasksMax =
+          story.subtasks?.reduce(
+            (subtaskMax, subtask) => Math.max(subtaskMax, subtask.id ?? 0),
+            0
+          ) ?? 0;
+        return Math.max(storyMax, story.id ?? 0, subtasksMax);
+      }, 0);
+      return Math.max(max, epicMax, storiesMax);
+    }, 0);
+
+    let nextId = maxId + 1;
+    plan.plan = plan.plan.map((epic) => {
+      if (epic.id === undefined) {
+        epic.id = nextId++;
+      }
+      epic.stories = epic.stories.map((story) => {
+        if (story.id === undefined) {
+          story.id = nextId++;
+        }
+        if (story.subtasks) {
+          story.subtasks = story.subtasks.map((subtask) => {
+            if (subtask.id === undefined) {
+              subtask.id = nextId++;
+            }
+            return subtask;
+          });
+        }
+        return story;
+      });
+      return epic;
+    });
+
     return {
-      plan: projectPlanSchema.parse(parsedYaml),
+      plan,
       schemaComment,
+      nextId,
     };
   } catch (error) {
     if (error instanceof Error) {
@@ -89,7 +132,7 @@ export async function loadProjectPlan(path: string): Promise<ProjectPlanWithSche
 /**
  * Safe version of loadProjectPlan that returns null instead of throwing
  */
-export async function safeLoadProjectPlan(path: string): Promise<ProjectPlanWithSchema | null> {
+export async function safeLoadProjectPlan(path: string): Promise<LoadedProjectPlan | null> {
   try {
     return await loadProjectPlan(path);
   } catch (error) {
