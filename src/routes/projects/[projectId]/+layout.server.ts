@@ -33,7 +33,7 @@ export const load = async (event) => {
   });
 
   return {
-    heading: '',
+    heading: project.projectInfo.name,
     project: project.projectInfo,
     documents: docs,
     plan,
