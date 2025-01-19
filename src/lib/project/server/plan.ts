@@ -147,3 +147,19 @@ export async function safeLoadProjectPlan(path: string): Promise<LoadedProjectPl
     return null;
   }
 }
+
+export function generatePlanDocPath(type: string, task: { id: number; title: string }) {
+  // Generate a filename based on the epic ID and title
+  const truncatedTitle = task.title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, '_')
+    .split('_')
+    .reduce((acc, word) => {
+      if (!acc.length || acc.length + word.length + 1 <= 60) {
+        return acc ? acc + '_' + word : word;
+      }
+      return acc;
+    }, '');
+  return `tasks/${task.id.toString().padStart(5, '0')}_${type}_${truncatedTitle}.md`;
+}

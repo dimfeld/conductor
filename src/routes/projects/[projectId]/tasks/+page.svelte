@@ -12,7 +12,9 @@
   {#each data.plan.plan as epic, epicIndex}
     <div class="rounded-lg border p-4">
       <div class="mb-4 flex items-center gap-2">
-        <h2 class="text-xl font-semibold">{epic.title}</h2>
+        <h2 class="text-xl font-semibold">
+          <a href="/projects/{data.project.id}/tasks/{epic.id}">{epic.title}</a>
+        </h2>
         <span class="text-sm text-muted-foreground">({epic.focus})</span>
       </div>
 
@@ -29,7 +31,7 @@
               <input type="hidden" name="storyIndex" value={storyIndex} />
               <Checkbox name="completed" checked={story.completed} type="submit" />
               <h3 class="font-medium {story.completed ? 'text-muted-foreground line-through' : ''}">
-                {story.title}
+                <a href="/projects/{data.project.id}/tasks/{epic.id}/{story.id}">{story.title}</a>
               </h3>
             </form>
 
@@ -51,7 +53,9 @@
                     <input type="hidden" name="subtaskIndex" value={subtaskIndex} />
                     <Checkbox name="completed" checked={subtask.completed} type="submit" />
                     <span class={subtask.completed ? 'text-muted-foreground line-through' : ''}
-                      >{subtask.title}</span
+                      ><a href="/projects/{data.project.id}/tasks/{epic.id}/{story.id}/{subtask.id}"
+                        >{subtask.title}</a
+                      ></span
                     >
                   </form>
                 {/each}
