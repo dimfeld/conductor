@@ -5,17 +5,23 @@ import type { ProjectPlan } from '../plan.js';
 
 export interface LoadedProjectPlan {
   plan: ProjectPlan;
+  path: string;
   schemaComment?: string;
   nextId: number;
 }
 
 export class ManagedProjectPlan {
-  constructor(
-    public data: ProjectPlan,
-    public path: string,
-    public schemaComment?: string,
-    public nextId: number = 1
-  ) {}
+  data: ProjectPlan;
+  schemaComment?: string;
+  nextId: number;
+  path: string;
+
+  constructor(loadedPlan: LoadedProjectPlan) {
+    this.data = loadedPlan.plan;
+    this.schemaComment = loadedPlan.schemaComment;
+    this.nextId = loadedPlan.nextId;
+    this.path = loadedPlan.path;
+  }
 
   async update(updater: (data: ProjectPlan) => ProjectPlan) {
     this.data = updater(this.data);
@@ -50,6 +56,7 @@ export async function loadProjectPlan(path: string): Promise<LoadedProjectPlan> 
     fileContent = await readFile(path, 'utf8');
   } catch (e) {
     const emptyPlan: LoadedProjectPlan = {
+      path,
       plan: {
         plan: [],
         dependencies: [],
@@ -118,6 +125,7 @@ export async function loadProjectPlan(path: string): Promise<LoadedProjectPlan> 
 
     return {
       plan,
+      path,
       schemaComment,
       nextId,
     };

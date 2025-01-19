@@ -45,7 +45,9 @@
   </Sidebar.Header>
   <Sidebar.Content>
     <Sidebar.Group>
-      <Sidebar.GroupLabel>Tasks</Sidebar.GroupLabel>
+      <Sidebar.GroupLabel>
+        <a href="/projects/{page.params.projectId}/tasks">Tasks</a>
+      </Sidebar.GroupLabel>
       <Sidebar.GroupContent>
         {#if nextIncompleteStory}
           <Sidebar.Menu>
@@ -68,8 +70,9 @@
             {@const epicComplete = epic.stories?.every((story) => story.completed)}
             <Collapsible.Root
               class="group/collapsible"
-              bind:open={() => openEpic[epic.title] ?? false,
-              (value) => (openEpic[epic.title] = value)}
+              bind:open={
+                () => openEpic[epic.title] ?? false, (value) => (openEpic[epic.title] = value)
+              }
             >
               <Sidebar.MenuItem>
                 <Sidebar.MenuButton>
