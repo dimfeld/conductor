@@ -56,6 +56,7 @@
 
 - Use `$props` instead of `export let` in Svelte components.
 - Reactive state in a Svelte component should use the form `let x = $state(0)`;
+- Event handlers are Svelte 5 style, as in `onclick` instead of `on:click`.
 - In a +page.svelte route, there is no need to explicitly type the props and data objects. Let the automatic type inference handle it.
 - Make sure to separate backend and frontend concerns, using SvelteKit load functions and form actions to send data between the two.
 - Place `// @vitest-environment jsdom` at the top of each test file that tests Svelte components.

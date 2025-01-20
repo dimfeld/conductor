@@ -5,298 +5,323 @@ plan:
     stories:
       - title: Build Epic Documentation
         completed: false
+        id: 79
       - title: Build Task Documentation
         completed: false
+        id: 80
       - title: Build Subtask Documentation
         completed: false
-
+        id: 81
+    id: 78
+    plan_file: tasks/00078_epic_documentation_building.md
   - title: Repo Scanner
     description: Generate documentation for existing repository code
     stories:
       - title: Workspace awareness
+        completed: false
+        id: 83
       - title: Package Overview Document
+        completed: false
+        id: 84
       - title: Package internal interfaces
+        completed: false
+        id: 85
       - title: Package external interfaces
+        completed: false
+        id: 86
       - title: Code Conventions
-      - title: Create changes document in each package that updates for each PR merged
+        completed: false
+        id: 87
+      - title: >-
+          Create changes document in each package that updates for each PR
+          merged
+        completed: false
+        id: 88
       - title: Update package overview documents as well on each PR
-      - title: Create single document that uses the overviews and interfaces documents from each package to describe where things happen
-  - title: Agent Core Loop MVP
+        completed: false
+        id: 89
+      - title: >-
+          Create single document that uses the overviews and interfaces
+          documents from each package to describe where things happen
+        completed: false
+        id: 90
+    id: 82
+  - id: 1
+    title: Agent Core Loop MVP
     description: >-
       Implement basic agent functionality with console interface and state
       management
     stories:
-      - title: Core Infrastructure Setup
+      - id: 2
+        title: Core Infrastructure Setup
         completed: true
         description: Set up basic project structure with necessary dependencies
         testing: Verify project builds and dependencies are correctly configured
         subtasks:
-          - title: Set up AI SDK integration
+          - id: 3
+            title: Set up AI SDK integration
             completed: true
-            id: 3
-        id: 2
-      - title: Project Configuration File
+      - id: 4
+        title: Project Configuration File
         completed: true
         description: Create a project configuration file format
         testing: Verify project configuration file is correctly parsed
         subtasks:
-          - title: Create project plan YAML file format
+          - id: 5
+            title: Create project plan YAML file format
             completed: true
-            id: 5
-          - title: Create project configuration file format in `docs/project.yml`
+          - id: 6
+            title: Create project configuration file format in `docs/project.yml`
             completed: true
-            id: 6
-          - title: Configuration file includes a list of technologies used
+          - id: 7
+            title: Configuration file includes a list of technologies used
             completed: true
-            id: 7
-        id: 4
-      - title: Task Input System
+      - id: 8
+        title: Task Input System
         completed: false
         description: Implement console-based task input using inquirer
         testing: Verify task input is correctly captured and stored
         subtasks:
-          - title: Create task input prompt interface
+          - id: 9
+            title: Create task input prompt interface
             completed: false
-            id: 9
-          - title: Implement task storage in database
+          - id: 10
+            title: Implement task storage in database
             completed: false
-            id: 10
-          - title: Add input validation
+          - id: 11
+            title: Add input validation
             completed: false
-            id: 11
-          - title: Create commit after task creation
+          - id: 12
+            title: Create commit after task creation
             completed: false
-            id: 12
-        id: 8
-      - title: Task Planning System
+      - id: 13
+        title: Task Planning System
         completed: false
         description: Integrate with aider to generate implementation plans
         testing: Verify plan generation and storage works correctly
         subtasks:
-          - title: Set up aider integration
+          - id: 14
+            title: Set up aider integration
             completed: false
-            id: 14
-          - title: Implement plan generation logic
+          - id: 15
+            title: Implement plan generation logic
             completed: false
-            id: 15
-          - title: Create plan storage in markdown
+          - id: 16
+            title: Create plan storage in markdown
             completed: false
-            id: 16
-          - title: Add commit step for plan creation
+          - id: 17
+            title: Add commit step for plan creation
             completed: false
-            id: 17
-          - title: Store record of planning step in database
+          - id: 18
+            title: Store record of planning step in database
             completed: false
-            id: 18
-        id: 13
-      - title: Interface Definition Step
+      - id: 19
+        title: Interface Definition Step
         completed: false
         description: Create system to define and store interface types
         testing: Verify type definitions are generated correctly
         subtasks:
-          - title: Create interface generation logic
+          - id: 20
+            title: Create interface generation logic
             completed: false
-            id: 20
-          - title: Implement type definition storage
+          - id: 21
+            title: Implement type definition storage
             completed: false
-            id: 21
-          - title: Add validation for generated types
+          - id: 22
+            title: Add validation for generated types
             completed: false
-            id: 22
-          - title: Create commit step for interface definitions
+          - id: 23
+            title: Create commit step for interface definitions
             completed: false
-            id: 23
-          - title: Store record of interface step in database
+          - id: 24
+            title: Store record of interface step in database
             completed: false
-            id: 24
-        id: 19
-      - title: Code Generation - Frontend
+      - id: 25
+        title: Code Generation - Frontend
         completed: false
         description: Implement frontend code generation based on interface
         testing: Verify generated frontend code matches interface
         subtasks:
-          - title: Create frontend code generation logic
+          - id: 26
+            title: Create frontend code generation logic
             completed: false
-            id: 26
-          - title: Implement template system
+          - id: 27
+            title: Implement template system
             completed: false
-            id: 27
-          - title: Add type validation
+          - id: 28
+            title: Add type validation
             completed: false
-            id: 28
-          - title: Create commit step for frontend code
+          - id: 29
+            title: Create commit step for frontend code
             completed: false
-            id: 29
-          - title: Store record of frontend generation step in database
+          - id: 30
+            title: Store record of frontend generation step in database
             completed: false
-            id: 30
-        id: 25
-      - title: Code Generation - Backend
+      - id: 31
+        title: Code Generation - Backend
         completed: false
         description: Implement backend code generation based on interface
         testing: Verify generated backend code matches interface
         subtasks:
-          - title: Create backend code generation logic
+          - id: 32
+            title: Create backend code generation logic
             completed: false
-            id: 32
-          - title: Implement API endpoint generation
+          - id: 33
+            title: Implement API endpoint generation
             completed: false
-            id: 33
-          - title: Add type validation
+          - id: 34
+            title: Add type validation
             completed: false
-            id: 34
-          - title: Create commit step for backend code
+          - id: 35
+            title: Create commit step for backend code
             completed: false
-            id: 35
-          - title: Store record of backend generation step in database
+          - id: 36
+            title: Store record of backend generation step in database
             completed: false
-            id: 36
-        id: 31
-      - title: Type Checking System
+      - id: 37
+        title: Type Checking System
         completed: false
         description: Implement automatic type checking and fixing
         testing: Verify type issues are detected and resolved
         subtasks:
-          - title: Create type checking automation
+          - id: 38
+            title: Create type checking automation
             completed: false
-            id: 38
-          - title: Implement error detection
+          - id: 39
+            title: Implement error detection
             completed: false
-            id: 39
-          - title: Add automatic fix generation
+          - id: 40
+            title: Add automatic fix generation
             completed: false
-            id: 40
-          - title: Create commit step for type fixes
+          - id: 41
+            title: Create commit step for type fixes
             completed: false
-            id: 41
-          - title: Store record of type checking step in database
+          - id: 42
+            title: Store record of type checking step in database
             completed: false
-            id: 42
-        id: 37
-      - title: Test Generation System
+      - id: 43
+        title: Test Generation System
         completed: false
         description: Create test generation and execution pipeline
         testing: Verify tests are generated and run correctly
         subtasks:
-          - title: Implement test generation logic
+          - id: 44
+            title: Implement test generation logic
             completed: false
-            id: 44
-          - title: Create test execution system
+          - id: 45
+            title: Create test execution system
             completed: false
-            id: 45
-          - title: Add test result tracking
+          - id: 46
+            title: Add test result tracking
             completed: false
-            id: 46
-          - title: Create commit step for tests
+          - id: 47
+            title: Create commit step for tests
             completed: false
-            id: 47
-          - title: Store test generation step in database
+          - id: 48
+            title: Store test generation step in database
             completed: false
-            id: 48
-        id: 43
-      - title: Test Running Loop
+      - id: 49
+        title: Test Running Loop
         completed: false
         description: Implement test execution and fix cycle
         testing: Verify test failures are addressed and fixed
         subtasks:
-          - title: Create test execution loop
+          - id: 50
+            title: Create test execution loop
             completed: false
-            id: 50
-          - title: Implement fix generation
+          - id: 51
+            title: Implement fix generation
             completed: false
-            id: 51
-          - title: Add progress tracking
+          - id: 52
+            title: Add progress tracking
             completed: false
-            id: 52
-          - title: Create commit step for fixes
+          - id: 53
+            title: Create commit step for fixes
             completed: false
-            id: 53
-          - title: Store test running step in database
+          - id: 54
+            title: Store test running step in database
             completed: false
-            id: 54
-        id: 49
-      - title: Code Formatting System
+      - id: 55
+        title: Code Formatting System
         completed: false
         description: Implement code formatting step
         testing: Verify code meets style guidelines
         subtasks:
-          - title: Set up code formatter
+          - id: 56
+            title: Set up code formatter
             completed: false
-            id: 56
-          - title: Implement formatting automation
+          - id: 57
+            title: Implement formatting automation
             completed: false
-            id: 57
-          - title: Add format verification
+          - id: 58
+            title: Add format verification
             completed: false
-            id: 58
-          - title: Create commit step for formatting
+          - id: 59
+            title: Create commit step for formatting
             completed: false
-            id: 59
-          - title: Store formatting step in database
+          - id: 60
+            title: Store formatting step in database
             completed: false
-            id: 60
-        id: 55
-      - title: Documentation Update System
+      - id: 61
+        title: Documentation Update System
         completed: false
         description: Implement documentation and lessons learned updates
         testing: Verify documentation is correctly updated
         subtasks:
-          - title: Create documentation update logic
+          - id: 62
+            title: Create documentation update logic
             completed: false
-            id: 62
-          - title: Implement lessons learned storage
+          - id: 63
+            title: Implement lessons learned storage
             completed: false
-            id: 63
-          - title: Add documentation validation
+          - id: 64
+            title: Add documentation validation
             completed: false
-            id: 64
-          - title: Create commit step for documentation
+          - id: 65
+            title: Create commit step for documentation
             completed: false
-            id: 65
-          - title: Store documentation step in database
+          - id: 66
+            title: Store documentation step in database
             completed: false
-            id: 66
-        id: 61
-      - title: State Machine Integration
+      - id: 67
+        title: State Machine Integration
         completed: false
         description: Implement langgraph state machine for core loop
         testing: Verify state transitions work correctly
         subtasks:
-          - title: Define state machine states
+          - id: 68
+            title: Define state machine states
             completed: false
-            id: 68
-          - title: Implement state transitions
+          - id: 69
+            title: Implement state transitions
             completed: false
-            id: 69
-          - title: Add error handling
+          - id: 70
+            title: Add error handling
             completed: false
-            id: 70
-          - title: Create progress tracking
+          - id: 71
+            title: Create progress tracking
             completed: false
-            id: 71
-          - title: Store state machine logs in database
+          - id: 72
+            title: Store state machine logs in database
             completed: false
-            id: 72
-        id: 67
-      - title: File Map System
+      - id: 73
+        title: File Map System
         completed: false
         description: The file map lists information about every source file in the project
         testing: Verify file map is generated correctly
         subtasks:
-          - title: Create file map generation logic
+          - id: 74
+            title: Create file map generation logic
             completed: false
-            id: 74
-          - title: Use an LLM to get a one-line description of each file
+          - id: 75
+            title: Use an LLM to get a one-line description of each file
             completed: false
-            id: 75
-          - title: Store the file map in a YAML file in docs/file_map.yml
+          - id: 76
+            title: Store the file map in a YAML file in docs/file_map.yml
             completed: false
-            id: 76
-          - title: Add file map validation
+          - id: 77
+            title: Add file map validation
             completed: false
-            id: 77
-        id: 73
-    id: 1
 dependencies:
   - Core Infrastructure must be completed first
   - Task Input System must be completed before Planning System

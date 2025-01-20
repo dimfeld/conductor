@@ -1,12 +1,13 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { loadProject } from '$lib/project/project';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { z } from 'zod';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { generatePlanDocPath } from '$lib/project/server/plan';
+import { createEpicPlanning } from '$lib/project/create_documents';
 
 const epicPlanSchema = z.object({
   title: z.string().min(1),
@@ -34,7 +35,11 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
   let epicPlan = '';
   if (epic.plan_file) {
     const epicPlanPath = join(project.docsPath, epic.plan_file);
-    epicPlan = await readFile(epicPlanPath, 'utf-8');
+    try {
+      epicPlan = await readFile(epicPlanPath, 'utf-8');
+    } catch (e) {
+      // file might not exist
+    }
   }
 
   const form = await superValidate(
@@ -54,7 +59,8 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, cookies, params }) => {
+  save: async ({ request, cookies, params }) => {
+    console.log('saving');
     const form = await superValidate(request, zod(epicPlanSchema));
     if (!form.valid) {
       return { form };
@@ -94,8 +100,41 @@ export const actions: Actions = {
 
     // Save the plan content
     const planPath = join(project.docsPath, epic.plan_file!);
+    await mkdir(dirname(planPath), { recursive: true });
     await writeFile(planPath, form.data.content);
 
     return { form };
+  },
+
+  generatePlan: async ({ cookies, params }) => {
+    console.log('generating plan');
+    const projectId = params.projectId;
+    const project = await loadProject(cookies, +projectId);
+    if (!project) {
+      error(404, 'Project not found');
+    }
+
+    const epicId = parseInt(params.epicId);
+    if (isNaN(epicId)) {
+      error(400, 'Invalid epic ID');
+    }
+
+    const epic = project.plan.findEpic(epicId);
+    if (!epic) {
+      error(404, 'Epic not found');
+    }
+
+    const epicIndex = project.plan.data.plan.findIndex((e) => e.id === epicId);
+    const plan = await createEpicPlanning({
+      project,
+      epicIndex,
+    });
+
+    // Save the plan content
+    const planPath = join(project.docsPath, epic.plan_file!);
+    await mkdir(dirname(planPath), { recursive: true });
+    await writeFile(planPath, plan);
+
+    return { plan };
   },
 } satisfies Actions;

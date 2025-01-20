@@ -13,6 +13,8 @@ interface CreateEpicPlanningInput {
   project: Project;
   /** Index of the epic to create the planning document for */
   epicIndex: number;
+  /** Override the default LLM */
+  llm?: LanguageModel;
 }
 
 async function readPromptFile(name: string, params: Record<string, string>) {
@@ -26,6 +28,7 @@ async function readPromptFile(name: string, params: Record<string, string>) {
 const planningModel = anthropicClaude35Sonnet;
 
 export async function createEpicPlanning({ project, epicIndex, llm }: CreateEpicPlanningInput) {
+  llm ??= planningModel;
   const info = await gatherProjectContext(project);
   const overviewPrompt = await readPromptFile('prefix_main', {
     PROJECT_OVERVIEW: info.projectOverview,
@@ -39,7 +42,7 @@ export async function createEpicPlanning({ project, epicIndex, llm }: CreateEpic
   });
 
   const response = await generateText({
-    model: planningModel,
+    model: llm,
     temperature: 0.1,
     messages: [
       {
@@ -74,7 +77,9 @@ export async function createStoryPlanning({
   project,
   epicIndex,
   storyIndex,
+  llm,
 }: CreateStoryPlanningInput) {
+  llm ??= planningModel;
   const epic = project.plan.data.plan[epicIndex];
 
   if (!epic.plan_file) {
@@ -98,7 +103,7 @@ export async function createStoryPlanning({
   });
 
   const response = await generateText({
-    model: planningModel,
+    model: llm,
     temperature: 0.1,
     messages: [
       {
@@ -122,6 +127,13 @@ export async function createStoryPlanning({
       { role: 'user', content: storyPrompt },
     ],
   });
+
+  const description = extractTag(response.text, 'story_description');
+  if (!description) {
+    throw new Error('No story description found in response');
+  }
+
+  return description;
 }
 
 export interface CreateTaskPlanningInput extends CreateStoryPlanningInput {
@@ -133,7 +145,9 @@ export async function createTaskPlanning({
   epicIndex,
   storyIndex,
   taskIndex,
+  llm,
 }: CreateTaskPlanningInput) {
+  llm ??= planningModel;
   const epic = project.plan.data.plan[epicIndex];
   const story = epic.stories[storyIndex];
   const task = story.subtasks?.[taskIndex];

@@ -1,24 +1,12 @@
 <script lang="ts">
-  import { page } from '$app/state';
-  import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-  import * as Collapsible from '$lib/components/ui/collapsible/index.js';
-  import type { Document } from '$lib/server/db/schema.js';
-  import {
-    Minus,
-    MinusSquare,
-    Plus,
-    PlusSquare,
-    CheckSquare,
-    Square,
-    Check,
-    Circle,
-  } from 'lucide-svelte';
   import { enhance } from '$app/forms';
-  import { getNextIncompleteSubtask, type ProjectPlan } from '$lib/project/plan.js';
-  import type { Project } from '$lib/project/project.js';
-  import type { LayoutData } from './$types.js';
+  import { page } from '$app/state';
+  import * as Collapsible from '$lib/components/ui/collapsible/index.js';
+  import * as Sidebar from '$lib/components/ui/sidebar/index.js';
+  import { getNextIncompleteSubtask } from '$lib/project/plan.js';
+  import { MinusSquare, PlusSquare } from 'lucide-svelte';
 
-  let { data }: { data: LayoutData } = $props();
+  let { data } = $props();
 
   let { plan, project, documents, untrackedDocs } = $derived(data);
 
@@ -26,8 +14,6 @@
   let openEpic = $state<Record<string, boolean>>({});
 
   let nextIncompleteSubtaskRef = $derived(getNextIncompleteSubtask(plan));
-  let nextIncompleteStory = $derived(nextIncompleteSubtaskRef?.story);
-
   let nextIncompleteSubtask = $derived(
     nextIncompleteSubtaskRef && 'subtask' in nextIncompleteSubtaskRef
       ? nextIncompleteSubtaskRef?.subtask
