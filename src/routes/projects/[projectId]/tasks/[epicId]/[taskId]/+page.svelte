@@ -18,6 +18,15 @@
   let generatingPlan = $state(false);
 </script>
 
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === 'Enter' && e.metaKey) {
+      e.preventDefault();
+      form.submit();
+    }
+  }}
+/>
+
 <form
   method="POST"
   id="generatePlan"

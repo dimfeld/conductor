@@ -18,12 +18,20 @@
   let generatingPlan = $state(false);
 </script>
 
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === 'Enter' && e.metaKey) {
+      e.preventDefault();
+      form.submit();
+    }
+  }}
+/>
+
 <form
   method="POST"
   id="generatePlan"
   action="?/generatePlan"
   use:kitEnhance={() => {
-    console.log('generating plan');
     generatingPlan = true;
     return ({ update }) => {
       generatingPlan = false;

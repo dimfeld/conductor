@@ -18,12 +18,20 @@
   let generatingPlan = $state(false);
 </script>
 
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === 'Enter' && e.metaKey) {
+      e.preventDefault();
+      form.submit();
+    }
+  }}
+/>
+
 <form
   method="POST"
   class="flex h-full flex-col gap-4 overflow-y-auto px-4 py-4"
   action="?/generatePlan"
   use:skEnhance={() => {
-    console.log('generating plan');
     generatingPlan = true;
     return ({ update }) => {
       generatingPlan = false;
@@ -32,7 +40,7 @@
       });
     };
   }}
->
+></form>
 
 <form
   method="POST"
