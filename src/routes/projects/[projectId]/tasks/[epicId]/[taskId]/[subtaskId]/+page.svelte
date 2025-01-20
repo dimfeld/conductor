@@ -6,6 +6,7 @@
   import { Textarea } from '$lib/components/ui/textarea/index.js';
   import { Input } from '$lib/components/ui/input/index.js';
   import { superForm } from 'sveltekit-superforms/client';
+  import { enhance as skEnhance } from '$app/forms';
 
   let { data } = $props();
   const form = superForm(data.form, {
@@ -13,9 +14,32 @@
   });
 
   const { form: formData, enhance, delayed } = form;
+
+  let generatingPlan = $state(false);
 </script>
 
-<form method="POST" class="flex h-full flex-col gap-4 overflow-y-auto px-4 py-4" use:enhance>
+<form
+  method="POST"
+  class="flex h-full flex-col gap-4 overflow-y-auto px-4 py-4"
+  action="?/generatePlan"
+  use:skEnhance={() => {
+    console.log('generating plan');
+    generatingPlan = true;
+    return ({ update }) => {
+      generatingPlan = false;
+      void update({
+        invalidateAll: true,
+      });
+    };
+  }}
+>
+
+<form
+  method="POST"
+  class="flex h-full flex-col gap-4 overflow-y-auto px-4 py-4"
+  action="?/save"
+  use:enhance
+>
   <div class="flex items-center justify-between gap-4">
     <Input
       name="title"
@@ -23,9 +47,14 @@
       bind:value={$formData.title}
       placeholder="Subtask Title"
     />
-    <Button type="submit" disabled={$delayed}>
-      {$delayed ? 'Saving...' : 'Save'}
-    </Button>
+    <div class="flex gap-2">
+      <Button type="submit" form="generatePlan" disabled={generatingPlan} variant="outline">
+        {generatingPlan ? 'Generating...' : 'Generate Plan'}
+      </Button>
+      <Button type="submit" disabled={$delayed}>
+        {$delayed ? 'Saving...' : 'Save'}
+      </Button>
+    </div>
   </div>
 
   <Textarea

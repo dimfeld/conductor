@@ -7,13 +7,15 @@ plan:
     stories:
       - id: 79
         title: Build Epic Documentation
-        completed: false
+        completed: true
       - id: 80
         title: Build Task Documentation
-        completed: false
+        completed: true
+        plan_file: tasks/00080_task_build_task_documentation.md
       - id: 81
         title: Build Subtask Documentation
-        completed: false
+        completed: true
+        plan_file: tasks/00081_task_build_subtask_documentation.md
   - id: 82
     title: Repo Scanner
     description: Generate documentation for existing repository code
@@ -52,6 +54,7 @@ plan:
     description: >-
       Implement basic agent functionality with console interface and state
       management
+    plan_file: tasks/00001_epic_agent_core_loop_mvp.md
     stories:
       - id: 2
         title: Core Infrastructure Setup
@@ -323,7 +326,6 @@ plan:
           - id: 77
             title: Add file map validation
             completed: false
-    plan_file: tasks/00001_epic_agent_core_loop_mvp.md
 dependencies:
   - Core Infrastructure must be completed first
   - Task Input System must be completed before Planning System
