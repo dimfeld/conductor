@@ -1,5 +1,6 @@
 import { dump, load } from 'js-yaml';
 import { readFile, writeFile } from 'node:fs/promises';
+import { watch } from 'node:fs';
 import { projectPlanSchema } from '../plan.js';
 import type { ProjectPlan } from '../plan.js';
 
@@ -15,6 +16,8 @@ export class ManagedProjectPlan {
   schemaComment?: string;
   nextId: number;
   path: string;
+
+  watchAbort: AbortController | undefined;
 
   constructor(loadedPlan: LoadedProjectPlan) {
     this.data = loadedPlan.plan;
@@ -42,6 +45,18 @@ export class ManagedProjectPlan {
     }
     content += dump(this.data);
     await writeFile(this.path, content);
+  }
+
+  watch() {
+    this.watchAbort = new AbortController();
+    watch(this.path, { signal: this.watchAbort.signal }, () => {
+      this.refresh().catch(console.error);
+    });
+  }
+
+  close() {
+    this.watchAbort?.abort();
+    this.watchAbort = undefined;
   }
 
   findEpic(id: number) {

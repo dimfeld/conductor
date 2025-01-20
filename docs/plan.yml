@@ -9,6 +9,18 @@ plan:
         completed: false
       - title: Build Subtask Documentation
         completed: false
+
+  - title: Repo Scanner
+    description: Generate documentation for existing repository code
+    stories:
+      - title: Workspace awareness
+      - title: Package Overview Document
+      - title: Package internal interfaces
+      - title: Package external interfaces
+      - title: Code Conventions
+      - title: Create changes document in each package that updates for each PR merged
+      - title: Update package overview documents as well on each PR
+      - title: Create single document that uses the overviews and interfaces documents from each package to describe where things happen
   - title: Agent Core Loop MVP
     description: >-
       Implement basic agent functionality with console interface and state

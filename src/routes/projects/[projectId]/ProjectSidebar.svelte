@@ -49,11 +49,13 @@
           <Sidebar.Menu>
             <Sidebar.MenuItem>
               <Sidebar.MenuButton>
-                Next Up: <a
-                  class="hover:underline"
-                  href="/projects/{page.params.projectId}/tasks/{nextIncompleteSubtaskRef.epic
-                    .id}/{nextIncompleteSubtaskRef.story.id}"
-                  >{nextIncompleteSubtaskRef.story.title}</a
+                <span class="truncate">
+                  Next Up: <a
+                    class="hover:underline"
+                    href="/projects/{page.params.projectId}/tasks/{nextIncompleteSubtaskRef.epic
+                      .id}/{nextIncompleteSubtaskRef.story.id}"
+                    >{nextIncompleteSubtaskRef.story.title}</a
+                  ></span
                 >
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>

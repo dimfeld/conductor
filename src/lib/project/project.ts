@@ -207,6 +207,7 @@ export async function loadProject(event: RequestEvent | Cookies, id: number) {
   const projectPlan = await loadProjectPlan(projectPlanPath);
 
   const managedPlan = new ManagedProjectPlan(projectPlan);
+  managedPlan.watch();
   const project = new Project(projectInfo, projectConfig, managedPlan);
   await project.init();
 
