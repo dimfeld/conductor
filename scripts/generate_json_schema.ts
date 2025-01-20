@@ -7,12 +7,12 @@ import * as path from 'node:path';
 
 const planJsonSchema = zodToJsonSchema(projectPlanSchema);
 await writeFile(
-  path.join(import.meta.dir, '..', 'schema', 'project-plan-schema.json'),
+  path.join(import.meta.dirname, '..', 'schema', 'project-plan-schema.json'),
   JSON.stringify(planJsonSchema, null, 2)
 );
 
 const projectConfigJsonSchema = zodToJsonSchema(projectConfigSchema);
 await writeFile(
-  path.join(import.meta.dir, '..', 'schema', 'project-config-schema.json'),
+  path.join(import.meta.dirname, '..', 'schema', 'project-config-schema.json'),
   JSON.stringify(projectConfigJsonSchema, null, 2)
 );

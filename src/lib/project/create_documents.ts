@@ -19,7 +19,7 @@ interface CreateEpicPlanningInput {
 
 async function readPromptFile(name: string, params: Record<string, string>) {
   const template = await readFile(
-    join(import.meta.dir, `prompts/planning/${name}.md.hbs`),
+    join(import.meta.dirname, `prompts/planning/${name}.md.hbs`),
     'utf-8'
   );
   return Handlebars.compile(template)(params);
@@ -50,7 +50,7 @@ export async function createEpicPlanning({ project, epicIndex, llm }: CreateEpic
         content: overviewPrompt,
         experimental_providerMetadata: {
           anthropic: {
-            cacheControl: true,
+            cacheControl: { type: 'ephemeral' },
           },
         },
       },
@@ -111,7 +111,7 @@ export async function createStoryPlanning({
         content: overviewPrompt,
         experimental_providerMetadata: {
           anthropic: {
-            cacheControl: true,
+            cacheControl: { type: 'ephemeral' },
           },
         },
       },
@@ -120,7 +120,7 @@ export async function createStoryPlanning({
         content: epicDescription,
         experimental_providerMetadata: {
           anthropic: {
-            cacheControl: true,
+            cacheControl: { type: 'ephemeral' },
           },
         },
       },
@@ -190,7 +190,7 @@ export async function createTaskPlanning({
         content: overviewPrompt,
         experimental_providerMetadata: {
           anthropic: {
-            cacheControl: true,
+            cacheControl: { type: 'ephemeral' },
           },
         },
       },
@@ -199,7 +199,7 @@ export async function createTaskPlanning({
         content: epicDescription,
         experimental_providerMetadata: {
           anthropic: {
-            cacheControl: true,
+            cacheControl: { type: 'ephemeral' },
           },
         },
       },
@@ -208,7 +208,7 @@ export async function createTaskPlanning({
         content: storyPrompt,
         experimental_providerMetadata: {
           anthropic: {
-            cacheControl: true,
+            cacheControl: { type: 'ephemeral' },
           },
         },
       },

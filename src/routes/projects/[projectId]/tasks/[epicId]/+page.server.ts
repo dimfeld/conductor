@@ -60,7 +60,6 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 
 export const actions: Actions = {
   save: async ({ request, cookies, params }) => {
-    console.log('saving');
     const form = await superValidate(request, zod(epicPlanSchema));
     if (!form.valid) {
       return { form };
@@ -107,7 +106,6 @@ export const actions: Actions = {
   },
 
   generatePlan: async ({ cookies, params }) => {
-    console.log('generating plan');
     const projectId = params.projectId;
     const project = await loadProject(cookies, +projectId);
     if (!project) {
