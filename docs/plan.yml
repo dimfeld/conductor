@@ -1,51 +1,52 @@
 # yaml-language-server: $schema=../schema/project-plan-schema.json
 plan:
-  - title: Documentation Building
+  - id: 78
+    title: Documentation Building
     description: Build documentation for the project
-    stories:
-      - title: Build Epic Documentation
-        completed: false
-        id: 79
-      - title: Build Task Documentation
-        completed: false
-        id: 80
-      - title: Build Subtask Documentation
-        completed: false
-        id: 81
-    id: 78
     plan_file: tasks/00078_epic_documentation_building.md
-  - title: Repo Scanner
-    description: Generate documentation for existing repository code
     stories:
-      - title: Workspace awareness
+      - id: 79
+        title: Build Epic Documentation
         completed: false
-        id: 83
-      - title: Package Overview Document
+      - id: 80
+        title: Build Task Documentation
         completed: false
-        id: 84
-      - title: Package internal interfaces
+      - id: 81
+        title: Build Subtask Documentation
         completed: false
-        id: 85
-      - title: Package external interfaces
+  - id: 82
+    title: Repo Scanner
+    description: Generate documentation for existing repository code
+    plan_file: tasks/00082_epic_repo_scanner.md
+    stories:
+      - id: 83
+        title: Workspace awareness
         completed: false
-        id: 86
-      - title: Code Conventions
+      - id: 84
+        title: Package Overview Document
         completed: false
-        id: 87
-      - title: >-
+      - id: 85
+        title: Package internal interfaces
+        completed: false
+      - id: 86
+        title: Package external interfaces
+        completed: false
+      - id: 87
+        title: Code Conventions
+        completed: false
+      - id: 88
+        title: >-
           Create changes document in each package that updates for each PR
           merged
         completed: false
-        id: 88
-      - title: Update package overview documents as well on each PR
+      - id: 89
+        title: Update package overview documents as well on each PR
         completed: false
-        id: 89
-      - title: >-
+      - id: 90
+        title: >-
           Create single document that uses the overviews and interfaces
           documents from each package to describe where things happen
         completed: false
-        id: 90
-    id: 82
   - id: 1
     title: Agent Core Loop MVP
     description: >-
@@ -322,6 +323,7 @@ plan:
           - id: 77
             title: Add file map validation
             completed: false
+    plan_file: tasks/00001_epic_agent_core_loop_mvp.md
 dependencies:
   - Core Infrastructure must be completed first
   - Task Input System must be completed before Planning System

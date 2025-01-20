@@ -48,7 +48,6 @@ export async function getOpenRouterRateLimit() {
     },
   });
   const data = await response.json();
-  console.log({ data });
   const rateLimit = data.data.rate_limit as { interval: string; requests: number };
 
   if (rateLimit.interval.endsWith('s')) {

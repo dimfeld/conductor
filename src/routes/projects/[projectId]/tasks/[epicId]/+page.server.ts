@@ -128,8 +128,13 @@ export const actions: Actions = {
       epicIndex,
     });
 
+    if (!epic.plan_file) {
+      epic.plan_file = generatePlanDocPath('epic', { id: epicId, title: epic.title });
+      await project.plan.save();
+    }
+
     // Save the plan content
-    const planPath = join(project.docsPath, epic.plan_file!);
+    const planPath = join(project.docsPath, epic.plan_file);
     await mkdir(dirname(planPath), { recursive: true });
     await writeFile(planPath, plan);
 
