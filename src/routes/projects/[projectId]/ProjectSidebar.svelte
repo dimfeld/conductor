@@ -58,9 +58,7 @@
             </Sidebar.MenuItem>
             {#if nextIncompleteSubtask}
               <Sidebar.MenuItem class="ml-2">
-                <Sidebar.MenuButton>
-                  {nextIncompleteSubtask?.title}
-                </Sidebar.MenuButton>
+                <Sidebar.MenuButton>{nextIncompleteSubtask?.title}</Sidebar.MenuButton>
               </Sidebar.MenuItem>
             {/if}
           </Sidebar.Menu>
@@ -95,7 +93,10 @@
                     <Sidebar.MenuSub>
                       {#each epic.stories as story}
                         <Sidebar.MenuSubItem>
-                          <Sidebar.MenuSubButton class="flex items-center gap-2">
+                          <Sidebar.MenuSubButton
+                            href="/projects/{page.params.projectId}/tasks/{epic.id}/{story.id}"
+                            class="flex items-center gap-2"
+                          >
                             <span class="truncate text-xs" class:text-gray-300={story.completed}>
                               {story.title}
                             </span>
