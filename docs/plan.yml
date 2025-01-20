@@ -1,5 +1,14 @@
 # yaml-language-server: $schema=../schema/project-plan-schema.json
 plan:
+  - title: Documentation Building
+    description: Build documentation for the project
+    stories:
+      - title: Build Epic Documentation
+        completed: false
+      - title: Build Task Documentation
+        completed: false
+      - title: Build Subtask Documentation
+        completed: false
   - title: Agent Core Loop MVP
     description: >-
       Implement basic agent functionality with console interface and state

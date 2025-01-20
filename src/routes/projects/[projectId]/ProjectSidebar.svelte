@@ -25,16 +25,12 @@
   let untrackedDocsOpen = $state(false);
   let openEpic = $state<Record<string, boolean>>({});
 
-  let nextIncompleteSubtaskIndex = $derived(getNextIncompleteSubtask(plan));
-  let nextIncompleteStory = $derived(
-    nextIncompleteSubtaskIndex
-      ? plan.plan[nextIncompleteSubtaskIndex.epic]?.stories[nextIncompleteSubtaskIndex.story]
-      : null
-  );
+  let nextIncompleteSubtaskRef = $derived(getNextIncompleteSubtask(plan));
+  let nextIncompleteStory = $derived(nextIncompleteSubtaskRef?.story);
 
   let nextIncompleteSubtask = $derived(
-    nextIncompleteStory && nextIncompleteSubtaskIndex?.subtask
-      ? nextIncompleteStory.subtasks?.[nextIncompleteSubtaskIndex.subtask]
+    nextIncompleteSubtaskRef && 'subtask' in nextIncompleteSubtaskRef
+      ? nextIncompleteSubtaskRef?.subtask
       : null
   );
 </script>
@@ -49,16 +45,27 @@
         <a href="/projects/{page.params.projectId}/tasks">Tasks</a>
       </Sidebar.GroupLabel>
       <Sidebar.GroupContent>
-        {#if nextIncompleteStory}
+        {#if nextIncompleteSubtaskRef}
           <Sidebar.Menu>
             <Sidebar.MenuItem>
               <Sidebar.MenuButton>
-                Next Up: {nextIncompleteStory.title}
+                Next Up: <a
+                  class="hover:underline"
+                  href="/projects/{page.params.projectId}/tasks/{nextIncompleteSubtaskRef.epic
+                    .id}/{nextIncompleteSubtaskRef.story.id}"
+                  >{nextIncompleteSubtaskRef.story.title}</a
+                >
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>
             {#if nextIncompleteSubtask}
               <Sidebar.MenuItem class="ml-2">
-                <Sidebar.MenuButton>{nextIncompleteSubtask?.title}</Sidebar.MenuButton>
+                <Sidebar.MenuButton>
+                  <a
+                    href="/projects/{page.params.projectId}/tasks/{nextIncompleteSubtaskRef.epic
+                      .id}/{nextIncompleteSubtaskRef.story.id}/{nextIncompleteSubtask.id}"
+                    >{nextIncompleteSubtask.title}</a
+                  >
+                </Sidebar.MenuButton>
               </Sidebar.MenuItem>
             {/if}
           </Sidebar.Menu>
@@ -72,17 +79,24 @@
                 () => openEpic[epic.title] ?? false, (value) => (openEpic[epic.title] = value)
               }
             >
-              <Sidebar.MenuItem>
+              <Sidebar.MenuItem class="mt-2">
                 <Sidebar.MenuButton>
                   {#snippet child({ props })}
-                    <Collapsible.Trigger {...props} class="flex items-center gap-2">
-                      {#if openEpic[epic.title]}
-                        <MinusSquare class="size-4 text-gray-500" />
-                      {:else}
-                        <PlusSquare class="size-4 text-gray-500" />
-                      {/if}
-                      <span class:text-gray-300={epicComplete}>{epic.title}</span>
-                    </Collapsible.Trigger>
+                    <div class="flex items-center gap-2">
+                      <Collapsible.Trigger {...props} class="flex items-center gap-2">
+                        {#if openEpic[epic.title]}
+                          <MinusSquare class="size-4 text-gray-500" />
+                        {:else}
+                          <PlusSquare class="size-4 text-gray-500" />
+                        {/if}
+                      </Collapsible.Trigger>
+                      <span class:text-gray-300={epicComplete}>
+                        <a
+                          class="truncate hover:underline"
+                          href="/projects/{page.params.projectId}/tasks/{epic.id}">{epic.title}</a
+                        >
+                      </span>
+                    </div>
                   {/snippet}
                 </Sidebar.MenuButton>
               </Sidebar.MenuItem>

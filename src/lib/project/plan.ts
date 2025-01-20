@@ -57,15 +57,28 @@ export function safeValidateProjectPlan(plan: unknown): ProjectPlan | null {
   return result.success ? result.data : null;
 }
 
-export interface StoryReference {
+export interface StoryIndex {
   epic: number;
   story: number;
 }
 
-export interface SubtaskReference {
+export interface SubtaskIndex {
   epic: number;
   story: number;
   subtask?: number;
+}
+
+export interface StoryReference {
+  index: StoryIndex;
+  epic: Epic;
+  story: Story;
+}
+
+export interface SubtaskReference {
+  index: SubtaskIndex;
+  epic: Epic;
+  story: Story;
+  subtask: Subtask;
 }
 
 /**
@@ -76,7 +89,7 @@ export function getNextIncompleteStory(plan: ProjectPlan): StoryReference | null
     const epic = plan.plan[i];
     for (let j = 0; j < epic.stories.length; j++) {
       const story = epic.stories[j];
-      if (!story.completed) return { epic: i, story: j };
+      if (!story.completed) return { index: { epic: i, story: j }, epic, story };
     }
   }
   return null;
@@ -86,18 +99,22 @@ export function getNextIncompleteStory(plan: ProjectPlan): StoryReference | null
  * Get the next incomplete subtask from a story. If then next unfinished story has no subtasks,
  * we just return it.
  */
-export function getNextIncompleteSubtask(plan: ProjectPlan) {
+export function getNextIncompleteSubtask(
+  plan: ProjectPlan
+): StoryReference | SubtaskReference | null {
   const storyRef = getNextIncompleteStory(plan);
-  if (!storyRef) return null;
+  if (!storyRef || !storyRef.story.subtasks?.length) return storyRef;
 
-  const story = plan.plan[storyRef.epic].stories[storyRef.story];
-
-  if (story.subtasks?.length) {
-    for (let i = 0; i < story.subtasks?.length; i++) {
-      const subtask = story.subtasks[i];
-      if (!subtask.completed) return { epic: storyRef.epic, story: storyRef.story, subtask: i };
-    }
+  for (let i = 0; i < storyRef.story.subtasks?.length; i++) {
+    const subtask = storyRef.story.subtasks[i];
+    if (!subtask.completed)
+      return {
+        index: { ...storyRef.index, subtask: i },
+        epic: storyRef.epic,
+        story: storyRef.story,
+        subtask,
+      };
   }
 
-  return { epic: storyRef.epic, story: storyRef.story };
+  return storyRef;
 }
