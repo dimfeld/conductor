@@ -94,3 +94,4 @@ The Repo Scanner epic focuses on creating a comprehensive system for analyzing a
    - Include metrics for documentation coverage
    - Plan for future integration with external documentation tools
    - Consider implementing documentation search functionality
+   - Prefer to use the filesystem as the source of truth, instead of storing scan results in the database.

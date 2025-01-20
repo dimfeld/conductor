@@ -24,6 +24,14 @@ plan:
       - id: 83
         title: Workspace awareness
         completed: false
+        description: >-
+          We need to be able to detect a workspace file, starting with
+          Javascript workspace configurations such as pnpm-workspace.yaml. Once
+          the file is detected, we should look through the filesystem to find
+          all the packages matched by the workspace globs, and store the list of
+          matched projects in the Project class. If we did not find a workspace
+          configuration that's ok.
+        plan_file: tasks/00083_task_workspace_awareness.md
       - id: 84
         title: Package Overview Document
         completed: false
