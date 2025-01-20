@@ -18,7 +18,7 @@ describe('plan-loader', () => {
     plan: [
       {
         title: 'Test Epic',
-        focus: 'Test Focus',
+        description 'Test Focus',
         stories: [
           {
             title: 'Completed Story',

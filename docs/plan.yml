@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../schema/project-plan-schema.json
 plan:
   - title: Agent Core Loop MVP
-    focus: >-
+    description: >-
       Implement basic agent functionality with console interface and state
       management
     stories:

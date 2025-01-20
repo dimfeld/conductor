@@ -6,6 +6,7 @@ import { z } from 'zod';
 export const subtaskSchema = z.object({
   id: z.number().optional(),
   title: z.string(),
+  description: z.string().optional(),
   plan_file: z.string().optional().describe('Location of the plan file for this subtask'),
   completed: z.boolean(),
 });
@@ -23,7 +24,7 @@ export const storySchema = z.object({
 export const epicSchema = z.object({
   id: z.number().optional(),
   title: z.string(),
-  focus: z.string(),
+  description: z.string().optional(),
   plan_file: z.string().optional().describe('Location of the plan file for this epic'),
   stories: z.array(storySchema),
 });

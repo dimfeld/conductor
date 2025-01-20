@@ -21,19 +21,19 @@
       name="title"
       class="text-2xl font-bold"
       bind:value={$formData.title}
-      placeholder="Epic Title"
+      placeholder="Task Title"
     />
     <Button type="submit" disabled={$delayed}>
       {$delayed ? 'Saving...' : 'Save'}
     </Button>
   </div>
 
-  <Textarea name="description" bind:value={$formData.description} placeholder="Epic description" />
+  <Textarea name="description" bind:value={$formData.description} placeholder="Task description" />
 
   <Textarea
     name="content"
     class="min-h-96 flex-1"
     bind:value={$formData.content}
-    placeholder="Epic plan content"
+    placeholder="Task plan content"
   />
 </form>

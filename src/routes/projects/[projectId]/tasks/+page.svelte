@@ -15,7 +15,7 @@
         <h2 class="text-xl font-semibold">
           <a href="/projects/{data.project.id}/tasks/{epic.id}">{epic.title}</a>
         </h2>
-        <span class="text-sm text-muted-foreground">({epic.focus})</span>
+        <span class="text-sm text-muted-foreground">({epic.description})</span>
       </div>
 
       <div class="ml-4 space-y-4">

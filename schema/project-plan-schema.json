@@ -9,7 +9,7 @@
           "title": {
             "type": "string"
           },
-          "focus": {
+          "description": {
             "type": "string"
           },
           "plan_file": {

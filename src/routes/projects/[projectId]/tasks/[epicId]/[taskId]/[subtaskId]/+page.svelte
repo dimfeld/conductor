@@ -1,4 +1,4 @@
-<!-- Display an epic and its plan -->
+<!-- Display a subtask and its plan -->
 <script lang="ts">
   import { Button } from '$lib/components/ui/button';
   import { Card } from '$lib/components/ui/card';
@@ -21,19 +21,23 @@
       name="title"
       class="text-2xl font-bold"
       bind:value={$formData.title}
-      placeholder="Epic Title"
+      placeholder="Subtask Title"
     />
     <Button type="submit" disabled={$delayed}>
       {$delayed ? 'Saving...' : 'Save'}
     </Button>
   </div>
 
-  <Textarea name="description" bind:value={$formData.description} placeholder="Epic description" />
+  <Textarea
+    name="description"
+    bind:value={$formData.description}
+    placeholder="Subtask description"
+  />
 
   <Textarea
     name="content"
     class="min-h-96 flex-1"
     bind:value={$formData.content}
-    placeholder="Epic plan content"
+    placeholder="Subtask plan content"
   />
 </form>

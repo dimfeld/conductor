@@ -43,6 +43,18 @@ export class ManagedProjectPlan {
     content += dump(this.data);
     await writeFile(this.path, content);
   }
+
+  findEpic(id: number) {
+    return this.data.plan.find((epic) => epic.id === id);
+  }
+
+  findStory(epicId: number, storyId: number) {
+    return this.findEpic(epicId)?.stories.find((story) => story.id === storyId);
+  }
+
+  findSubtask(epicId: number, storyId: number, subtaskId: number) {
+    return this.findStory(epicId, storyId)?.subtasks?.find((subtask) => subtask.id === subtaskId);
+  }
 }
 
 /**

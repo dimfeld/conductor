@@ -8,7 +8,7 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { generatePlanDocPath } from '$lib/project/server/plan';
 
-const epicPlanSchema = z.object({
+const subtaskPlanSchema = z.object({
   title: z.string().min(1),
   description: z.string(),
   content: z.string(),
@@ -21,41 +21,40 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     error(404, 'Project not found');
   }
 
-  const epicId = parseInt(params.epicId);
-  if (isNaN(epicId)) {
-    error(400, 'Invalid epic ID');
+  const subtask = project.plan.findSubtask(
+    parseInt(params.epicId),
+    parseInt(params.taskId),
+    parseInt(params.subtaskId)
+  );
+  if (!subtask) {
+    error(404, 'Subtask not found');
   }
 
-  const epic = project.plan.findEpic(epicId);
-  if (!epic) {
-    error(404, 'Epic not found');
-  }
-
-  let epicPlan = '';
-  if (epic.plan_file) {
-    const epicPlanPath = join(project.docsPath, epic.plan_file);
-    epicPlan = await readFile(epicPlanPath, 'utf-8');
+  let subtaskPlan = '';
+  if (subtask.plan_file) {
+    const subtaskPlanPath = join(project.docsPath, subtask.plan_file);
+    subtaskPlan = await readFile(subtaskPlanPath, 'utf-8');
   }
 
   const form = await superValidate(
     {
-      title: epic.title,
-      description: epic.description || '',
-      content: epicPlan,
+      title: subtask.title,
+      description: subtask.description || '',
+      content: subtaskPlan,
     },
-    zod(epicPlanSchema)
+    zod(subtaskPlanSchema)
   );
 
   return {
-    heading: epic.title,
-    epic,
+    heading: subtask.title,
+    subtask,
     form,
   };
 };
 
 export const actions: Actions = {
   default: async ({ request, cookies, params }) => {
-    const form = await superValidate(request, zod(epicPlanSchema));
+    const form = await superValidate(request, zod(subtaskPlanSchema));
     if (!form.valid) {
       return { form };
     }
@@ -65,35 +64,37 @@ export const actions: Actions = {
       error(404, 'Project not found');
     }
 
-    const epicId = parseInt(params.epicId);
-    if (isNaN(epicId)) {
-      error(400, 'Invalid epic ID');
+    const subtask = project.plan.findSubtask(
+      parseInt(params.epicId),
+      parseInt(params.taskId),
+      parseInt(params.subtaskId)
+    );
+    if (!subtask) {
+      error(404, 'Subtask not found');
     }
 
-    const epic = project.plan.findEpic(epicId);
-    if (!epic) {
-      error(404, 'Epic not found');
-    }
-
-    // Update the epic title and focus
+    // Update the task title and focus
     let needsUpdate =
-      epic.title !== form.data.title ||
-      epic.description !== form.data.description ||
-      !epic.plan_file;
+      subtask.title !== form.data.title ||
+      subtask.description !== form.data.description ||
+      !subtask.plan_file;
 
     if (needsUpdate) {
-      epic.title = form.data.title;
-      epic.description = form.data.description;
+      subtask.title = form.data.title;
+      subtask.description = form.data.description;
       // Generate a filename based on the epic ID and title
-      if (!epic.plan_file) {
-        epic.plan_file = generatePlanDocPath('epic', { id: epicId, title: form.data.title });
+      if (!subtask.plan_file) {
+        subtask.plan_file = generatePlanDocPath('subtask', {
+          id: subtask.id!,
+          title: form.data.title,
+        });
       }
 
       await project.plan.save();
     }
 
     // Save the plan content
-    const planPath = join(project.docsPath, epic.plan_file!);
+    const planPath = join(project.docsPath, subtask.plan_file!);
     await writeFile(planPath, form.data.content);
 
     return { form };
