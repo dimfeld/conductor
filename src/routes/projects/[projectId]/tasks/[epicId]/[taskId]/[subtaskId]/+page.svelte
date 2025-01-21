@@ -29,7 +29,6 @@
 
 <form
   method="POST"
-  class="flex h-full flex-col gap-4 overflow-y-auto px-4 py-4"
   action="?/generatePlan"
   use:skEnhance={() => {
     generatingPlan = true;
