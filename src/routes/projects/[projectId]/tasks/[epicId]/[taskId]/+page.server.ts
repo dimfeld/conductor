@@ -8,7 +8,7 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { generatePlanDocPath } from '$lib/project/server/plan';
 import { dirname } from 'node:path';
-import { createTaskPlanning, createTaskPlanning } from '$lib/project/create_documents';
+import { createTaskPlanning } from '$lib/project/create_documents';
 
 const taskPlanSchema = z.object({
   title: z.string().min(1),

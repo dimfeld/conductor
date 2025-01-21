@@ -5,8 +5,9 @@
   import * as Sidebar from '$lib/components/ui/sidebar/index.js';
   import { getNextIncompleteSubtask } from '$lib/project/plan.js';
   import { MinusSquare, PlusSquare } from 'lucide-svelte';
+  import type { LayoutData } from './$types.js';
 
-  let { data } = $props();
+  let { data }: { data: LayoutData } = $props();
 
   let { plan, project, documents, untrackedDocs } = $derived(data);
 
