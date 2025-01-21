@@ -16,50 +16,86 @@ plan:
         title: Build Subtask Documentation
         completed: true
         plan_file: tasks/00081_task_build_subtask_documentation.md
-      - title: Build all documentation concurrently
+      - id: 91
+        title: Build all documentation concurrently
         completed: false
-        id: 91
         description: >-
           This should be a button that you can click to build all the epic,
           tasks, and subtasks plan documents that aren't built yet.
         plan_file: tasks/00091_task_build_all_documentation_concurrently.md
-      - title: Workflow for building the initial plan and overview
+      - id: 92
+        title: Workflow for building the initial plan and overview
+        completed: false
+        description: >-
+          1. Start from a short description
+
+          2. Generate an overview document for the project
+
+          3. Ask about technology choices
+
+          4. Generate a list of epics, tasks, and subtasks
+
+
+          The list should end up in the plan.yml format, either from being in
+          that format initially or by being parsed into it if that gives better
+          output.
+        plan_file: >-
+          tasks/00092_task_workflow_for_building_the_initial_plan_and_overview.md
+        subtasks:
+          - id: 93
+            title: Build the overview
+            completed: false
+          - id: 94
+            title: Help build the guidelines
+            completed: false
+          - id: 95
+            title: Build the initial plan.yml from these
+            completed: false
+      - id: 96
+        title: Workflow for adding a new epic
+        completed: false
+        description: |-
+          Should be able to
+          - name the epic
+          - Suggest a description
+          - Suggest tasks and subtasks
+        plan_file: tasks/00096_task_workflow_for_adding_a_new_epic.md
+      - id: 97
+        title: Plan file management
         completed: false
         subtasks:
-          - title: Build the overview
+          - id: 98
+            title: Quick add a new epic
             completed: false
-            id: 93
-          - title: Help build the guidelines
+          - id: 99
+            title: Quick add a new story
             completed: false
-            id: 94
-          - title: Build the initial plan.yml from these
+          - id: 100
+            title: Quick add a new subtask
             completed: false
-            id: 95
-        id: 92
-      - title: Workflow for adding a new epic
+      - id: 101
+        title: Ability to include a custom prompt when generating documentation
         completed: false
-        id: 96
-      - title: Plan file management
-        completed: false
+
+      - title: Better file map integration
+        description: We have the file map but it would be better to have more intelligent selection of possible files, so we can include the long description for each one.
         subtasks:
-          - title: Quick add a new epic
-            completed: false
-            id: 98
-          - title: Quick add a new story
-            completed: false
-            id: 99
-          - title: Quick add a new subtask
-            completed: false
-            id: 100
-        id: 97
-      - title: Ability to include a custom prompt when generating documentation
-        completed: false
-        id: 101
+          - title: Use a smaller model to get a list of the possibly most relevant files
+          - title: From this list, use a larger model with the longer description to get the most relevant files
+          - title: Incorporate interface information into the longer description
   - id: 82
     title: Repo Scanner
     description: Generate documentation for existing repository code
     plan_file: tasks/00082_epic_repo_scanner.md
     tasks:
+      - title: Parse file interfaces
+        completed: false
+        id: 108
+        description: >-
+          It's helpful to be able to parse out just the interfaces of a file.
+          This should be a list of functions and classes, along with the doc
+          comments for each one if provided. Probably use treesitter for this.
+        plan_file: tasks/00108_task_parse_file_interfaces.md
       - id: 83
         title: Workspace awareness
         completed: false
@@ -96,25 +132,46 @@ plan:
           Create single document that uses the overviews and interfaces
           documents from each package to describe where things happen
         completed: false
-  - title: Manual Agent Mode
+  - id: 102
+    title: Manual Agent Mode
+    description: >-
+      Helpers for putting the context into Aider or other coding assistants that
+      aren't run automatically by Conductor.
+    plan_file: tasks/00102_epic_manual_agent_mode.md
     tasks:
-      - title: Generate /add commands for tasks
+      - id: 103
+        title: Generate Aider /add commands for tasks
         completed: false
-        id: 103
-      - title: Generate all the context in a single file
+        description: >-
+          /add for editable files, /read for readonly files like guidelines and
+          overview
+
+
+          This should be pastable straight in to Aider
+        plan_file: tasks/00103_task_generate_aider_add_commands_for_tasks.md
+      - id: 104
+        title: Generate all the context in a single file
         completed: false
-        description: This will allow pasting it into another interface
-        id: 104
-    id: 102
-  - title: Configuration
+        description: >-
+          This will allow pasting it into another interface like Claude or
+          ChatGPT
+        plan_file: tasks/00104_task_generate_all_the_context_in_a_single_file.md
+  - id: 105
+    title: Configuration
     tasks:
-      - title: Model API key mamagement
+      - id: 106
+        title: Model API key mamagement
         completed: false
-        id: 106
-      - title: Model selection for each feature
+        description: >-
+          Use environment variables if provided, but also have a way to store
+          API keys for various providers in the database.
+
+
+          Deepseek, OpenRouter, Claude, OpenAI, any others
+        plan_file: tasks/00106_task_model_api_key_mamagement.md
+      - id: 107
+        title: Model selection for each feature
         completed: false
-        id: 107
-    id: 105
   - id: 1
     title: Agent Core Loop MVP
     description: >-
