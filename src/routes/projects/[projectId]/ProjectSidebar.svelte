@@ -39,8 +39,8 @@
                   Next Up: <a
                     class="hover:underline"
                     href="/projects/{page.params.projectId}/tasks/{nextIncompleteSubtaskRef.epic
-                      .id}/{nextIncompleteSubtaskRef.story.id}"
-                    >{nextIncompleteSubtaskRef.story.title}</a
+                      .id}/{nextIncompleteSubtaskRef.task.id}"
+                    >{nextIncompleteSubtaskRef.task.title}</a
                   ></span
                 >
               </Sidebar.MenuButton>
@@ -50,7 +50,7 @@
                 <Sidebar.MenuButton>
                   <a
                     href="/projects/{page.params.projectId}/tasks/{nextIncompleteSubtaskRef.epic
-                      .id}/{nextIncompleteSubtaskRef.story.id}/{nextIncompleteSubtask.id}"
+                      .id}/{nextIncompleteSubtaskRef.task.id}/{nextIncompleteSubtask.id}"
                     >{nextIncompleteSubtask.title}</a
                   >
                 </Sidebar.MenuButton>
@@ -60,7 +60,7 @@
         {/if}
         <Sidebar.Menu>
           {#each plan?.plan ?? [] as epic}
-            {@const epicComplete = epic.stories?.every((story) => story.completed)}
+            {@const epicComplete = epic.tasks?.every((task) => task.completed)}
             <Collapsible.Root
               class="group/collapsible"
               bind:open={
@@ -91,16 +91,16 @@
 
               <Collapsible.Content>
                 <div class="ml-4">
-                  {#if epic.stories?.length}
+                  {#if epic.tasks?.length}
                     <Sidebar.MenuSub>
-                      {#each epic.stories as story}
+                      {#each epic.tasks as task}
                         <Sidebar.MenuSubItem>
                           <Sidebar.MenuSubButton
-                            href="/projects/{page.params.projectId}/tasks/{epic.id}/{story.id}"
+                            href="/projects/{page.params.projectId}/tasks/{epic.id}/{task.id}"
                             class="flex items-center gap-2"
                           >
-                            <span class="truncate text-xs" class:text-gray-300={story.completed}>
-                              {story.title}
+                            <span class="truncate text-xs" class:text-gray-300={task.completed}>
+                              {task.title}
                             </span>
                           </Sidebar.MenuSubButton>
                         </Sidebar.MenuSubItem>

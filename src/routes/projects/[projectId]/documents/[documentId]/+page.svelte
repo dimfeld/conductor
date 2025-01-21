@@ -19,7 +19,6 @@
 
 <svelte:window
   onkeydown={(e) => {
-    console.log(e);
     if (e.key === 'Enter' && e.metaKey) {
       e.preventDefault();
       form.submit();

@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { generatePlanDocPath } from '$lib/project/server/plan';
-import { createTaskPlanning } from '$lib/project/create_documents';
+import { createSubtaskPlanning, createTaskPlanning } from '$lib/project/create_documents';
 
 const subtaskPlanSchema = z.object({
   title: z.string().min(1),
@@ -124,8 +124,8 @@ export const actions: Actions = {
     }
 
     const epicIndex = project.plan.data.plan.findIndex((e) => e.id === epicId);
-    const storyIndex = epic.stories.findIndex((s) => s.id === taskId);
-    if (storyIndex === -1) {
+    const taskIndex = epic.tasks.findIndex((s) => s.id === taskId);
+    if (taskIndex === -1) {
       error(404, 'Task not found');
     }
 
@@ -133,21 +133,21 @@ export const actions: Actions = {
     if (isNaN(subtaskId)) {
       error(400, 'Invalid subtask ID');
     }
-    const taskIndex = epic.stories[storyIndex]?.subtasks?.findIndex((s) => s.id === subtaskId);
-    if (taskIndex === -1 || taskIndex === undefined) {
+    const subtaskIndex = epic.tasks[taskIndex]?.subtasks?.findIndex((s) => s.id === subtaskId);
+    if (subtaskIndex === -1 || subtaskIndex === undefined) {
       error(404, 'Subtask not found');
     }
 
-    const subtask = epic.stories[storyIndex]?.subtasks?.[taskIndex];
+    const subtask = epic.tasks[taskIndex]?.subtasks?.[subtaskIndex];
     if (!subtask) {
       error(404, 'Subtask not found');
     }
 
-    const plan = await createTaskPlanning({
+    const plan = await createSubtaskPlanning({
       project,
       epicIndex,
-      storyIndex,
       taskIndex,
+      subtaskIndex,
     });
 
     if (!subtask.plan_file) {

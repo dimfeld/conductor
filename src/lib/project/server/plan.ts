@@ -63,12 +63,12 @@ export class ManagedProjectPlan {
     return this.data.plan.find((epic) => epic.id === id);
   }
 
-  findStory(epicId: number, storyId: number) {
-    return this.findEpic(epicId)?.stories.find((story) => story.id === storyId);
+  findTask(epicId: number, taskId: number) {
+    return this.findEpic(epicId)?.tasks.find((task) => task.id === taskId);
   }
 
-  findSubtask(epicId: number, storyId: number, subtaskId: number) {
-    return this.findStory(epicId, storyId)?.subtasks?.find((subtask) => subtask.id === subtaskId);
+  findSubtask(epicId: number, taskId: number, subtaskId: number) {
+    return this.findTask(epicId, taskId)?.subtasks?.find((subtask) => subtask.id === subtaskId);
   }
 }
 
@@ -117,13 +117,13 @@ export async function loadProjectPlan(path: string): Promise<LoadedProjectPlan> 
 
     const maxId = plan.plan.reduce((max, epic) => {
       const epicMax = epic.id ?? 0;
-      const storiesMax = epic.stories.reduce((storyMax, story) => {
+      const storiesMax = epic.tasks.reduce((taskMax, task) => {
         const subtasksMax =
-          story.subtasks?.reduce(
+          task.subtasks?.reduce(
             (subtaskMax, subtask) => Math.max(subtaskMax, subtask.id ?? 0),
             0
           ) ?? 0;
-        return Math.max(storyMax, story.id ?? 0, subtasksMax);
+        return Math.max(taskMax, task.id ?? 0, subtasksMax);
       }, 0);
       return Math.max(max, epicMax, storiesMax);
     }, 0);
@@ -133,19 +133,19 @@ export async function loadProjectPlan(path: string): Promise<LoadedProjectPlan> 
       if (epic.id === undefined) {
         epic.id = nextId++;
       }
-      epic.stories = epic.stories.map((story) => {
-        if (story.id === undefined) {
-          story.id = nextId++;
+      epic.tasks = epic.tasks.map((task) => {
+        if (task.id === undefined) {
+          task.id = nextId++;
         }
-        if (story.subtasks) {
-          story.subtasks = story.subtasks.map((subtask) => {
+        if (task.subtasks) {
+          task.subtasks = task.subtasks.map((subtask) => {
             if (subtask.id === undefined) {
               subtask.id = nextId++;
             }
             return subtask;
           });
         }
-        return story;
+        return task;
       });
       return epic;
     });
@@ -157,9 +157,7 @@ export async function loadProjectPlan(path: string): Promise<LoadedProjectPlan> 
       nextId,
     };
   } catch (error) {
-    if (error instanceof Error) {
-      error.message = `Failed to load project plan: ${error.message}`;
-    }
+    console.error(error);
     throw error;
   }
 }

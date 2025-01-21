@@ -19,29 +19,29 @@
       </div>
 
       <div class="ml-4 space-y-4">
-        {#each epic.stories as story, storyIndex}
+        {#each epic.tasks as task, taskIndex}
           <div class="border-l-2 pl-4">
             <form
               method="POST"
-              action="?/toggleStory"
+              action="?/toggleTask"
               use:enhance
               class="mb-2 flex items-center gap-2"
             >
               <input type="hidden" name="epicIndex" value={epicIndex} />
-              <input type="hidden" name="storyIndex" value={storyIndex} />
-              <Checkbox name="completed" checked={story.completed} type="submit" />
-              <h3 class="font-medium {story.completed ? 'text-muted-foreground line-through' : ''}">
-                <a href="/projects/{data.project.id}/tasks/{epic.id}/{story.id}">{story.title}</a>
+              <input type="hidden" name="taskIndex" value={taskIndex} />
+              <Checkbox name="completed" checked={task.completed} type="submit" />
+              <h3 class="font-medium {task.completed ? 'text-muted-foreground line-through' : ''}">
+                <a href="/projects/{data.project.id}/tasks/{epic.id}/{task.id}">{task.title}</a>
               </h3>
             </form>
 
-            {#if story.description}
-              <p class="mb-2 text-sm text-muted-foreground">{story.description}</p>
+            {#if task.description}
+              <p class="mb-2 text-sm text-muted-foreground">{task.description}</p>
             {/if}
 
-            {#if story.subtasks}
+            {#if task.subtasks}
               <div class="ml-4 mt-2 space-y-2">
-                {#each story.subtasks as subtask, subtaskIndex}
+                {#each task.subtasks as subtask, subtaskIndex}
                   <form
                     method="POST"
                     action="?/toggleSubtask"
@@ -49,11 +49,11 @@
                     class="flex items-center gap-2"
                   >
                     <input type="hidden" name="epicIndex" value={epicIndex} />
-                    <input type="hidden" name="storyIndex" value={storyIndex} />
+                    <input type="hidden" name="taskIndex" value={taskIndex} />
                     <input type="hidden" name="subtaskIndex" value={subtaskIndex} />
                     <Checkbox name="completed" checked={subtask.completed} type="submit" />
                     <span class={subtask.completed ? 'text-muted-foreground line-through' : ''}
-                      ><a href="/projects/{data.project.id}/tasks/{epic.id}/{story.id}/{subtask.id}"
+                      ><a href="/projects/{data.project.id}/tasks/{epic.id}/{task.id}/{subtask.id}"
                         >{subtask.title}</a
                       ></span
                     >

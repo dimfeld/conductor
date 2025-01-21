@@ -8,7 +8,7 @@ import { superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { generatePlanDocPath } from '$lib/project/server/plan';
 import { dirname } from 'node:path';
-import { createStoryPlanning, createTaskPlanning } from '$lib/project/create_documents';
+import { createTaskPlanning, createTaskPlanning } from '$lib/project/create_documents';
 
 const taskPlanSchema = z.object({
   title: z.string().min(1),
@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
     error(400, 'Invalid epic ID');
   }
 
-  const task = project.plan.findStory(epicId, parseInt(params.taskId));
+  const task = project.plan.findTask(epicId, parseInt(params.taskId));
   if (!task) {
     error(404, 'Task not found');
   }
@@ -67,7 +67,7 @@ export const actions: Actions = {
       error(404, 'Project not found');
     }
 
-    const task = project.plan.findStory(parseInt(params.epicId), parseInt(params.taskId));
+    const task = project.plan.findTask(parseInt(params.epicId), parseInt(params.taskId));
     if (!task) {
       error(404, 'Task not found');
     }
@@ -119,16 +119,16 @@ export const actions: Actions = {
     }
 
     const epicIndex = project.plan.data.plan.findIndex((e) => e.id === epicId);
-    const storyIndex = epic.stories.findIndex((s) => s.id === taskId);
-    if (storyIndex === -1) {
+    const taskIndex = epic.tasks.findIndex((s) => s.id === taskId);
+    if (taskIndex === -1) {
       error(404, 'Task not found');
     }
 
-    const task = epic.stories[storyIndex];
-    const plan = await createStoryPlanning({
+    const task = epic.tasks[taskIndex];
+    const plan = await createTaskPlanning({
       project,
       epicIndex,
-      storyIndex,
+      taskIndex,
     });
 
     if (!task.plan_file) {

@@ -67,14 +67,7 @@ export async function loadProjectConfig(
     parsedYaml = defaultProjectConfig;
   }
 
-  try {
-    return projectConfigSchema.parse(parsedYaml);
-  } catch (error) {
-    if (error instanceof Error) {
-      error.message = `Failed to load project config: ${error.message}`;
-    }
-    throw error;
-  }
+  return projectConfigSchema.parse(parsedYaml);
 }
 
 function docsPath(projectInfo: typeof projects.$inferSelect, projectConfig: ProjectConfig) {

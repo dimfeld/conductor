@@ -69,16 +69,16 @@ export async function createEpicPlanning({ project, epicIndex, llm }: CreateEpic
   return description;
 }
 
-export interface CreateStoryPlanningInput extends CreateEpicPlanningInput {
-  storyIndex: number;
+export interface CreateTaskPlanningInput extends CreateEpicPlanningInput {
+  taskIndex: number;
 }
 
-export async function createStoryPlanning({
+export async function createTaskPlanning({
   project,
   epicIndex,
-  storyIndex,
+  taskIndex,
   llm,
-}: CreateStoryPlanningInput) {
+}: CreateTaskPlanningInput) {
   llm ??= planningModel;
   const epic = project.plan.data.plan[epicIndex];
 
@@ -86,7 +86,7 @@ export async function createStoryPlanning({
     throw new Error('Epic has no plan file');
   }
 
-  const story = epic.stories[storyIndex];
+  const task = epic.tasks[taskIndex];
   const info = await gatherProjectContext(project);
 
   const overviewPrompt = await readPromptFile('prefix_main', {
@@ -98,8 +98,8 @@ export async function createStoryPlanning({
     EPIC_NAME: epic.title,
     EPIC_PLANNING: await readFile(join(project.docsPath, epic.plan_file), 'utf-8'),
   });
-  const storyPrompt = await readPromptFile('create_story_document', {
-    STORY_NAME: story.title,
+  const taskPrompt = await readPromptFile('create_task_document', {
+    TASK_NAME: task.title,
   });
 
   const response = await generateText({
@@ -124,43 +124,43 @@ export async function createStoryPlanning({
           },
         },
       },
-      { role: 'user', content: storyPrompt },
+      { role: 'user', content: taskPrompt },
     ],
   });
 
-  const description = extractTag(response.text, 'story_description');
+  const description = extractTag(response.text, 'task_description');
   if (!description) {
-    throw new Error('No story description found in response');
+    throw new Error('No task description found in response');
   }
 
   return description;
 }
 
-export interface CreateTaskPlanningInput extends CreateStoryPlanningInput {
-  taskIndex: number;
+export interface CreateSubtaskPlanningInput extends CreateTaskPlanningInput {
+  subtaskIndex: number;
 }
 
-export async function createTaskPlanning({
+export async function createSubtaskPlanning({
   project,
   epicIndex,
-  storyIndex,
   taskIndex,
+  subtaskIndex,
   llm,
-}: CreateTaskPlanningInput) {
+}: CreateSubtaskPlanningInput) {
   llm ??= planningModel;
   const epic = project.plan.data.plan[epicIndex];
-  const story = epic.stories[storyIndex];
-  const task = story.subtasks?.[taskIndex];
-  if (!task) {
-    throw new Error('Task not found');
+  const task = epic.tasks[taskIndex];
+  const subtask = task.subtasks?.[subtaskIndex];
+  if (!subtask) {
+    throw new Error('Subtask not found');
   }
 
   if (!epic.plan_file) {
     throw new Error('Epic has no plan file');
   }
 
-  if (!story.plan_file) {
-    throw new Error('Story has no plan file');
+  if (!task.plan_file) {
+    throw new Error('Task has no plan file');
   }
 
   const info = await gatherProjectContext(project);
@@ -173,12 +173,12 @@ export async function createTaskPlanning({
     EPIC_NAME: epic.title,
     EPIC_PLANNING: await readFile(join(project.docsPath, epic.plan_file), 'utf-8'),
   });
-  const storyPrompt = await readPromptFile('prefix_story_desc', {
-    STORY_NAME: story.title,
-    STORY_PLANNING: await readFile(join(project.docsPath, story.plan_file), 'utf-8'),
-  });
-  const taskPrompt = await readPromptFile('create_task_document', {
+  const taskPrompt = await readPromptFile('prefix_task_desc', {
     TASK_NAME: task.title,
+    TASK_PLANNING: await readFile(join(project.docsPath, task.plan_file), 'utf-8'),
+  });
+  const subtaskPrompt = await readPromptFile('create_subtask_document', {
+    SUBTASK_NAME: subtask.title,
   });
 
   const response = await generateText({
@@ -205,18 +205,18 @@ export async function createTaskPlanning({
       },
       {
         role: 'user',
-        content: storyPrompt,
+        content: taskPrompt,
         experimental_providerMetadata: {
           anthropic: {
             cacheControl: { type: 'ephemeral' },
           },
         },
       },
-      { role: 'user', content: taskPrompt },
+      { role: 'user', content: subtaskPrompt },
     ],
   });
 
-  const description = extractTag(response.text, 'task_description');
+  const description = extractTag(response.text, 'subtask_description');
   if (!description) {
     throw new Error('No task description found in response');
   }
@@ -264,33 +264,33 @@ function formatPlanForPrompt(plan: ManagedProjectPlan, fullDetails = false) {
   plan.data.plan.forEach((epic, epicIndex) => {
     lines.push(`### ${epicIndex + 1}. ${epic.title}`);
     if (fullDetails) {
-      lines.push(`Focus: ${epic.focus}`);
+      lines.push(`Description: ${epic.description}`);
       if (epic.plan_file) {
         lines.push(`Plan: ${epic.plan_file}`);
       }
     }
     lines.push('');
 
-    epic.stories.forEach((story, storyIndex) => {
-      const status = story.completed ? '[x]' : '[ ]';
-      lines.push(`#### ${epicIndex + 1}.${storyIndex + 1}. ${status} ${story.title}`);
+    epic.tasks.forEach((task, taskIndex) => {
+      const status = task.completed ? '[x]' : '[ ]';
+      lines.push(`#### ${epicIndex + 1}.${taskIndex + 1}. ${status} ${task.title}`);
 
-      if (story.description) {
-        lines.push(story.description);
+      if (task.description) {
+        lines.push(task.description);
       }
 
       if (fullDetails) {
-        if (story.plan_file) {
-          lines.push(`Plan: ${story.plan_file}`);
+        if (task.plan_file) {
+          lines.push(`Plan: ${task.plan_file}`);
         }
-        if (story.testing) {
-          lines.push(`Testing: ${story.testing}`);
+        if (task.testing) {
+          lines.push(`Testing: ${task.testing}`);
         }
       }
 
-      if (story.subtasks?.length) {
+      if (task.subtasks?.length) {
         lines.push('\nSubtasks:');
-        story.subtasks.forEach((subtask, subtaskIndex) => {
+        task.subtasks.forEach((subtask, subtaskIndex) => {
           const subtaskStatus = subtask.completed ? '[x]' : '[ ]';
           lines.push(`- ${subtaskStatus} ${subtask.title}`);
           if (fullDetails && subtask.plan_file) {

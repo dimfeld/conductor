@@ -6,6 +6,9 @@
       "items": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "number"
+          },
           "title": {
             "type": "string"
           },
@@ -16,11 +19,14 @@
             "type": "string",
             "description": "Location of the plan file for this epic"
           },
-          "stories": {
+          "tasks": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "number"
+                },
                 "title": {
                   "type": "string"
                 },
@@ -43,7 +49,13 @@
                   "items": {
                     "type": "object",
                     "properties": {
+                      "id": {
+                        "type": "number"
+                      },
                       "title": {
+                        "type": "string"
+                      },
+                      "description": {
                         "type": "string"
                       },
                       "plan_file": {
@@ -51,12 +63,12 @@
                         "description": "Location of the plan file for this subtask"
                       },
                       "completed": {
-                        "type": "boolean"
+                        "type": "boolean",
+                        "default": false
                       }
                     },
                     "required": [
-                      "title",
-                      "completed"
+                      "title"
                     ],
                     "additionalProperties": false
                   }
@@ -71,8 +83,7 @@
         },
         "required": [
           "title",
-          "focus",
-          "stories"
+          "tasks"
         ],
         "additionalProperties": false
       }

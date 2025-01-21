@@ -4,7 +4,7 @@ plan:
     title: Documentation Building
     description: Build documentation for the project
     plan_file: tasks/00078_epic_documentation_building.md
-    stories:
+    tasks:
       - id: 79
         title: Build Epic Documentation
         completed: true
@@ -16,11 +16,50 @@ plan:
         title: Build Subtask Documentation
         completed: true
         plan_file: tasks/00081_task_build_subtask_documentation.md
+      - title: Build all documentation concurrently
+        completed: false
+        id: 91
+        description: >-
+          This should be a button that you can click to build all the epic,
+          tasks, and subtasks plan documents that aren't built yet.
+        plan_file: tasks/00091_task_build_all_documentation_concurrently.md
+      - title: Workflow for building the initial plan and overview
+        completed: false
+        subtasks:
+          - title: Build the overview
+            completed: false
+            id: 93
+          - title: Help build the guidelines
+            completed: false
+            id: 94
+          - title: Build the initial plan.yml from these
+            completed: false
+            id: 95
+        id: 92
+      - title: Workflow for adding a new epic
+        completed: false
+        id: 96
+      - title: Plan file management
+        completed: false
+        subtasks:
+          - title: Quick add a new epic
+            completed: false
+            id: 98
+          - title: Quick add a new story
+            completed: false
+            id: 99
+          - title: Quick add a new subtask
+            completed: false
+            id: 100
+        id: 97
+      - title: Ability to include a custom prompt when generating documentation
+        completed: false
+        id: 101
   - id: 82
     title: Repo Scanner
     description: Generate documentation for existing repository code
     plan_file: tasks/00082_epic_repo_scanner.md
-    stories:
+    tasks:
       - id: 83
         title: Workspace awareness
         completed: false
@@ -57,13 +96,32 @@ plan:
           Create single document that uses the overviews and interfaces
           documents from each package to describe where things happen
         completed: false
+  - title: Manual Agent Mode
+    tasks:
+      - title: Generate /add commands for tasks
+        completed: false
+        id: 103
+      - title: Generate all the context in a single file
+        completed: false
+        description: This will allow pasting it into another interface
+        id: 104
+    id: 102
+  - title: Configuration
+    tasks:
+      - title: Model API key mamagement
+        completed: false
+        id: 106
+      - title: Model selection for each feature
+        completed: false
+        id: 107
+    id: 105
   - id: 1
     title: Agent Core Loop MVP
     description: >-
       Implement basic agent functionality with console interface and state
       management
     plan_file: tasks/00001_epic_agent_core_loop_mvp.md
-    stories:
+    tasks:
       - id: 2
         title: Core Infrastructure Setup
         completed: true

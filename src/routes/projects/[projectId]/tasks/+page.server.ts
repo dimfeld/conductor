@@ -6,10 +6,10 @@ import { loadProject } from '$lib/project/project';
 export const load = (async ({ params }) => {}) satisfies PageServerLoad;
 
 export const actions = {
-  toggleStory: async ({ params, request, cookies }) => {
+  toggleTask: async ({ params, request, cookies }) => {
     const data = await request.formData();
     const epicIndex = parseInt(data.get('epicIndex') as string);
-    const storyIndex = parseInt(data.get('storyIndex') as string);
+    const taskIndex = parseInt(data.get('taskIndex') as string);
 
     const project = await loadProject(cookies, +params.projectId);
     if (!project) {
@@ -17,11 +17,11 @@ export const actions = {
     }
 
     await project.plan.update((plan) => {
-      const story = plan.plan[epicIndex]?.stories[storyIndex];
-      if (!story) {
-        error(404, 'Story not found');
+      const task = plan.plan[epicIndex]?.tasks[taskIndex];
+      if (!task) {
+        error(404, 'Task not found');
       }
-      story.completed = !story.completed;
+      task.completed = !task.completed;
 
       return plan;
     });
@@ -32,7 +32,7 @@ export const actions = {
   toggleSubtask: async ({ params, request, cookies }) => {
     const data = await request.formData();
     const epicIndex = parseInt(data.get('epicIndex') as string);
-    const storyIndex = parseInt(data.get('storyIndex') as string);
+    const taskIndex = parseInt(data.get('taskIndex') as string);
     const subtaskIndex = parseInt(data.get('subtaskIndex') as string);
 
     const project = await loadProject(cookies, +params.projectId);
@@ -41,12 +41,12 @@ export const actions = {
     }
 
     await project.plan.update((plan) => {
-      const story = plan.plan[epicIndex]?.stories[storyIndex];
-      if (!story || !story.subtasks) {
-        error(404, 'Story or subtasks not found');
+      const task = plan.plan[epicIndex]?.tasks[taskIndex];
+      if (!task || !task.subtasks) {
+        error(404, 'Task or subtasks not found');
       }
 
-      const subtask = story.subtasks[subtaskIndex];
+      const subtask = task.subtasks[subtaskIndex];
       if (!subtask) {
         error(404, 'Subtask not found');
       }
