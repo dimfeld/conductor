@@ -6,6 +6,7 @@
   import { getNextIncompleteSubtask } from '$lib/project/plan.js';
   import { MinusSquare, PlusSquare } from 'lucide-svelte';
   import type { LayoutData } from './$types.js';
+  import { cn } from '$lib/utils.js';
 
   let { data }: { data: LayoutData } = $props();
 
@@ -93,17 +94,35 @@
               <Collapsible.Content>
                 <div class="ml-4">
                   {#if epic.tasks?.length}
-                    <Sidebar.MenuSub>
+                    <Sidebar.MenuSub class="mr-0">
                       {#each epic.tasks as task}
                         <Sidebar.MenuSubItem>
                           <Sidebar.MenuSubButton
                             href="/projects/{page.params.projectId}/tasks/{epic.id}/{task.id}"
-                            class="flex items-center gap-2"
+                            class={cn('flex items-center gap-2', task.completed && 'text-gray-300')}
                           >
-                            <span class="truncate text-xs" class:text-gray-300={task.completed}>
-                              {task.title}
-                            </span>
+                            <span class="truncate">{task.title}</span>
                           </Sidebar.MenuSubButton>
+                          {#if task.subtasks?.length}
+                            <Sidebar.MenuSub class="mr-0">
+                              {#each task.subtasks as subtask}
+                                <Sidebar.MenuSubItem>
+                                  <Sidebar.MenuSubButton
+                                    href="/projects/{page.params
+                                      .projectId}/tasks/{epic.id}/{task.id}/{subtask.id}"
+                                    class={cn(
+                                      'flex items-center gap-2',
+                                      subtask.completed && 'text-gray-300'
+                                    )}
+                                  >
+                                    <span class="truncate" title={subtask.title}
+                                      >{subtask.title}</span
+                                    >
+                                  </Sidebar.MenuSubButton>
+                                </Sidebar.MenuSubItem>
+                              {/each}
+                            </Sidebar.MenuSub>
+                          {/if}
                         </Sidebar.MenuSubItem>
                       {/each}
                     </Sidebar.MenuSub>
