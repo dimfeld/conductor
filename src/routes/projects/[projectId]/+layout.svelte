@@ -6,7 +6,7 @@
   let { data, children } = $props();
 </script>
 
-<Sidebar.Provider>
+<Sidebar.Provider style="--sidebar-width: 20rem; --sidebar-width-mobile: 20rem">
   <ProjectSidebar {data} />
   <div class="grid h-screen w-full grid-rows-[auto_1fr]">
     <header class="flex w-full items-center bg-teal-500 py-1">
