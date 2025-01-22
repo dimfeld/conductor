@@ -14,22 +14,22 @@
   let showAddTask = $state<Record<number, boolean>>({});
   let showAddSubtask = $state<Record<string, boolean>>({});
 
-  async function toggleAddTask(epicIndex: number) {
-    showAddTask[epicIndex] = !showAddTask[epicIndex];
-    if (showAddTask[epicIndex]) {
+  async function toggleAddTask(epicId: number) {
+    showAddTask[epicId] = !showAddTask[epicId];
+    if (showAddTask[epicId]) {
       await tick();
-      const input = document.getElementById(`new-task-title-${epicIndex}`) as HTMLInputElement;
+      const input = document.getElementById(`new-task-title-${epicId}`) as HTMLInputElement;
       input.focus();
     }
   }
 
-  async function toggleAddSubtask(epicIndex: number, taskIndex: number) {
-    const key = `${epicIndex}-${taskIndex}`;
+  async function toggleAddSubtask(epicId: number, taskId: number) {
+    const key = `${epicId}-${taskId}`;
     showAddSubtask[key] = !showAddSubtask[key];
     if (showAddSubtask[key]) {
       await tick();
       const input = document.getElementById(
-        `new-subtask-title-${epicIndex}-${taskIndex}`
+        `new-subtask-title-${epicId}-${taskId}`
       ) as HTMLInputElement;
       input.focus();
     }
@@ -37,7 +37,7 @@
 </script>
 
 <div class="space-y-8">
-  {#each data.plan.plan as epic, epicIndex}
+  {#each data.plan.plan as epic (epic.id)}
     <div class="p-4">
       <div class="mb-4 flex items-center gap-2">
         <h2 class="text-xl font-semibold">
@@ -49,12 +49,12 @@
       </div>
 
       <div class="ml-4">
-        {#each epic.tasks as task, taskIndex}
+        {#each epic.tasks as task (task.id)}
           <div class="border-l-2 py-2 pl-4">
             <div class="mb-2 flex items-center gap-2">
               <form method="POST" action="?/toggleTask" use:enhance class="flex items-center gap-2">
-                <input type="hidden" name="epicIndex" value={epicIndex} />
-                <input type="hidden" name="taskIndex" value={taskIndex} />
+                <input type="hidden" name="epicId" value={epic.id} />
+                <input type="hidden" name="taskId" value={task.id} />
                 <Checkbox name="completed" checked={task.completed} type="submit" />
                 <h3
                   class="font-medium {task.completed ? 'text-muted-foreground line-through' : ''}"
@@ -73,16 +73,16 @@
 
             {#if task.subtasks}
               <div class="ml-4 mt-2 space-y-2">
-                {#each task.subtasks as subtask, subtaskIndex}
+                {#each task.subtasks as subtask (subtask.id)}
                   <form
                     method="POST"
                     action="?/toggleSubtask"
                     use:enhance
                     class="flex items-center gap-2"
                   >
-                    <input type="hidden" name="epicIndex" value={epicIndex} />
-                    <input type="hidden" name="taskIndex" value={taskIndex} />
-                    <input type="hidden" name="subtaskIndex" value={subtaskIndex} />
+                    <input type="hidden" name="epicId" value={epic.id} />
+                    <input type="hidden" name="taskId" value={task.id} />
+                    <input type="hidden" name="subtaskId" value={subtask.id} />
                     <Checkbox name="completed" checked={subtask.completed} type="submit" />
                     <span class={subtask.completed ? 'text-muted-foreground line-through' : ''}
                       ><a
@@ -96,7 +96,7 @@
             {/if}
 
             <div class="ml-4 mt-2">
-              {#if showAddSubtask[`${epicIndex}-${taskIndex}`]}
+              {#if showAddSubtask[`${epic.id}-${task.id}`]}
                 <form
                   method="POST"
                   action="?/addSubtask"
@@ -118,19 +118,19 @@
                   }}
                   class="mb-2 flex items-center gap-2"
                 >
-                  <input type="hidden" name="epicIndex" value={epicIndex} />
-                  <input type="hidden" name="taskIndex" value={taskIndex} />
+                  <input type="hidden" name="epicId" value={epic.id} />
+                  <input type="hidden" name="taskId" value={task.id} />
                   <Input
                     type="text"
                     name="title"
-                    id="new-subtask-title-{epicIndex}-{taskIndex}"
+                    id="new-subtask-title-{epic.id}-{task.id}"
                     placeholder="New subtask title"
                     class="w-full"
                     required
                     onkeydown={(e) => {
                       if (e.key === 'Escape') {
                         e.currentTarget.value = '';
-                        showAddSubtask[`${epicIndex}-${taskIndex}`] = false;
+                        showAddSubtask[`${epic.id}-${task.id}`] = false;
                       }
                     }}
                   />
@@ -139,7 +139,7 @@
                     type="button"
                     variant="outline"
                     size="sm"
-                    onclick={() => (showAddSubtask[`${epicIndex}-${taskIndex}`] = false)}
+                    onclick={() => (showAddSubtask[`${epic.id}-${task.id}`] = false)}
                   >
                     Cancel
                   </Button>
@@ -148,7 +148,7 @@
                 <Button
                   variant="ghost"
                   size="sm"
-                  onclick={() => toggleAddSubtask(epicIndex, taskIndex)}
+                  onclick={() => toggleAddSubtask(epic.id!, task.id!)}
                   title="Add Subtask"
                   class="flex items-center gap-1"
                 >
@@ -160,7 +160,7 @@
           </div>
         {/each}
 
-        {#if showAddTask[epicIndex]}
+        {#if showAddTask[epic.id!]}
           <form
             method="POST"
             action="?/addTask"
@@ -180,18 +180,18 @@
             }}
             class="mb-4 flex items-center gap-2 border-l-2 py-2 pl-4"
           >
-            <input type="hidden" name="epicIndex" value={epicIndex} />
+            <input type="hidden" name="epicId" value={epic.id} />
             <Input
               type="text"
               name="title"
-              id="new-task-title-{epicIndex}"
+              id="new-task-title-{epic.id}"
               placeholder="New task title"
               class="w-full"
               required
               onkeydown={(e) => {
                 if (e.key === 'Escape') {
                   e.currentTarget.value = '';
-                  showAddTask[epicIndex] = false;
+                  showAddTask[epic.id!] = false;
                 }
               }}
             />
@@ -200,7 +200,7 @@
               type="button"
               variant="outline"
               size="sm"
-              onclick={() => (showAddTask[epicIndex] = false)}
+              onclick={() => (showAddTask[epic.id!] = false)}
             >
               Cancel
             </Button>
@@ -209,7 +209,7 @@
           <Button
             variant="ghost"
             size="sm"
-            onclick={() => toggleAddTask(epicIndex)}
+            onclick={() => toggleAddTask(epic.id!)}
             title="Add Task"
             class="flex items-center gap-1 border-l-2 py-2 pl-4"
           >
@@ -228,7 +228,7 @@
     action="?/addEpic"
     use:enhance={() => {
       return ({ update }) => {
-        update();
+        void update();
         showAddEpic = false;
       };
     }}

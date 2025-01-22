@@ -33,7 +33,7 @@ export const actions = {
 
   addTask: async ({ params, request, cookies }) => {
     const data = await request.formData();
-    const epicIndex = parseInt(data.get('epicIndex') as string);
+    const epicId = parseInt(data.get('epicId') as string);
     const title = data.get('title') as string;
     if (!title?.trim()) {
       error(400, 'Title is required');
@@ -45,7 +45,7 @@ export const actions = {
     }
 
     await project.plan.update((plan) => {
-      const epic = plan.plan[epicIndex];
+      const epic = plan.plan.find((epic) => epic.id === epicId);
       if (!epic) {
         error(404, 'Epic not found');
       }
@@ -65,8 +65,8 @@ export const actions = {
 
   addSubtask: async ({ params, request, cookies }) => {
     const data = await request.formData();
-    const epicIndex = parseInt(data.get('epicIndex') as string);
-    const taskIndex = parseInt(data.get('taskIndex') as string);
+    const epicId = parseInt(data.get('epicId') as string);
+    const taskId = parseInt(data.get('taskId') as string);
     const title = data.get('title') as string;
     if (!title?.trim()) {
       error(400, 'Title is required');
@@ -78,7 +78,7 @@ export const actions = {
     }
 
     await project.plan.update((plan) => {
-      const task = plan.plan[epicIndex]?.tasks[taskIndex];
+      const task = project.plan.findTask(epicId, taskId);
       if (!task) {
         error(404, 'Task not found');
       }
@@ -101,8 +101,8 @@ export const actions = {
 
   toggleTask: async ({ params, request, cookies }) => {
     const data = await request.formData();
-    const epicIndex = parseInt(data.get('epicIndex') as string);
-    const taskIndex = parseInt(data.get('taskIndex') as string);
+    const epicId = parseInt(data.get('epicId') as string);
+    const taskId = parseInt(data.get('taskId') as string);
 
     const project = await loadProject(cookies, +params.projectId);
     if (!project) {
@@ -110,7 +110,7 @@ export const actions = {
     }
 
     await project.plan.update((plan) => {
-      const task = plan.plan[epicIndex]?.tasks[taskIndex];
+      const task = project.plan.findTask(epicId, taskId);
       if (!task) {
         error(404, 'Task not found');
       }
@@ -124,9 +124,9 @@ export const actions = {
 
   toggleSubtask: async ({ params, request, cookies }) => {
     const data = await request.formData();
-    const epicIndex = parseInt(data.get('epicIndex') as string);
-    const taskIndex = parseInt(data.get('taskIndex') as string);
-    const subtaskIndex = parseInt(data.get('subtaskIndex') as string);
+    const epicId = parseInt(data.get('epicId') as string);
+    const taskId = parseInt(data.get('taskId') as string);
+    const subtaskId = parseInt(data.get('subtaskId') as string);
 
     const project = await loadProject(cookies, +params.projectId);
     if (!project) {
@@ -134,12 +134,7 @@ export const actions = {
     }
 
     await project.plan.update((plan) => {
-      const task = plan.plan[epicIndex]?.tasks[taskIndex];
-      if (!task || !task.subtasks) {
-        error(404, 'Task or subtasks not found');
-      }
-
-      const subtask = task.subtasks[subtaskIndex];
+      const subtask = project.plan.findSubtask(epicId, taskId, subtaskId);
       if (!subtask) {
         error(404, 'Subtask not found');
       }
