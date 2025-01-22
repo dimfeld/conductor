@@ -10,17 +10,19 @@
 
 <div class="space-y-8">
   {#each data.plan.plan as epic, epicIndex}
-    <div class="rounded-lg border p-4">
+    <div class="p-4">
       <div class="mb-4 flex items-center gap-2">
         <h2 class="text-xl font-semibold">
-          <a href="/projects/{data.project.id}/tasks/{epic.id}">{epic.title}</a>
+          <a href="/projects/{data.project.id}/tasks/{epic.id}" class="hover:underline"
+            >{epic.title}</a
+          >
         </h2>
         <span class="text-sm text-muted-foreground">({epic.description})</span>
       </div>
 
-      <div class="ml-4 space-y-4">
+      <div class="ml-4">
         {#each epic.tasks as task, taskIndex}
-          <div class="border-l-2 pl-4">
+          <div class="border-l-2 py-2 pl-4">
             <form
               method="POST"
               action="?/toggleTask"
@@ -31,7 +33,10 @@
               <input type="hidden" name="taskIndex" value={taskIndex} />
               <Checkbox name="completed" checked={task.completed} type="submit" />
               <h3 class="font-medium {task.completed ? 'text-muted-foreground line-through' : ''}">
-                <a href="/projects/{data.project.id}/tasks/{epic.id}/{task.id}">{task.title}</a>
+                <a
+                  href="/projects/{data.project.id}/tasks/{epic.id}/{task.id}"
+                  class="hover:underline">{task.title}</a
+                >
               </h3>
             </form>
 
@@ -53,8 +58,9 @@
                     <input type="hidden" name="subtaskIndex" value={subtaskIndex} />
                     <Checkbox name="completed" checked={subtask.completed} type="submit" />
                     <span class={subtask.completed ? 'text-muted-foreground line-through' : ''}
-                      ><a href="/projects/{data.project.id}/tasks/{epic.id}/{task.id}/{subtask.id}"
-                        >{subtask.title}</a
+                      ><a
+                        href="/projects/{data.project.id}/tasks/{epic.id}/{task.id}/{subtask.id}"
+                        class="hover:underline">{subtask.title}</a
                       ></span
                     >
                   </form>
