@@ -16,6 +16,9 @@ plan:
         title: Build Subtask Documentation
         completed: true
         plan_file: tasks/00081_task_build_subtask_documentation.md
+      - id: 109
+        title: Show subtasks in sidebar
+        completed: true
       - id: 91
         title: Build all documentation concurrently
         completed: false
@@ -60,37 +63,71 @@ plan:
           - Suggest a description
           - Suggest tasks and subtasks
         plan_file: tasks/00096_task_workflow_for_adding_a_new_epic.md
+        subtasks:
+          - id: 117
+            title: Initial Epic data intake
+            completed: false
+          - id: 118
+            title: Ask LLM for suggested tasks and subtasks
+            completed: false
+          - id: 119
+            title: Allow user to modify list of tasks and subtasks
+            completed: false
       - id: 97
         title: Plan file management
         completed: false
         subtasks:
+          - id: 110
+            title: Show child tasks/subtasks in page view of an epic/task
+            completed: false
           - id: 98
             title: Quick add a new epic
-            completed: false
+            completed: true
           - id: 99
             title: Quick add a new story
-            completed: false
+            completed: true
           - id: 100
             title: Quick add a new subtask
-            completed: false
+            completed: true
       - id: 101
         title: Ability to include a custom prompt when generating documentation
         completed: false
-
-      - title: Better file map integration
-        description: We have the file map but it would be better to have more intelligent selection of possible files, so we can include the long description for each one.
         subtasks:
-          - title: Use a smaller model to get a list of the possibly most relevant files
-          - title: From this list, use a larger model with the longer description to get the most relevant files
-          - title: Incorporate interface information into the longer description
+          - id: 115
+            title: Add a field in the project schema for the new prompt
+            completed: false
+          - id: 116
+            title: Incorporate the custom prompt
+            completed: false
+      - id: 111
+        title: Better file map integration
+        completed: false
+        description: >-
+          We have the file map but it would be better to have more intelligent
+          selection of possible files, so we can include the long description
+          for each one.
+        subtasks:
+          - id: 112
+            title: >-
+              Use a smaller model to get a list of the possibly most relevant
+              files
+            completed: false
+          - id: 113
+            title: >-
+              From this list, use a larger model with the longer description to
+              get the most relevant files
+            completed: false
+          - id: 114
+            title: Incorporate interface information into the longer description
+            completed: false
   - id: 82
     title: Repo Scanner
     description: Generate documentation for existing repository code
     plan_file: tasks/00082_epic_repo_scanner.md
     tasks:
-      - title: Parse file interfaces
+      - id: 108
+        title: Parse file interfaces
         completed: false
-        id: 108
         description: >-
           It's helpful to be able to parse out just the interfaces of a file.
           This should be a list of functions and classes, along with the doc

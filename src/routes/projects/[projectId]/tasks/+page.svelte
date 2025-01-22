@@ -2,10 +2,38 @@
   import type { PageData } from './$types';
   import { enhance } from '$app/forms';
   import { Checkbox } from '$lib/components/ui/checkbox';
+  import { Button } from '$lib/components/ui/button';
+  import { Input } from '$lib/components/ui/input';
+  import { Plus } from 'lucide-svelte';
+  import { tick } from 'svelte';
+  import { invalidate, invalidateAll } from '$app/navigation';
 
   let { data }: { data: PageData } = $props();
 
-  $inspect(data);
+  let showAddEpic = $state(false);
+  let showAddTask = $state<Record<number, boolean>>({});
+  let showAddSubtask = $state<Record<string, boolean>>({});
+
+  async function toggleAddTask(epicIndex: number) {
+    showAddTask[epicIndex] = !showAddTask[epicIndex];
+    if (showAddTask[epicIndex]) {
+      await tick();
+      const input = document.getElementById(`new-task-title-${epicIndex}`) as HTMLInputElement;
+      input.focus();
+    }
+  }
+
+  async function toggleAddSubtask(epicIndex: number, taskIndex: number) {
+    const key = `${epicIndex}-${taskIndex}`;
+    showAddSubtask[key] = !showAddSubtask[key];
+    if (showAddSubtask[key]) {
+      await tick();
+      const input = document.getElementById(
+        `new-subtask-title-${epicIndex}-${taskIndex}`
+      ) as HTMLInputElement;
+      input.focus();
+    }
+  }
 </script>
 
 <div class="space-y-8">
@@ -23,22 +51,21 @@
       <div class="ml-4">
         {#each epic.tasks as task, taskIndex}
           <div class="border-l-2 py-2 pl-4">
-            <form
-              method="POST"
-              action="?/toggleTask"
-              use:enhance
-              class="mb-2 flex items-center gap-2"
-            >
-              <input type="hidden" name="epicIndex" value={epicIndex} />
-              <input type="hidden" name="taskIndex" value={taskIndex} />
-              <Checkbox name="completed" checked={task.completed} type="submit" />
-              <h3 class="font-medium {task.completed ? 'text-muted-foreground line-through' : ''}">
-                <a
-                  href="/projects/{data.project.id}/tasks/{epic.id}/{task.id}"
-                  class="hover:underline">{task.title}</a
+            <div class="mb-2 flex items-center gap-2">
+              <form method="POST" action="?/toggleTask" use:enhance class="flex items-center gap-2">
+                <input type="hidden" name="epicIndex" value={epicIndex} />
+                <input type="hidden" name="taskIndex" value={taskIndex} />
+                <Checkbox name="completed" checked={task.completed} type="submit" />
+                <h3
+                  class="font-medium {task.completed ? 'text-muted-foreground line-through' : ''}"
                 >
-              </h3>
-            </form>
+                  <a
+                    href="/projects/{data.project.id}/tasks/{epic.id}/{task.id}"
+                    class="hover:underline">{task.title}</a
+                  >
+                </h3>
+              </form>
+            </div>
 
             {#if task.description}
               <p class="mb-2 text-sm text-muted-foreground">{task.description}</p>
@@ -67,9 +94,157 @@
                 {/each}
               </div>
             {/if}
+
+            <div class="ml-4 mt-2">
+              {#if showAddSubtask[`${epicIndex}-${taskIndex}`]}
+                <form
+                  method="POST"
+                  action="?/addSubtask"
+                  use:enhance={({ formElement }) => {
+                    return async ({ update }) => {
+                      // We do it this way to properly wait for everything to settle and then
+                      // set focus back into the input again.
+                      await update({
+                        reset: false,
+                        invalidateAll: false,
+                      });
+                      await invalidateAll();
+                      const input = formElement.querySelector(
+                        'input[name="title"]'
+                      ) as HTMLInputElement;
+                      input.value = '';
+                      input.focus();
+                    };
+                  }}
+                  class="mb-2 flex items-center gap-2"
+                >
+                  <input type="hidden" name="epicIndex" value={epicIndex} />
+                  <input type="hidden" name="taskIndex" value={taskIndex} />
+                  <Input
+                    type="text"
+                    name="title"
+                    id="new-subtask-title-{epicIndex}-{taskIndex}"
+                    placeholder="New subtask title"
+                    class="w-full"
+                    required
+                    onkeydown={(e) => {
+                      if (e.key === 'Escape') {
+                        e.currentTarget.value = '';
+                        showAddSubtask[`${epicIndex}-${taskIndex}`] = false;
+                      }
+                    }}
+                  />
+                  <Button type="submit" size="sm">Add</Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onclick={() => (showAddSubtask[`${epicIndex}-${taskIndex}`] = false)}
+                  >
+                    Cancel
+                  </Button>
+                </form>
+              {:else}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onclick={() => toggleAddSubtask(epicIndex, taskIndex)}
+                  title="Add Subtask"
+                  class="flex items-center gap-1"
+                >
+                  <Plus class="size-4" />
+                  <span>Add Subtask</span>
+                </Button>
+              {/if}
+            </div>
           </div>
         {/each}
+
+        {#if showAddTask[epicIndex]}
+          <form
+            method="POST"
+            action="?/addTask"
+            use:enhance={({ formElement }) => {
+              return async ({ update }) => {
+                // We do it this way to properly wait for everything to settle and then
+                // set focus back into the input again.
+                await update({
+                  reset: false,
+                  invalidateAll: false,
+                });
+                await invalidateAll();
+                const input = formElement.querySelector('input[name="title"]') as HTMLInputElement;
+                input.value = '';
+                input.focus();
+              };
+            }}
+            class="mb-4 flex items-center gap-2 border-l-2 py-2 pl-4"
+          >
+            <input type="hidden" name="epicIndex" value={epicIndex} />
+            <Input
+              type="text"
+              name="title"
+              id="new-task-title-{epicIndex}"
+              placeholder="New task title"
+              class="w-full"
+              required
+              onkeydown={(e) => {
+                if (e.key === 'Escape') {
+                  e.currentTarget.value = '';
+                  showAddTask[epicIndex] = false;
+                }
+              }}
+            />
+            <Button type="submit" size="sm">Add</Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onclick={() => (showAddTask[epicIndex] = false)}
+            >
+              Cancel
+            </Button>
+          </form>
+        {:else}
+          <Button
+            variant="ghost"
+            size="sm"
+            onclick={() => toggleAddTask(epicIndex)}
+            title="Add Task"
+            class="flex items-center gap-1 border-l-2 py-2 pl-4"
+          >
+            <Plus class="size-4" />
+            <span>Add Task</span>
+          </Button>
+        {/if}
       </div>
     </div>
   {/each}
 </div>
+
+{#if showAddEpic}
+  <form
+    method="POST"
+    action="?/addEpic"
+    use:enhance={() => {
+      return ({ update }) => {
+        update();
+        showAddEpic = false;
+      };
+    }}
+    class="fixed bottom-4 right-4 flex items-center gap-2 rounded-lg bg-card p-4 shadow-lg"
+  >
+    <Input type="text" name="title" placeholder="New epic title" required />
+    <Button type="submit">Add Epic</Button>
+  </form>
+{/if}
+
+<Button
+  variant="default"
+  size="icon"
+  class="fixed bottom-4 right-4"
+  onclick={() => (showAddEpic = !showAddEpic)}
+  title="Add Epic"
+>
+  <Plus class="size-4" />
+</Button>
