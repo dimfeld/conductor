@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { join } from 'node:path';
 import { loadProject } from '$lib/project/project';
@@ -142,5 +142,31 @@ export const actions: Actions = {
     await writeFile(planPath, plan);
 
     return { plan };
+  },
+
+  delete: async ({ cookies, params }) => {
+    const project = await loadProject(cookies, +params.projectId);
+    if (!project) {
+      error(404, 'Project not found');
+    }
+
+    const epicId = +params.epicId;
+    const taskId = +params.taskId;
+    await project.plan.update((plan) => {
+      const epic = plan.plan.find((epic) => epic.id === epicId);
+      if (!epic) {
+        error(404, 'Epic not found');
+      }
+
+      const taskIndex = epic.tasks.findIndex((task) => task.id === taskId);
+      if (taskIndex === -1) {
+        error(404, 'Task not found');
+      }
+
+      epic.tasks.splice(taskIndex, 1);
+      return plan;
+    });
+
+    redirect(303, `/projects/${params.projectId}/tasks/${params.epicId}`);
   },
 } satisfies Actions;

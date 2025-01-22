@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { dirname, join } from 'node:path';
 import { loadProject } from '$lib/project/project';
@@ -161,5 +161,41 @@ export const actions: Actions = {
     await writeFile(planPath, plan);
 
     return { plan };
+  },
+
+  delete: async ({ cookies, params }) => {
+    const project = await loadProject(cookies, +params.projectId);
+    if (!project) {
+      error(404, 'Project not found');
+    }
+
+    const epicId = +params.epicId;
+    const taskId = +params.taskId;
+    const subtaskId = +params.subtaskId;
+    await project.plan.update((plan) => {
+      const epic = plan.plan.find((epic) => epic.id === epicId);
+      if (!epic) {
+        error(404, 'Epic not found');
+      }
+
+      const task = epic.tasks.find((task) => task.id === taskId);
+      if (!task) {
+        error(404, 'Task not found');
+      }
+
+      if (!task.subtasks) {
+        error(404, 'Subtask not found');
+      }
+
+      const subtaskIndex = task.subtasks.findIndex((subtask) => subtask.id === subtaskId);
+      if (subtaskIndex === -1) {
+        error(404, 'Subtask not found');
+      }
+
+      task.subtasks.splice(subtaskIndex, 1);
+      return plan;
+    });
+
+    redirect(303, `/projects/${params.projectId}/tasks/${params.epicId}/${params.taskId}`);
   },
 } satisfies Actions;

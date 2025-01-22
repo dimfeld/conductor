@@ -7,6 +7,7 @@
   import { Input } from '$lib/components/ui/input/index.js';
   import { superForm } from 'sveltekit-superforms/client';
   import { enhance as kitEnhance } from '$app/forms';
+  import * as AlertDialog from '$lib/components/ui/alert-dialog';
 
   let { data } = $props();
   const form = superForm(data.form, {
@@ -16,6 +17,11 @@
   const { form: formData, enhance, delayed } = form;
 
   let generatingPlan = $state(false);
+  let showDeleteConfirm = $state(false);
+
+  function confirmDelete() {
+    showDeleteConfirm = true;
+  }
 </script>
 
 <svelte:window
@@ -42,6 +48,8 @@
   }}
 ></form>
 
+<form method="POST" id="deleteTask" action="?/delete"></form>
+
 <form
   method="POST"
   action="?/save"
@@ -62,6 +70,7 @@
       <Button type="submit" disabled={$delayed}>
         {$delayed ? 'Saving...' : 'Save'}
       </Button>
+      <Button type="button" variant="destructive" onclick={confirmDelete}>Delete Task</Button>
     </div>
   </div>
 
@@ -74,3 +83,18 @@
     placeholder="Task plan content"
   />
 </form>
+
+<AlertDialog.Root bind:open={showDeleteConfirm}>
+  <AlertDialog.Content>
+    <AlertDialog.Header>
+      <AlertDialog.Title>Delete Task</AlertDialog.Title>
+      <AlertDialog.Description>
+        Are you sure you want to delete this task and all its subtasks? This cannot be undone.
+      </AlertDialog.Description>
+    </AlertDialog.Header>
+    <AlertDialog.Footer>
+      <AlertDialog.Cancel onclick={() => (showDeleteConfirm = false)}>Cancel</AlertDialog.Cancel>
+      <AlertDialog.Action type="submit" form="deleteTask">Delete</AlertDialog.Action>
+    </AlertDialog.Footer>
+  </AlertDialog.Content>
+</AlertDialog.Root>

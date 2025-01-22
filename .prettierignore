@@ -7,3 +7,5 @@ drizzle
 rust_helper
 *.hbs
 schema/*.json
+docs/
+components.json

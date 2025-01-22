@@ -26,8 +26,9 @@ plan:
           This should be a button that you can click to build all the epic,
           tasks, and subtasks plan documents that aren't built yet.
         plan_file: tasks/00091_task_build_all_documentation_concurrently.md
+        subtasks: []
       - id: 92
-        title: Workflow for building the initial plan and overview
+        title: Workflow for building the initial plan and overview in a new project
         completed: false
         description: >-
           1. Start from a short description
@@ -89,6 +90,19 @@ plan:
           - id: 100
             title: Quick add a new subtask
             completed: true
+          - id: 122
+            title: Task Deletion
+            completed: true
+          - id: 123
+            title: Drag and drop reordering
+            description: >-
+              https://github.com/HanielU/dnd-kit-svelte looks pretty good for
+              this
+            plan_file: tasks/00123_subtask_drag_and_drop_reordering.md
+            completed: false
+          - id: 125
+            title: Breadcrumbs in task page
+            completed: false
       - id: 101
         title: Ability to include a custom prompt when generating documentation
         completed: false
@@ -119,6 +133,28 @@ plan:
             completed: false
           - id: 114
             title: Incorporate interface information into the longer description
+            completed: false
+      - id: 120
+        title: Generate docs for child tasks from a task page
+        completed: false
+        subtasks:
+          - id: 121
+            title: Show which children are missing a task doc or where it's older
+            completed: false
+          - id: 124
+            title: Generate all child plan documents at once
+            description: >-
+              Generate the plan documents for all the child tasks at once.
+              Should support
+
+
+              - Generate missing/empty documents
+
+              - Generate if the child task's plan document is older then the
+              parent's plan document
+
+              - Regenerate them all
+            plan_file: tasks/00124_subtask_generate_all_child_plan_documents_at_once.md
             completed: false
   - id: 82
     title: Repo Scanner
