@@ -95,9 +95,11 @@ plan:
             completed: true
           - id: 123
             title: Drag and drop reordering
-            description: >-
-              https://github.com/HanielU/dnd-kit-svelte looks pretty good for
-              this
+            description: |
+              Consider one of these
+              - https://github.com/HanielU/dnd-kit-svelte
+              - https://github.com/thisuxhq/sveltednd
+              - https://github.com/isaacHagoel/svelte-dnd-action
             plan_file: tasks/00123_subtask_drag_and_drop_reordering.md
             completed: false
           - id: 125
