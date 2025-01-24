@@ -101,6 +101,25 @@ export const actions: Actions = {
     return { form };
   },
 
+  toggle: async ({ cookies, params }) => {
+    const project = await loadProject(cookies, +params.projectId);
+    if (!project) {
+      error(404, 'Project not found');
+    }
+
+    const subtask = project.plan.findSubtask(
+      parseInt(params.epicId),
+      parseInt(params.taskId),
+      parseInt(params.subtaskId)
+    );
+    if (!subtask) {
+      error(404, 'Subtask not found');
+    }
+
+    subtask.completed = !subtask.completed;
+    await project.plan.save();
+  },
+
   generatePlan: async ({ cookies, params }) => {
     const projectId = params.projectId;
     const project = await loadProject(cookies, +projectId);

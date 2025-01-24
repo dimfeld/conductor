@@ -80,7 +80,7 @@ plan:
         subtasks:
           - id: 110
             title: Show child tasks/subtasks in page view of an epic/task
-            completed: false
+            completed: true
           - id: 98
             title: Quick add a new epic
             completed: true

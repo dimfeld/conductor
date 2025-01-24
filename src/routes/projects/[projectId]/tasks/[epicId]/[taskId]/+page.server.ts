@@ -96,6 +96,57 @@ export const actions: Actions = {
     return { form };
   },
 
+  addSubtask: async ({ params, request, cookies }) => {
+    const data = await request.formData();
+    const epicId = parseInt(params.epicId);
+    const taskId = parseInt(params.taskId);
+    const title = data.get('title') as string;
+    if (!title?.trim()) {
+      error(400, 'Title is required');
+    }
+
+    const project = await loadProject(cookies, +params.projectId);
+    if (!project) {
+      error(404, 'Project not found');
+    }
+
+    await project.plan.update((plan) => {
+      const task = project.plan.findTask(epicId, taskId);
+      if (!task) {
+        error(404, 'Task not found');
+      }
+
+      if (!task.subtasks) {
+        task.subtasks = [];
+      }
+
+      const id = project.plan.nextId++;
+      task.subtasks.push({
+        id,
+        title,
+        completed: false,
+      });
+      return plan;
+    });
+
+    return { success: true };
+  },
+
+  toggle: async ({ cookies, params }) => {
+    const project = await loadProject(cookies, +params.projectId);
+    if (!project) {
+      error(404, 'Project not found');
+    }
+
+    const task = project.plan.findTask(parseInt(params.epicId), parseInt(params.taskId));
+    if (!task) {
+      error(404, 'Task not found');
+    }
+
+    task.completed = !task.completed;
+    await project.plan.save();
+  },
+
   generatePlan: async ({ cookies, params }) => {
     const projectId = params.projectId;
     const project = await loadProject(cookies, +projectId);

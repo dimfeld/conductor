@@ -105,6 +105,38 @@ export const actions: Actions = {
     return { form };
   },
 
+  addTask: async ({ params, request, cookies }) => {
+    const data = await request.formData();
+    const epicId = parseInt(params.epicId);
+    const title = data.get('title') as string;
+    if (!title?.trim()) {
+      error(400, 'Title is required');
+    }
+
+    const project = await loadProject(cookies, +params.projectId);
+    if (!project) {
+      error(404, 'Project not found');
+    }
+
+    await project.plan.update((plan) => {
+      const epic = plan.plan.find((epic) => epic.id === epicId);
+      if (!epic) {
+        error(404, 'Epic not found');
+      }
+
+      const id = project.plan.nextId++;
+      epic.tasks.push({
+        id,
+        title,
+        completed: false,
+        subtasks: [],
+      });
+      return plan;
+    });
+
+    return { success: true };
+  },
+
   generatePlan: async ({ cookies, params }) => {
     const projectId = params.projectId;
     const project = await loadProject(cookies, +projectId);

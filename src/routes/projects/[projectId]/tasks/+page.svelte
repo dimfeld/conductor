@@ -66,7 +66,6 @@
                 </h3>
               </form>
             </div>
-
             {#if task.description}
               <p class="mb-2 text-sm text-muted-foreground">{task.description}</p>
             {/if}
@@ -99,7 +98,7 @@
               {#if showAddSubtask[`${epic.id}-${task.id}`]}
                 <form
                   method="POST"
-                  action="?/addSubtask"
+                  action="/projects/{data.project.id}/tasks/{epic.id}/{task.id}?/addSubtask"
                   use:enhance={({ formElement }) => {
                     return async ({ update }) => {
                       // We do it this way to properly wait for everything to settle and then
@@ -163,7 +162,7 @@
         {#if showAddTask[epic.id!]}
           <form
             method="POST"
-            action="?/addTask"
+            action="/projects/{data.project.id}/tasks/{epic.id}?/addTask"
             use:enhance={({ formElement }) => {
               return async ({ update }) => {
                 // We do it this way to properly wait for everything to settle and then

@@ -8,6 +8,12 @@
   import { superForm } from 'sveltekit-superforms/client';
   import { enhance as kitEnhance } from '$app/forms';
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
+  import { Checkbox } from '$lib/components/ui/checkbox';
+  import * as Tabs from '$lib/components/ui/tabs';
+  import { queryParameters } from 'sveltekit-search-params';
+  import { Plus } from 'lucide-svelte';
+  import { tick } from 'svelte';
+  import { invalidateAll } from '$app/navigation';
 
   let { data } = $props();
   const form = superForm(data.form, {
@@ -18,10 +24,22 @@
 
   let generatingPlan = $state(false);
   let showDeleteConfirm = $state(false);
+  let showAddTask = $state(false);
 
   function confirmDelete() {
     showDeleteConfirm = true;
   }
+
+  async function toggleAddTask() {
+    showAddTask = !showAddTask;
+    if (showAddTask) {
+      await tick();
+      const input = document.getElementById('new-task-title') as HTMLInputElement;
+      input.focus();
+    }
+  }
+
+  const params = queryParameters();
 </script>
 
 <svelte:window
@@ -76,13 +94,106 @@
 
   <Textarea name="description" bind:value={$formData.description} placeholder="Epic description" />
 
-  <Textarea
-    name="content"
-    class="min-h-96 flex-1"
-    bind:value={$formData.content}
-    placeholder="Epic plan content"
-  />
+  <Tabs.Root bind:value={() => params.tab ?? 'tasks', (tab) => (params.tab = tab)}>
+    <Tabs.List class="flex w-full justify-start">
+      <Tabs.Trigger value="tasks">Tasks ({data.epic.tasks?.length ?? 0})</Tabs.Trigger>
+      <Tabs.Trigger value="plan">Plan</Tabs.Trigger>
+    </Tabs.List>
+
+    <Tabs.Content value="tasks">
+      {#if data.epic.tasks?.length}
+        <div class="space-y-4">
+          <ul class="flex flex-col gap-2">
+            {#each data.epic.tasks as task (task.id)}
+              <li class="flex items-center gap-2">
+                <Checkbox
+                  name="toggle-task-{task.id}"
+                  checked={task.completed}
+                  form="toggleTask"
+                  formaction="/projects/{page.params.projectId}/tasks/{page.params
+                    .epicId}/{task.id}?/toggle"
+                  type="submit"
+                />
+                <h3
+                  class="font-medium {task.completed ? 'text-muted-foreground line-through' : ''}"
+                >
+                  <a
+                    href="/projects/{page.params.projectId}/tasks/{page.params.epicId}/{task.id}"
+                    class="hover:underline"
+                  >
+                    {task.title}
+                  </a>
+                </h3>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {:else}
+        <div class="py-4 text-center text-muted-foreground">No tasks created yet</div>
+      {/if}
+
+      {#if showAddTask}
+        <form
+          method="POST"
+          action="?/addTask"
+          use:kitEnhance={({ formElement }) => {
+            return async ({ update }) => {
+              await update({
+                reset: false,
+                invalidateAll: false,
+              });
+              await invalidateAll();
+              const input = formElement.querySelector('input[name="title"]') as HTMLInputElement;
+              input.value = '';
+              input.focus();
+            };
+          }}
+          class="mt-4 flex items-center gap-2"
+        >
+          <Input
+            type="text"
+            name="title"
+            id="new-task-title"
+            placeholder="New task title"
+            class="w-full"
+            required
+            onkeydown={(e) => {
+              if (e.key === 'Escape') {
+                e.currentTarget.value = '';
+                showAddTask = false;
+              }
+            }}
+          />
+          <Button type="submit" size="sm">Add</Button>
+          <Button type="button" variant="outline" size="sm" onclick={() => (showAddTask = false)}>
+            Cancel
+          </Button>
+        </form>
+      {:else}
+        <Button
+          variant="ghost"
+          size="sm"
+          onclick={toggleAddTask}
+          title="Add Task"
+          class="mt-4 flex items-center gap-1"
+        >
+          <Plus class="size-4" />
+          <span>Add Task</span>
+        </Button>
+      {/if}
+    </Tabs.Content>
+    <Tabs.Content value="plan" class="flex-1">
+      <Textarea
+        name="content"
+        class="min-h-96 flex-1"
+        bind:value={$formData.content}
+        placeholder="Epic plan content"
+      />
+    </Tabs.Content>
+  </Tabs.Root>
 </form>
+
+<form method="POST" id="toggleTask" use:kitEnhance class="hidden"></form>
 
 <AlertDialog.Root bind:open={showDeleteConfirm}>
   <AlertDialog.Content>
