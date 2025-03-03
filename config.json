@@ -1,8 +1,5 @@
 {
-  "repositories": [
-    { "id": "repo1", "path": "/path/to/repo1" },
-    { "id": "repo2", "path": "/path/to/repo2" }
-  ],
+  "repositories": [{ "id": "conductor2", "path": "." }],
   "aider": {
     "model": "gpt-3.5-turbo",
     "apiKey": "your-api-key-here"

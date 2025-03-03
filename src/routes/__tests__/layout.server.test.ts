@@ -21,7 +21,7 @@ describe('Layout Server Load', () => {
       repositories: mockRepositories
     });
     
-    const result = await load();
+    const result = await load({ params: {}, url: new URL('http://localhost') } as any);
     
     expect(config.loadConfig).toHaveBeenCalled();
     expect(result).toEqual({ repositories: mockRepositories });
@@ -32,7 +32,7 @@ describe('Layout Server Load', () => {
       throw new Error('Config file not found');
     });
     
-    await expect(load()).rejects.toMatchObject({
+    await expect(load({ params: {}, url: new URL('http://localhost') } as any)).rejects.toMatchObject({
       status: 404
     });
   });
