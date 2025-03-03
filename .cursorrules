@@ -1,0 +1,6 @@
+- Use Svelte 5 with runes and the new `onclick` style event syntax, and SvelteKit 2.
+- Use Sveltekit's `$app/state` runes instead of `$app/stores`.
+- When creating route pages, prefer to put hte logic directly in the page file rather than creating a separate component
+  for it.
+- Prefer svelte-shadcn@next for UI. The installed components are at $lib/components/ui.
+- Use sveltekit-superforms and zod for form logic.
