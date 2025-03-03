@@ -66,11 +66,11 @@ Below are the small, iterative prompts, each designed to be implemented safely w
 ```
 **Context**: We are building a Git Repository Management and Task Automation Tool using SvelteKit and Node.js. This is the first step to set up the project foundation.
 
-**Task**: Initialize a new SvelteKit project named "git-task-tool" using the SvelteKit CLI. Use the skeleton project template and enable TypeScript support. After initialization, navigate into the project directory and install dependencies with `npm install`. Create a `.gitignore` file including `node_modules` and `.env`.
+**Task**: Initialize a new SvelteKit project named "git-task-tool" using the SvelteKit CLI. Use the skeleton project template and enable TypeScript support. After initialization, navigate into the project directory and install dependencies with `pnpm install`. Create a `.gitignore` file including `node_modules` and `.env`.
 
 **Integration**: This sets up the base project structure. Future steps will add files and features within this structure.
 
-**Testing**: Verify the project runs with `npm run dev` and opens a blank page at `http://localhost:5173`.
+**Testing**: Verify the project runs with `pnpm run dev` and opens a blank page at `http://localhost:5173`.
 ```
 
 ### Prompt 2: Install Dependencies
@@ -85,7 +85,7 @@ Update `package.json` with these dependencies.
 
 **Integration**: These libraries will be imported in subsequent steps for UI, validation, and spec file handling.
 
-**Testing**: Ensure `npm install` completes without errors and verify that imports like `import { z } from 'zod'` work in a test file (e.g., `src/lib/test.ts`).
+**Testing**: Ensure `pnpm install` completes without errors and verify that imports like `import { z } from 'zod'` work in a test file (e.g., `src/lib/test.ts`).
 ```
 
 ### Prompt 3: Create Basic Application Layout
@@ -94,12 +94,12 @@ Update `package.json` with these dependencies.
 
 **Task**: In `src/routes/+layout.svelte`, define a layout using shadcn-svelte components:
 - A sidebar on the left (20% width) with placeholder text "Repository List".
-- A main area (remaining width) with `<slot />` for route content.
+- A main area (remaining width) that renders the `children` snippet for route content.
 Ensure the layout is responsive. Use TypeScript in the script tag.
 
 **Integration**: This layout will host the repository list (next step) and route content (later steps).
 
-**Testing**: Run `npm run dev`, visit `http://localhost:5173`, and confirm the sidebar and main area display correctly on various screen sizes.
+**Testing**: Run `pnpm run dev`, visit `http://localhost:5173`, and confirm the sidebar and main area display correctly on various screen sizes.
 ```
 
 ### Prompt 4: Create Sample Configuration File
@@ -147,7 +147,7 @@ Export the function with a TypeScript type for the config object.
 **Testing**: Write unit tests in `src/lib/config.test.ts` using Vitest:
 - Test loading a valid `config.json`.
 - Test error handling for a missing file.
-Run `npm run test` to verify.
+Run `pnpm run test` to verify.
 ```
 
 ### Prompt 6: Set Up Server-Side Layout for Repositories
@@ -161,7 +161,7 @@ Run `npm run test` to verify.
 
 **Integration**: The returned `repositories` will be used in the layout to render the sidebar (next step).
 
-**Testing**: Test `npm run dev`, visit the root, and use the browser’s dev tools to confirm `repositories` is in the page props (via `__sveltekit` data).
+**Testing**: Test `pnpm run dev`, visit the root, and use the browser’s dev tools to confirm `repositories` is in the page props (via `__sveltekit` data).
 ```
 
 ### Prompt 8: Render Repository List in Sidebar
@@ -176,7 +176,7 @@ Run `npm run test` to verify.
 
 **Integration**: Connects the config’s repositories to the UI and sets the stage for repository-specific routes.
 
-**Testing**: Run `npm run dev`, click a repository, and verify the main area updates. Write a test in `src/routes/__tests__/layout.test.ts` to simulate clicks via Svelte Testing Library.
+**Testing**: Run `pnpm run dev`, click a repository, and verify the main area updates. Write a test in `src/routes/__tests__/layout.test.ts` to simulate clicks via Svelte Testing Library.
 ```
 
 ### Prompt 9: Implement Spec File Listing Route
