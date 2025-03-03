@@ -166,11 +166,11 @@ Run `pnpm run test` to verify.
 
 ### Prompt 8: Render Repository List in Sidebar
 ```
-**Context**: With repositories loaded and a store ready, render them in the sidebar, enhancing the layout.
+**Context**: With repositories loaded, render them in the sidebar, enhancing the layout.
 
 **Task**: Update `src/routes/+layout.svelte`:
 - Use `export let data` to access `repositories` from `+layout.server.ts`.
-- In the sidebar, render a clickable list of `repositories` using shadcn-svelte `List` component.
+- In the sidebar, render a clickable list of `repositories`
 - Each item should be a `<a href="/projects/{repoId}">` link
 - In the main area, display “Selected Repository: {page.params.repoId || 'None'}”.
 

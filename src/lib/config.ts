@@ -6,7 +6,7 @@ import path from 'path';
  */
 export interface Config {
   repositories: {
-    name: string;
+    id: string;
     path: string;
   }[];
 }
