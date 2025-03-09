@@ -5,7 +5,7 @@ import type { LayoutServerLoad } from './$types';
 export const load: LayoutServerLoad = async () => {
   try {
     const config = loadConfig();
-    return { repositories: config.repositories };
+    return {};
   } catch (err) {
     console.error('Failed to load config:', err);
     throw error(404, 'Configuration not found');
