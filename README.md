@@ -7,3 +7,4 @@ An Aider-based coding agent swarm
 - Completed Story 1.1: Added Task Markdown File functionality
 - Completed Story 1.2: Enhanced Markdown file handling with existence checking
 - Next Story: Story 1.3 - Parse Tasks from Markdown
+- Project archived, see [llmutils](https://github.com/dimfeld/llmutils) for my current coding agent setup.
